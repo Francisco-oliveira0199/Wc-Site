@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TÍTULO AQUI — Agendamento de Scrim</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="background" aria-hidden="true"></div>
+
+  <header class="glass header">
+    <div class="logo"><div class="logo-placeholder"><img src="imagens/wild clash logo colorido.png" alt="descrição da imagem"></div></div>
+    <nav class="nav">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="scrim.html" class="nav-link active">Scrim</a>
+      <a href="inscricoes.html" class="nav-link">Inscreva-se</a>
+    </nav>
+  </header>
+
+  <main class="page-wrap">
+    <section class="form-section glass">
+      <h1>Agendamento de SCRIM</h1>
+      <form id="scrim-form">
+        <label>Nome do time
+          <input type="text" name="team" required placeholder="Nome do time">
+        </label>
+
+        <label>Contato (Discord / Telefone)
+          <input type="text" name="contact" required placeholder="Discord#0000 ou telefone">
+        </label>
+
+        <label>Data e Horário da SCRIM
+          <input type="datetime-local" name="datetime" required>
+          <small style="color: var(--text-muted); font-size: 12px;">Selecione data e hora para o agendamento</small>
+        </label>
+
+        <label>Formato
+          <div class="format-selection">
+            <div class="option">
+              <input type="radio" id="mdx" name="format" value="MDX" required>
+              <label for="mdx" class="btn mdx-btn">MDX</label>
+              <select class="game-select" id="mdx-games" name="mdx-games" disabled>
+                <option value="3">3 jogos</option>
+                <option value="5">5 jogos</option>
+                <option value="7">7 jogos</option>
+              </select>
+            </div>
+            <div class="option">
+              <input type="radio" id="bcx" name="format" value="BCX">
+              <label for="bcx" class="btn mdx-btn">BCX</label>
+              <select class="game-select" id="bcx-games" name="bcx-games" disabled>
+                <option value="2">2 jogos</option>
+                <option value="3">3 jogos</option>
+                <option value="5">5 jogos</option>
+              </select>
+            </div>
+          </div>
+        </label>
+
+        <label class="rules-container">
+          <div class="rules-scroll">
+<h3>REGRAS COMPLETAS PARA INSCRIÇÕES DAS SCRIMS DE WILD RIFT (EXCLUSIVAS NO DISCORD)</h3>
+<h4>1. Requisitos Gerais para Participação</h4>
+<ol>
+<li>1.1. Todas as inscrições devem ser realizadas exclusivamente no servidor oficial do Discord.</li>
+<li>1.2. Apenas equipes previamente registradas poderão participar das scrims.</li>
+<li>1.3. Cada equipe deve possuir no mínimo 5 jogadores titulares ativos e pode registrar até 1 técnico e 1 jogador substituto opcional.</li>
+<li>1.4. A conta de cada participante deve estar ativa, sem punições recentes ou restrições impostas pela Riot Games.</li>
+<li>1.5. Jogadores com histórico de comportamento tóxico ou atitudes antidesportivas poderão ter a participação negada.</li>
+</ol>
+
+<h4>2. Processo de Inscrição</h4>
+<ol>
+<li>2.1. A inscrição deverá ser enviada no canal designado para este fim, seguindo rigorosamente o formulário disponibilizado pela administração.</li>
+<li>2.2. O capitão da equipe será o responsável oficial pelo envio das informações. Inscrições enviadas por jogadores não responsáveis serão desconsideradas.</li>
+<li>2.3. Informações obrigatórias:
+<ul>
+<li>Nome da equipe</li>
+<li>Lista completa dos jogadores (Nick in-game com tag, função e Discord ID)</li>
+<li>Nome do capitão</li>
+<li>Nome do substituto ou técnico, se houver</li>
+<li>Disponibilidades de dias e horários</li>
+</ul>
+</li>
+<li>2.4. A organização pode solicitar dados complementares caso julgue necessário.</li>
+<li>2.5. O prazo para análise e aprovação das inscrições pode variar de 24 a 48 horas.</li>
+</ol>
+
+<h4>3. Critérios de Aceitação e Seleção</h4>
+<ol>
+<li>3.1. A equipe será aceita somente se todas as informações estiverem completas e em conformidade com as regras.</li>
+<li>3.2. A equipe deve demonstrar comprometimento mínimo com a participação nas scrims, evitando faltas recorrentes.</li>
+<li>3.3. A administração reserva-se o direito de aceitar ou recusar inscrições conforme critérios internos de organização, segurança e comportamento.</li>
+</ol>
+
+<h4>4. Agendamento e Organização das Scrims</h4>
+<ol>
+<li>4.1. A agenda oficial de scrims será publicada em canais específicos do Discord.</li>
+<li>4.2. Cada equipe deve confirmar presença com no mínimo 30 minutos de antecedência.</li>
+<li>4.3. O limite de atraso permitido é de 10 minutos após o horário oficial. Após esse prazo, o time será considerado ausente e perderá a scrim.</li>
+<li>4.4. Jogadores não registrados na inscrição não poderão participar da partida.</li>
+<li>4.5. Alterações no elenco devem ser informadas à administração com no mínimo 24 horas de antecedência.</li>
+</ol>
+
+<h4>5. Conduta nos Canais e Durante as Partidas</h4>
+<ol>
+<li>5.1. É proibido qualquer tipo de comportamento tóxico, discurso de ódio, assédio, provocações ofensivas ou qualquer forma de agressão verbal.</li>
+<li>5.2. O uso indevido de canais, envio de spam ou flood resultará em punições.</li>
+<li>5.3. É proibido o uso de hacks, scripts ou qualquer programa externo que ofereça vantagem indevida.</li>
+<li>5.4. A reincidência de infrações poderá resultar em banimento permanente das scrims organizadas pelo servidor.</li>
+</ol>
+
+
+<h4>6. Penalidades</h4>
+<ol>
+<li>6.1. A organização poderá aplicar as seguintes sanções conforme a gravidade da infração:
+<ul>
+<li>Advertência</li>
+<li>Perda de escolha de lado</li>
+<li>Perda de partida</li>
+<li>Perda de série</li>
+<li>Desclassificação do torneio</li>
+<li>Banimento de eventos futuros</li>
+</ul>
+</li>
+<li>6.2. A reincidência agravará automaticamente o nível da punição.</li>
+</ol>
+
+<h4>7. Autoridade da Organização</h4>
+<ol>
+<li>7.1. Todas as decisões da administração do torneio são finais e inquestionáveis.</li>
+<li>7.2. Situações não previstas neste regulamento serão analisadas e julgadas pela organização de forma imparcial e definitiva.</li>
+</ol>
+          </div>
+          <input type="checkbox" id="rules-checkbox" required disabled>
+          <label for="rules-checkbox" class="checkbox-label">Li e aceito todas as regras (obrigatório)</label>
+        </label>
+
+        <label>Observações
+          <textarea name="obs" placeholder="Observações adicionais"></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button class="btn neon" type="submit">Enviar</button>
+        </div>
+        <p class="form-note">Obs: o envio é preparado para webhook do Discord. Veja comentários no código (script.js).</p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="glass footer">© TÍTULO AQUI</footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
