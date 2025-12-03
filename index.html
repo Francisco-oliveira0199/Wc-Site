@@ -1,9 +1,17 @@
+<!-- =============================================================================
+   PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
+   ARQUIVO: index.html (Página Inicial)
+   DESCRIÇÃO: Página principal com hero, carousel de competições e rodapé.
+   RESPONSÁVEL: Seção hero com título, subtítulo e carousel rotativo.
+   LINKADO A: style.css (estilos), script.js (funcionalidades carousel).
+   NOTAS: Carousel exibe 3 cards de competições; substituiu vídeo anterior.
+============================================================================= -->
 <!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>TÍTULO AQUI — Home</title>
+  <title>WILD CLASH — Campeonatos de Wild Rift</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -37,8 +45,31 @@
             <p>Eu sou Nitto — coach, streamer e player há cinco anos — e desenvolvi o Wild Clash para fortalecer a cena, ampliar oportunidades e dar visibilidade para quem realmente quer evoluir no jogo. Aqui, o foco é simples: competição séria, progresso real e espaço para todos que buscam desafiar seus limites.</p>
           </div>
 
-          <section class="video-placeholder" aria-label="Vídeo de apresentação">
-            <div class="video-box">SEÇÃO DE VÍDEO - COLOCAR VIDEO AQUI</div>
+          <section class="carousel" aria-label="Carrossel de competições">
+            <button class="arrow prev" aria-label="Anterior"></button>
+            <div class="carousel-container">
+              <div class="carousel-slide active">
+                <div class="competition-card glass">
+                  <div class="card-logo"><img src="imagens/wild clash.png" alt="Logo Wild Clash"></div>
+                </div>
+              </div>
+              <div class="carousel-slide">
+                <div class="competition-card glass">
+                  <div class="card-logo"><img src="imagens/ongoing wild clash.png" alt="Logo Campeonatos em Andamento"></div>
+                </div>
+              </div>
+              <div class="carousel-slide">
+                <div class="competition-card glass">
+                  <div class="card-logo"><img src="imagens/relegation.png" alt="Logo Wild Clash Relegation"></div>
+                </div>
+              </div>
+            </div>
+            <button class="arrow next" aria-label="Próximo"></button>
+            <div class="carousel-indicators">
+              <span class="indicator active" data-slide="0"></span>
+              <span class="indicator" data-slide="1"></span>
+              <span class="indicator" data-slide="2"></span>
+            </div>
           </section>
         </div>
       </div>
@@ -50,10 +81,10 @@
         <a class="card glass clickable wild-clash-card" href="wildclash.html" aria-label="Abrir Wild Clash — chaves e times">
           <div class="card-title">WILD CLASH</div>
           <div class="card-image-placeholder"><img src="imagens/wild clash.png" alt="descrição da imagem"></div>
-        </a>
+        </a> 
 
         <a class="card glass clickable external" href="https://www.youtube.com/channel/UCCNOSn3tTp2IqPKTKC2_umw/live" target="_blank" rel="noopener noreferrer" aria-label="Abrir campeonatos em andamento no YouTube">
-          <div class="card-title">CAMPEONATOS EM ANDAMENTO</div>
+          <div class="card-title">CAMP EM ANDAMENTO</div>
           <div class="card-image-placeholder"><img src="imagens/ongoing wild clash.png" alt="descrição da imagem"></div>
         </a>
 

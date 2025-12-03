@@ -1,3 +1,11 @@
+<!-- =============================================================================
+   PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
+   ARQUIVO: scrim.html (Página de Agendamento de Scrim)
+   DESCRIÇÃO: Formulário para agendamento de scrims, com regras scrolláveis e botão de aceitação.
+   RESPONSÁVEL: Coleta de dados para scrim, validação de regras, envio via Discord webhook.
+   LINKADO A: style.css (estilos), script.js (validação e envio).
+   NOTAS: Scrims são treinos; webhook configurado para canal específico do Discord.
+============================================================================= -->
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -30,6 +38,51 @@
           <input type="text" name="contact" required placeholder="Discord#0000 ou telefone">
         </label>
 
+        <label>Lineup principal (obrigatório)</label>
+        <div class="lineup-fields">
+          <label>TOP
+            <input type="text" name="top" required placeholder="Nome do Player / Nick#Hash">
+          </label>
+          <label>JNG
+            <input type="text" name="jng" required placeholder="Nome do Player / Nick#Hash">
+          </label>
+          <label>MID
+            <input type="text" name="mid" required placeholder="Nome do Player / Nick#Hash">
+          </label>
+          <label>ADC
+            <input type="text" name="adc" required placeholder="Nome do Player / Nick#Hash">
+          </label>
+          <label>SUP
+            <input type="text" name="sup" required placeholder="Nome do Player / Nick#Hash">
+          </label>
+        </div>
+
+        <label>Reservas</label>
+        <div class="reserves-fields">
+          <div class="reserve-field">
+            <input type="text" name="reserva1" placeholder="Nome do Player / Nick#Hash">
+            <select name="rota1">
+              <option value="">Selecione rota</option>
+              <option value="TOP">TOP</option>
+              <option value="JNG">JNG</option>
+              <option value="MID">MID</option>
+              <option value="ADC">ADC</option>
+              <option value="SUP">SUP</option>
+            </select>
+          </div>
+          <div class="reserve-field">
+            <input type="text" name="reserva2" placeholder="Nome do Player / Nick#Hash">
+            <select name="rota2">
+              <option value="">Selecione rota</option>
+              <option value="TOP">TOP</option>
+              <option value="JNG">JNG</option>
+              <option value="MID">MID</option>
+              <option value="ADC">ADC</option>
+              <option value="SUP">SUP</option>
+            </select>
+          </div>
+        </div>
+
         <label>Data e Horário da SCRIM
           <input type="datetime-local" name="datetime" required>
           <small style="color: var(--text-muted); font-size: 12px;">Selecione data e hora para o agendamento</small>
@@ -38,8 +91,8 @@
         <label>Formato
           <div class="format-selection">
             <div class="option">
-              <input type="radio" id="mdx" name="format" value="MDX" required>
-              <label for="mdx" class="btn mdx-btn">MDX</label>
+              <input type="radio" id="mdx" name="format" value="MDX" required style="display:none;">
+              <label for="mdx" class="format-btn">MDX</label>
               <select class="game-select" id="mdx-games" name="mdx-games" disabled>
                 <option value="3">3 jogos</option>
                 <option value="5">5 jogos</option>
@@ -47,8 +100,8 @@
               </select>
             </div>
             <div class="option">
-              <input type="radio" id="bcx" name="format" value="BCX">
-              <label for="bcx" class="btn mdx-btn">BCX</label>
+              <input type="radio" id="bcx" name="format" value="BCX" style="display:none;">
+              <label for="bcx" class="format-btn">BCX</label>
               <select class="game-select" id="bcx-games" name="bcx-games" disabled>
                 <option value="2">2 jogos</option>
                 <option value="3">3 jogos</option>
@@ -133,8 +186,8 @@
 <li>7.2. Situações não previstas neste regulamento serão analisadas e julgadas pela organização de forma imparcial e definitiva.</li>
 </ol>
           </div>
-          <input type="checkbox" id="rules-checkbox" required disabled>
-          <label for="rules-checkbox" class="checkbox-label">Li e aceito todas as regras (obrigatório)</label>
+          <input type="checkbox" id="rules-checkbox" required disabled style="display:none;">
+          <button type="button" class="checkbox-btn" id="scrim-accept-btn">Li e aceito todas as regras</button>
         </label>
 
         <label>Observações
