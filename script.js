@@ -360,14 +360,13 @@ function validateField(e) {
                 break;
                 
             case 'tel':
-                // Validação básica de telefone
-                const phoneRegex = /^\(?\d{2}\)?[\s-]?\d{4,5}[\s-]?\d{4}$/;
-                if (!phoneRegex.test(value)) {
-                    isValid = false;
-                    error = 'Formato: (DD) 99999-9999';
-                }
-                break;
-        }
+    // Validação de telefone com formatos: (DD)99999999, (DD)999999999, (DD) 99999-9999
+    const phoneRegex = /^\(\d{2}\)[\s-]?\d{4,5}[\s-]?\d{4}$/;
+    if (!phoneRegex.test(value)) {
+        isValid = false;
+        error = 'Formato: (DD)999999999 ou (DD) 99999-9999';
+    }
+    break;
         
         // Validação de Nick#TAG para jogadores
         if (field.name.match(/top|jng|mid|adc|sup|reserva/)) {
@@ -853,7 +852,7 @@ window.WildClashDebug = {
             competicao: 'Wild Clash Teste',
             coach: 'Nome de Teste',
             email_coach: 'teste@email.com',
-            telefone: '(11) 99999-9999',
+            telefone: '11999999999',
             nome_equipe: 'Equipe Teste',
             top: 'TesteTop#1234',
             jng: 'TesteJng#1234',
