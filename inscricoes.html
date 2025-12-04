@@ -2,7 +2,7 @@
    PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
    ARQUIVO: inscricoes.html (Página de Inscrições)
    DESCRIÇÃO: Formulário para inscrição em campeonatos, com regras scrolláveis e envio via EmailJS
-   VERSÃO: 3.0
+   VERSÃO: 4.0
    DATA: Dezembro 2025
    INTEGRAÇÃO: EmailJS para envio automático de inscrições
 ============================================================================= -->
@@ -26,17 +26,18 @@
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="text/javascript">
-        // Inicialização do EmailJS
+        // Inicialização do EmailJS (apenas se não estiver inicializado)
         (function() {
-            emailjs.init({
-                publicKey: "1bph11qy38lrIRSwK", // ← SUBSTITUA COM SUA CHAVE PÚBLICA DO EMAILJS
-                blockHeadless: true,
-                limitRate: {
-                    id: 'wildclash_inscricoes',
-                    throttle: 10000 // 10 segundos entre envios
-                }
-            });
-            console.log('EmailJS inicializado para inscrições');
+            if (typeof emailjs !== 'undefined' && !emailjs._isInitialized) {
+                emailjs.init({
+                    publicKey: "1bph11qy38lrIRSwK",
+                    blockHeadless: true,
+                    limitRate: {
+                        id: 'wildclash_inscricoes',
+                        throttle: 10000
+                    }
+                });
+            }
         })();
     </script>
 </head>
@@ -46,18 +47,14 @@
 
     <!-- Header -->
     <header class="glass header" role="banner">
-        <div class="header-container">
-            <div class="logo-placeholder">
-                <img src="imagens/wild-clash-logo-colorido.png" alt="Wild Clash Logo" width="180" height="60">
-            </div>
-            
-            <nav class="nav" role="navigation" aria-label="Navegação principal">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="scrim.html" class="nav-link">Scrim</a>
-                <a href="inscricoes.html" class="nav-link active" aria-current="page">Inscreva-se</a>
-                <a href="campeonatos.html" class="nav-link">Campeonatos</a>
-            </nav>
+        <div class="logo">
+            <div class="logo-placeholder"><img src="imagens/wild clash logo colorido.png" alt="Wild Clash Logo"></div>
         </div>
+        <nav class="nav" role="navigation" aria-label="Navegação principal">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="scrim.html" class="nav-link">Scrim</a>
+            <a href="inscricoes.html" class="nav-link active" aria-current="page">Inscreva-se</a>
+        </nav>
     </header>
 
     <!-- Main Content -->
@@ -65,13 +62,13 @@
         <section class="form-section glass" aria-labelledby="form-title">
             <h1 id="form-title" class="neon-title">FORMULÁRIO DE INSCRIÇÃO</h1>
             
-            <form id="inscricao-form" class="inscricao-form" data-emailjs data-form-type="inscricao">
+            <form id="inscricao-form" class="inscricao-form" data-emailjs>
                 <!-- Status Message Container -->
                 <div id="form-status" class="form-status" aria-live="polite"></div>
                 
                 <!-- Dados Básicos -->
                 <div class="form-section-group">
-                    <h2 class="form-group-title">📋 DADOS DA EQUIPE</h2>
+                    <h2 class="form-group-title">DADOS DA EQUIPE</h2>
                     
                     <div class="form-group">
                         <label for="competicao">
@@ -81,7 +78,7 @@
                             <option value="" disabled selected>Selecione a competição</option>
                             <option value="Wild Clash">Wild Clash (Torneio Principal)</option>
                             <option value="Wild Clash Relegation">Wild Clash Relegation</option>
-                            <option value="Campeonatos em Andamento">Campeonatos em Andamento</option>
+                            <option value="Campeonatos em Andamento">Next Reload</option>
                         </select>
                         <div class="error-message" id="competicao-error" aria-live="polite"></div>
                     </div>
@@ -135,7 +132,7 @@
 
                 <!-- Lineup Principal -->
                 <div class="form-section-group">
-                    <h2 class="form-group-title">🎮 LINEUP PRINCIPAL</h2>
+                    <h2 class="form-group-title">LINEUP PRINCIPAL</h2>
                     <p class="form-instruction">Preencha com Nick#TAG (exemplo: PlayerName#1234)</p>
                     
                     <div class="lineup-grid">
@@ -188,7 +185,7 @@
 
                 <!-- Reservas -->
                 <div class="form-section-group">
-                    <h2 class="form-group-title">🔄 RESERVAS (OPCIONAL)</h2>
+                    <h2 class="form-group-title">RESERVAS (OPCIONAL)</h2>
                     
                     <div class="reserves-grid">
                         <div class="reserve-item">
@@ -235,7 +232,7 @@
 
                 <!-- Informações Adicionais -->
                 <div class="form-section-group">
-                    <h2 class="form-group-title">📊 INFORMAÇÕES ADICIONAIS</h2>
+                    <h2 class="form-group-title">INFORMAÇÕES ADICIONAIS</h2>
                     
                     <div class="form-group">
                         <label for="elo_medio">Elo Médio da Equipe</label>
@@ -266,7 +263,7 @@
 
                 <!-- Regras do Torneio -->
                 <div class="form-section-group">
-                    <h2 class="form-group-title">📜 REGULAMENTO DO TORNEIO</h2>
+                    <h2 class="form-group-title">REGULAMENTO DO TORNEIO</h2>
                     
                     <div class="rules-container">
                         <label class="rules-label">
@@ -274,189 +271,297 @@
                         </label>
                         
                         <div class="rules-scroll" id="rules-scroll">
-                            <!-- Conteúdo das regras será carregado aqui -->
+                            <!-- Conteúdo das regras -->
                             <div class="rules-content">
-                                <h3>REGULAMENTO PARA CAMPEONATOS DE WILD RIFT</h3>
-                                
-                                <h4>CAPÍTULO 1 – DISPOSIÇÕES GERAIS</h4>
-                                <h5>1.1. Objetivo do Regulamento</h5>
-                                <p>Este documento estabelece todas as regras, procedimentos e responsabilidades para participação nos campeonatos de Wild Rift administrados pela organização, garantindo padronização, equidade competitiva, segurança operacional e respeito entre participantes.</p>
-                                
-                                <h5>1.2. Abrangência</h5>
-                                <p>As regras aqui descritas aplicam-se:</p>
-                                <ul>
-                                    <li>A todos os jogadores inscritos</li>
-                                    <li>Às equipes e representantes oficiais</li>
-                                    <li>À equipe organizadora, transmissão, arbitragem e staff</li>
-                                    <li>Ao público espectador quando aplicável</li>
-                                </ul>
-                                
-                                <h5>1.3. Aceitação das Regras</h5>
-                                <p>A inscrição de uma equipe implica aceitação integral, irrevogável e inquestionável de todas as condições e normas descritas neste regulamento.</p>
-                                
-                                <h5>1.4. Princípios do Regulamento</h5>
-                                <p>O torneio segue os princípios:</p>
+                                <h3>REGULAMENTO OFICIAL – WILD CLASH</h3>
+
+                                <h5>1.2. Objetivo</h5>
+                                <p>Garantir que a competição ocorra sob:</p>
                                 <ul>
                                     <li>Integridade competitiva</li>
                                     <li>Transparência</li>
-                                    <li>Igualdade de condições</li>
-                                    <li>Imparcialidade da arbitragem</li>
-                                    <li>Conduta profissional</li>
+                                    <li>Imparcialidade</li>
+                                    <li>Responsabilidade disciplinar</li>
+                                    <li>Respeito entre jogadores e staff</li>
                                 </ul>
-                                
-                                <h4>CAPÍTULO 2 – ELEGIBILIDADE E REQUISITOS DOS JOGADORES</h4>
-                                <h5>2.1. Requisitos de Conta</h5>
-                                <p>Para participar, o jogador deve possuir:</p>
+
+                                <h5>1.3. Caráter Obrigatório</h5>
+                                <p>A inscrição implica aceitação total e irrevogável de todas as regras.
+                                O desconhecimento deste regulamento não isenta o participante de sua aplicação.</p>
+
+                                <h4>CAPÍTULO 2 – ELEGIBILIDADE E REQUISITOS</h4>
+
+                                <h5>2.1. Requisitos de Jogadores</h5>
+                                <p>Para participar, o jogador deve:</p>
                                 <ul>
-                                    <li>Conta oficial do Wild Rift</li>
-                                    <li>Nome de Invocador adequado e que não infrinja normas da Riot</li>
-                                    <li>Conta no servidor designado para o torneio</li>
+                                    <li>Possuir conta oficial de Wild Rift não suspensa</li>
+                                    <li>Estar no servidor indicado pela organização</li>
+                                    <li>Ter o jogo instalado em dispositivo compatível</li>
+                                    <li>Não utilizar emuladores</li>
+                                    <li>Possuir apenas uma conta registrada no torneio</li>
                                 </ul>
-                                
+
                                 <h5>2.2. Idade Mínima</h5>
-                                <p>O torneio poderá exigir idade mínima definida no regulamento complementar (ex: 13, 16 ou 18 anos).</p>
-                                <p>A organização poderá solicitar comprovação de idade ou autorização de responsáveis.</p>
-                                
-                                <h5>2.3. Restrições de Participação</h5>
-                                <p>Jogadores estão impedidos se:</p>
                                 <ul>
-                                    <li>Estiverem suspensos pela Riot</li>
-                                    <li>Fizerem uso de software não autorizado</li>
-                                    <li>Estiverem enquadrados em punições disciplinares da organização</li>
-                                    <li>Estiverem inscritos em mais de uma equipe no mesmo campeonato</li>
+                                    <li>Idade mínima determinada pela organização (13, 16 ou 18).</li>
+                                    <li>A organização pode solicitar documento comprobatório.</li>
                                 </ul>
-                                
-                                <h5>2.4. Responsabilidade Individual</h5>
-                                <p>Cada jogador é responsável por:</p>
+
+                                <h5>2.3. Restrições</h5>
+                                <p>Será desclassificado o jogador que:</p>
                                 <ul>
-                                    <li>Manter sua conexão estável</li>
-                                    <li>Possuir dispositivo adequado</li>
-                                    <li>Entrar no lobby no horário indicado</li>
-                                    <li>Cumprir todas as normas de fair play</li>
+                                    <li>Estiver banido pela Riot</li>
+                                    <li>Usar programas de terceiros</li>
+                                    <li>Estiver inscrito em mais de uma lineup</li>
+                                    <li>Participar após o período de registro</li>
+                                    <li>Alternar entre equipes no mesmo campeonato</li>
                                 </ul>
-                                
-                                <h4>CAPÍTULO 3 – FORMAÇÃO E GESTÃO DAS EQUIPES</h4>
-                                <h5>3.1. Composição Mínima e Máxima</h5>
-                                <p>Cada equipe deve registrar:</p>
+
+                                <span>Jogadores que atuarem em duas lineups desclassificam ambas imediatamente.</span> 
+
+                                <h4>CAPÍTULO 3 – EQUIPES E ADMINISTRAÇÃO</h4>
+
+                                <h5>3.1. Composição da Equipe</h5>
                                 <ul>
-                                    <li>5 jogadores titulares obrigatórios</li>
+                                    <li>5 jogadores titulares</li>
                                     <li>Até 2 reservas</li>
-                                    <li>1 capitão</li>
-                                    <li>1 técnico opcional</li>
+                                    <li>1 capitão (obrigatório; sempre um jogador)</li>
+                                    <li>1 coach (opcional)</li>
+                                    <li>1 dono / responsável administrativo (opcional)</li>
                                 </ul>
-                                
-                                <h5>3.2. Capitão da Equipe</h5>
-                                <p>O capitão é responsável por:</p>
+
+                                <h5>3.2. Funções do Capitão</h5> 
+                                <p>O capitão é o único autorizado a:</p>
                                 <ul>
-                                    <li>Comunicação oficial com a organização</li>
-                                    <li>Realizar check-in</li>
-                                    <li>Enviar prints de resultados</li>
-                                    <li>Reportar problemas e solicitações de pausa</li>
+                                    <li>Se comunicar com a organização</li>
+                                    <li>Solicitar pausas</li>
+                                    <li>Reportar problemas</li>
+                                    <li>Enviar resultados</li>
+                                    <li>Representar a equipe em decisões oficiais</li>
                                 </ul>
-                                
-                                <h5>3.3. Responsabilidades do Técnico</h5>
-                                <p>O técnico (quando houver) pode:</p>
+
+                                <span>Jogadores individuais não podem acionar a staff diretamente.</span> 
+
+                                <h5>3.3. Comunicação Oficial</h5>
+                                <p>A comunicação com a staff ocorre exclusivamente por:</p>
                                 <ul>
-                                    <li>Participar do draft caso autorizado pelas regras</li>
-                                    <li>Auxiliar no preparo da equipe</li>
-                                    <li>Participar de reuniões com organizadores</li>
+                                    <li>Capitães</li>
+                                    <li>Donos das organizações</li>
+                                    <li>Coaches</li>
                                 </ul>
-                                <p>O técnico não pode:</p>
+
+                                <h4>CAPÍTULO 4 – DISCORD E ORGANIZAÇÃO OPERACIONAL</h4>
+
+                                <h5>4.1. Ambiente Oficial</h5>
+                                <p>Todos os jogos ocorrerão no Discord oficial do Wild Clash.</p>
+
+                                <h5>4.2. Identificação Obrigatória</h5>
+                                <p>Todos os jogadores devem:</p>
                                 <ul>
-                                    <li>Entrar na partida em lugar de um jogador titular sem registro prévio como reserva</li>
+                                    <li>Manter TAG da equipe no nick do Discord</li>
+                                    <li>Permanecer na call designada antes e durante a série</li>
                                 </ul>
-                                
-                                <h5>3.4. Substituições e Alterações de Line-up</h5>
-                                <p>Alterações permitidas:</p>
+
+                                <h5>4.3. Presença da Arbitragem</h5>
+                                <ul>
+                                    <li>Cada partida terá árbitros nas duas calls dos times</li>
+                                    <li>Os árbitros podem intervir em casos de dúvida, conflito ou irregularidade</li>
+                                </ul>
+
+                                <h5>4.4. Informações Oficiais</h5>
+                                <ul>
+                                    <li>A organização pode anunciar regras, avisos e orientações durante as transmissões oficiais</li>
+                                    <li>Todos os jogadores e capitães devem acompanhá-las</li>
+                                </ul>
+
+                                <span>O não acompanhamento das transmissões não isenta a equipe de cumprir mudanças comunicadas.</span>
+
+                                <h4>CAPÍTULO 5 – HORÁRIOS, ATRASOS E W.O.</h4>
+
+                                <h5>5.1. Tolerância</h5>
+                                <p>O limite máximo de atraso é de 10 minutos após o horário oficial.</p>
+
+                                <h5>5.2. Critérios de W.O.</h5>
+                                <ul>
+                                    <li>A equipe ausente após 10 minutos → W.O. imediato</li>
+                                    <li>A presença mínima é de 5 jogadores no lobby</li>
+                                </ul>
+
+                                <h5>5.3. Acúmulo de W.O.</h5>
+                                <ul>
+                                    <li>3 W.O. na Fase de Grupos → DESCLASSIFICAÇÃO</li>
+                                    <li>2 W.O. na Chave de Winners/Losers → DESCLASSIFICAÇÃO</li>
+                                </ul>
+
+                                <h5>5.4. W.O. Disciplinar</h5>
+                                <p>Três advertências acumuladas resultam em:</p>
+                                <ul>
+                                    <li>1 W.O. disciplinar automático, somado ao histórico da equipe</li>
+                                    <li>Este W.O. pode completar a contagem que leva à desclassificação</li>
+                                </ul>
+
+                                <h5>5.5. Ajustes de Horário</h5>
+                                <p>A organização tem o direito de alterar datas e horários se necessário.</p>
+
+                                <h4>CAPÍTULO 6 – FORMATO E PROCEDIMENTOS DE JOGO</h4>
+
+                                <h5>6.1. Configurações Gerais</h5>
+                                <ul>
+                                    <li>Custom Game</li>
+                                    <li>Modo Tournament Draft</li>
+                                    <li>Patch oficial fixado antes da rodada</li>
+                                    <li>Campeões novos ou reworks com menos de 7 dias estão proibidos</li>
+                                </ul>
+
+                                <h5>6.2. Uso de Skins</h5>
+                                <p>Permitidas exceto aquelas restritas pela Riot.</p>
+
+                                <h5>6.3. Pausas</h5>
+                                <p>Somente o capitão pode solicitar pausa, em casos de:</p>
+                                <ul>
+                                    <li>Problemas de conexão repentinos</li>
+                                    <li>Bugs críticos</li>
+                                    <li>Problemas técnicos de dispositivo</li>
+                                </ul>
+
+                                <span>Pausas abusivas geram penalidade.</span>
+
+                                <h5>6.4. Report de Resultados</h5>
+                                <p>Exige-se print visível com todos os nomes da partida.</p>
+
+                                <h4>CAPÍTULO 7 – TROCAS E LINEUP</h4>
+
+                                <h5>7.1. Trocas Permitidas</h5>
                                 <ul>
                                     <li>Entre partidas da mesma série</li>
-                                    <li>Entre séries diferentes do torneio</li>
+                                    <li>Entre séries diferentes</li>
                                 </ul>
-                                <p>Alterações proibidas:</p>
+
+                                <h5>7.2. Trocas Proibidas</h5>
                                 <ul>
-                                    <li>Durante uma partida iniciada</li>
+                                    <li>Durante uma partida em andamento</li>
+                                    <li>Jogadores não registrados</li>
+                                    <li>Jogadores adicionados após o prazo de inscrição</li>
                                 </ul>
-                                <p>Para que uma substituição seja válida:</p>
+
+                                <span>Jogador que entrar após o registro desclassifica a equipe.</span>
+
+                                <span>Jogador que atuar em duas equipes desclassifica ambas.</span> 
+
+                                <h4>CAPÍTULO 8 – CONDUTA E FAIR PLAY</h4>
+
+                                <h5>8.1. Condutas Leves (sempre geram advertência)</h5>
                                 <ul>
-                                    <li>O jogador deve estar previamente registrado</li>
-                                    <li>O capitão deve informar a staff com antecedência mínima estabelecida</li>
+                                    <li>Atrasos menores</li>
+                                    <li>Falha de comunicação</li>
+                                    <li>Reclamações indevidas</li>
+                                    <li>Comportamento desrespeitoso leve</li>
                                 </ul>
-                                
-                                <h4>CAPÍTULO 10 – TRANSMISSÃO, DIREITOS DE IMAGEM E STREAMS PESSOAIS</h4>
-                                <h5>10.1. Transmissão Oficial</h5>
-                                <p>A organização poderá transmitir:</p>
+
+                                <h5>8.2. Condutas Médias (sempre geram advertência)</h5>
                                 <ul>
-                                    <li>Partidas selecionadas</li>
-                                    <li>Série completa ou parcial</li>
-                                    <li>Entrevistas, análises e conteúdos extras</li>
+                                    <li>Pausas abusivas</li>
+                                    <li>Toxicidade moderada</li>
+                                    <li>Tentativa de manipular regras</li>
+                                    <li>Uso de emuladores</li>
+                                    <li>Desrespeito moderado à staff</li>
                                 </ul>
-                                
-                                <h5>10.2. Streams dos Jogadores</h5>
-                                <p>Jogadores só podem transmitir se:</p>
+
+                                <h5>8.3. Condutas Graves (retidas para análise da comissão)</h5>
                                 <ul>
-                                    <li>A organização permitir</li>
-                                    <li>Um delay mínimo for aplicado</li>
-                                    <li>Não interferir no andamento da equipe</li>
+                                    <li>Racismo, xenofobia, homofobia</li>
+                                    <li>Discurso de ódio</li>
+                                    <li>Matchfixing</li>
+                                    <li>Ringing (jogar na conta de outro)</li>
+                                    <li>Auxílio externo ilegal</li>
+                                    <li>Manipulação intencional de resultados</li>
+                                    <li>Assédio</li>
+                                    <li>Ameaças</li>
+                                    <li>Antijogo intencional</li>
                                 </ul>
-                                
-                                <h5>10.3. Uso de Imagem</h5>
-                                <p>Ao participar do torneio, o jogador autoriza o uso de:</p>
+
+                                <p>Penalidade automática para Discurso de Ódio:</p>
                                 <ul>
-                                    <li>Nickname</li>
-                                    <li>Voz em entrevistas</li>
-                                    <li>Clips de jogadas</li>
-                                    <li>Material gerado no evento</li>
+                                    <li>Desclassificação imediata da equipe</li>
+                                    <li>Registro permanente do jogador</li>
+                                    <li>Reincidência → banimento definitivo de todas as competições</li>
+                                    <li>Provas obrigatórias (prints / vídeos)</li>
                                 </ul>
-                                
-                                <h4>CAPÍTULO 11 – PUNIÇÕES E SANÇÕES DISCIPLINARES</h4>
-                                <h5>11.1. Tipos de Penalidades</h5>
-                                <p>A organização poderá aplicar:</p>
+
+                                <h4>CAPÍTULO 9 – PUNIÇÕES E PROCESSO DISCIPLINAR</h4>
+
+                                <h5>9.1. Penalidades Aplicáveis</h5>
                                 <ul>
                                     <li>Advertência</li>
+                                    <li>Perda de bans</li>
                                     <li>Perda de side</li>
-                                    <li>Perda de champion pick</li>
                                     <li>Perda de mapa</li>
-                                    <li>Perda de série</li>
+                                    <li>W.O. disciplinar</li>
                                     <li>Desclassificação</li>
-                                    <li>Suspensão temporária</li>
+                                    <li>Suspensão</li>
                                     <li>Banimento permanente</li>
                                 </ul>
-                                
-                                <h5>11.2. Critérios para Penalidades</h5>
-                                <p>Serão considerados:</p>
+
+                                <h5>9.2. Advertências</h5>
+                                <p>Toda infração leve ou média = 1 advertência</p>
+                                <p>Ao acumular 3 advertências:</p>
                                 <ul>
-                                    <li>Gravidade da infração</li>
-                                    <li>Reincidência</li>
-                                    <li>Intenção do ato</li>
-                                    <li>Impacto competitivo</li>
+                                    <li>A equipe recebe 1 W.O. disciplinar</li>
                                 </ul>
-                                
-                                <h5>11.3. Infrações Graves</h5>
-                                <p>Puníveis com desclassificação imediata:</p>
+
+                                <h5>9.3. Provas Obrigatórias</h5>
+                                <p>Toda denúncia deve conter:</p>
                                 <ul>
-                                    <li>Uso de hack</li>
-                                    <li>Ameaças ou ataques pessoais</li>
-                                    <li>Racismo e outras formas de ódio</li>
-                                    <li>Manipulação de resultados</li>
+                                    <li>Print</li>
+                                    <li>Vídeo</li>
+                                    <li>Registro concreto</li>
                                 </ul>
-                                
-                                <h4>CAPÍTULO 12 – DECISÕES DA ORGANIZAÇÃO E CASOS OMISSOS</h4>
-                                <h5>12.1. Poder Decisório</h5>
-                                <p>As decisões da organização são definitivas e não cabem recursos.</p>
-                                
-                                <h5>12.2. Casos Não Previstos</h5>
-                                <p>Situações não contempladas neste regulamento serão analisadas pela administração e decididas conforme critérios de justiça, integridade competitiva e precedentes.</p>
-                                
-                                <h5>12.3. Atualizações do Regulamento</h5>
-                                <p>A organização pode atualizar este regulamento antes ou durante o campeonato, desde que comunique imediatamente as equipes.</p>
-                                
-                                <div class="rules-end">
-                                    <p><strong>FIM DO REGULAMENTO</strong></p>
-                                    <p>Role até o final e clique no botão para aceitar as regras</p>
-                                </div>
+                                <p>Acusações sem prova não serão analisadas.</p>
+
+                                <h5>9.4. Autoridade dos Árbitros</h5>
+                                <ul>
+                                    <li>Árbitros possuem total autoridade nas calls</li>
+                                    <li>Decisões imediatas não são passíveis de recurso</li>
+                                </ul>
+
+                                <h4>CAPÍTULO 10 – DIREITOS DE IMAGEM E TRANSMISSÃO</h4>
+
+                                <h5>10.1. Transmissão Oficial</h5>
+                                <ul>
+                                    <li>A organização detém 100% dos direitos de transmissão</li>
+                                    <li>Nenhuma equipe pode negar participação na transmissão</li>
+                                </ul>
+
+                                <h5>10.2. Direitos de Imagem</h5>
+                                <p>Ao participar, o jogador permite:</p>
+                                <ul>
+                                    <li>Uso de nickname</li>
+                                    <li>Participação em clips</li>
+                                    <li>Uso de voz em entrevistas</li>
+                                    <li>Uso de imagem em materiais promocionais</li>
+                                </ul>
+
+                                <h4>CAPÍTULO 11 – DECISÕES FINAIS</h4>
+
+                                <h5>11.1. Casos Omissos</h5>
+                                <p>Serão decididos pela administração do Wild Clash conforme:</p>
+                                <ul>
+                                    <li>Integridade competitiva</li>
+                                    <li>Justiça desportiva</li>
+                                    <li>Precedentes internos</li>
+                                </ul>
+
+                                <h5>11.2. Atualizações</h5>
+                                <p>A organização pode alterar este regulamento a qualquer momento, comunicando oficialmente via Discord ou transmissão.</p>
+                            </div>
+
+                            <div class="rules-end">
+                                <p><strong>FIM DO REGULAMENTO – WILD CLASH</strong></p>
+                                <p>Role até o final e clique no botão para aceitar as regras</p>
                             </div>
                         </div>
                         
+                        <!-- Sistema de Aceitação de Regras -->
                         <div class="rules-controls">
                             <div class="rules-progress">
                                 <div class="progress-bar">
@@ -467,8 +572,7 @@
                             
                             <div class="rules-acceptance">
                                 <input type="checkbox" id="aceito_regras" name="aceito_regras" required style="display: none;">
-                                <button type="button" id="btn-aceitar-regras" class="btn-accept-rules" disabled>
-                                    <span class="btn-icon">📜</span>
+                                <button type="button" id="btn-aceitar-regras" class="checkbox-btn" disabled>
                                     <span class="btn-text">Role para ler as regras primeiro</span>
                                 </button>
                                 <div class="rules-status" id="rules-status"></div>
@@ -486,7 +590,7 @@
                         
                         <div class="form-actions">
                             <button type="submit" id="btn-enviar" class="btn-submit neon" disabled>
-                                <span class="submit-icon">📨</span>
+                                <span class="submit-icon"></span>
                                 <span class="submit-text">Enviar Inscrição</span>
                                 <span class="submit-loading" style="display: none;">
                                     <span class="loading-spinner"></span>
@@ -500,7 +604,7 @@
                         </div>
                         
                         <div class="form-note">
-                            <p><strong>⚠️ Atenção:</strong> Após o envio, você receberá uma confirmação por email. Em caso de problemas, entre em contato: <a href="mailto:nittocoach@gmail.com">nittocoach@gmail.com</a></p>
+                            <p><strong>Atenção:</strong> Após o envio, você receberá uma confirmação por email. Em caso de problemas, entre em contato: <a href="mailto:nittocoach@gmail.com">nittocoach@gmail.com</a></p>
                             <p>Todas as informações serão enviadas automaticamente para nossa equipe via EmailJS.</p>
                         </div>
                     </div>
@@ -511,49 +615,45 @@
 
     <!-- Footer -->
     <footer class="glass footer" role="contentinfo">
-        <div class="footer-container">
-            <div class="footer-content">
-                <!-- Social Media Links -->
-                <div class="social-media-links" aria-label="Redes sociais">
-                    <a href="https://discord.gg/GPRavHze" class="social-btn discord" aria-label="Discord" target="_blank" rel="noopener noreferrer">
-                        <div class="social-icon">
-                            <img src="imagens/disc-icon.png" alt="Ícone Discord" width="35" height="35">
-                        </div>
-                        <span class="social-label">Discord</span>
-                    </a>
+        <div class="footer-content">
+            <div class="footer-copyright">© WILD CLASH</div>
+            <div class="social-media-links">
+                <a href="https://discord.gg/GPRavHze" class="social-btn discord" aria-label="Discord" target="_blank" rel="noopener noreferrer">
+                    <div class="social-icon">
+                        <img src="imagens/disc-icon.png" alt="Discord" onerror="this.style.display='none'">
+                        <span class="default-icon"></span>
+                    </div>
+                    <span class="social-label">Discord</span>
+                </a>
 
-                    <a href="https://www.tiktok.com/@nittosono" class="social-btn tiktok" aria-label="TikTok" target="_blank" rel="noopener noreferrer">
-                        <div class="social-icon">
-                            <img src="imagens/tiktok-icon.png" alt="Ícone TikTok" width="35" height="35">
-                        </div>
-                        <span class="social-label">TikTok</span>
-                    </a>
+                <a href="https://www.tiktok.com/@nittosono?is_from_webapp=1&sender_device=pc" class="social-btn tiktok" aria-label="TikTok" target="_blank" rel="noopener noreferrer">
+                    <div class="social-icon">
+                        <img src="imagens/tiktok-icon.png" alt="TikTok" onerror="this.style.display='none'">
+                        <span class="default-icon"></span>
+                    </div>
+                    <span class="social-label">TikTok</span>
+                </a>
 
-                    <a href="https://www.instagram.com/wildclash_wildrift" class="social-btn instagram" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
-                        <div class="social-icon">
-                            <img src="imagens/insta-icon.png" alt="Ícone Instagram" width="35" height="35">
-                        </div>
-                        <span class="social-label">Instagram</span>
-                    </a>
+                <a href="https://www.instagram.com/wildclash_wildrift?igsh=b2U2Y2V2YWx5ODd0" class="social-btn instagram" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                    <div class="social-icon">
+                        <img src="imagens/insta-icon.png" alt="Instagram" onerror="this.style.display='none'">
+                        <span class="default-icon"></span>
+                    </div>
+                    <span class="social-label">Instagram</span>
+                </a>
 
-                    <a href="https://www.youtube.com/channel/UCCNOSn3tTp2IqPKTKC2_umw/live" class="social-btn youtube" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
-                        <div class="social-icon">
-                            <img src="imagens/youtube-icon.png" alt="Ícone YouTube" width="35" height="35">
-                        </div>
-                        <span class="social-label">YouTube</span>
-                    </a>
-                </div>
-                
-                <!-- Copyright -->
-                <div class="footer-copyright">
-                    <p>&copy; <span id="current-year">2025</span> WILD CLASH. Todos os direitos reservados.</p>
-                    <p class="footer-contact">Contato: <a href="mailto:nittocoach@gmail.com">nittocoach@gmail.com</a></p>
-                </div>
+                <a href="https://www.youtube.com/channel/UCCNOSn3tTp2IqPKTKC2_umw/live" class="social-btn youtube" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+                    <div class="social-icon">
+                        <img src="imagens/youtube-icon.png" alt="YouTube" onerror="this.style.display='none'">
+                        <span class="default-icon"></span>
+                    </div>
+                    <span class="social-label">YouTube</span>
+                </a>
             </div>
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- JavaScript Principal -->
     <script src="script.js"></script>
     
     <!-- Script específico para a página de inscrições -->
@@ -561,9 +661,6 @@
         // Configurações específicas para a página
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Página de inscrições carregada');
-            
-            // Atualiza ano do copyright
-            document.getElementById('current-year').textContent = new Date().getFullYear();
             
             // Sistema de contador de caracteres para observações
             const textareaObservacoes = document.getElementById('observacoes');
@@ -588,209 +685,7 @@
                 charCountElement.textContent = textareaObservacoes.value.length;
             }
             
-            // Sistema de progresso das regras
-            const rulesScroll = document.getElementById('rules-scroll');
-            const rulesProgress = document.getElementById('rules-progress');
-            const rulesProgressText = document.getElementById('rules-progress-text');
-            const btnAceitarRegras = document.getElementById('btn-aceitar-regras');
-            const aceitoRegrasCheckbox = document.getElementById('aceito_regras');
-            const rulesStatus = document.getElementById('rules-status');
-            const btnEnviar = document.getElementById('btn-enviar');
-            
-            if (rulesScroll && btnAceitarRegras) {
-                let hasReadRules = false;
-                let hasAcceptedRules = false;
-                
-                // Atualiza progresso do scroll
-                rulesScroll.addEventListener('scroll', function() {
-                    const scrollTop = this.scrollTop;
-                    const scrollHeight = this.scrollHeight - this.clientHeight;
-                    const scrollPercentage = Math.round((scrollTop / scrollHeight) * 100);
-                    
-                    // Atualiza barra de progresso
-                    rulesProgress.style.width = scrollPercentage + '%';
-                    rulesProgressText.textContent = scrollPercentage + '% lido';
-                    
-                    // Verifica se chegou ao final (95% ou mais)
-                    if (scrollPercentage >= 95 && !hasReadRules) {
-                        hasReadRules = true;
-                        btnAceitarRegras.disabled = false;
-                        btnAceitarRegras.classList.remove('disabled');
-                        btnAceitarRegras.classList.add('readable');
-                        btnAceitarRegras.innerHTML = `
-                            <span class="btn-icon">✅</span>
-                            <span class="btn-text">Clique para aceitar as regras</span>
-                        `;
-                        
-                        // Anima o botão
-                        btnAceitarRegras.style.animation = 'pulse 2s infinite';
-                        
-                        // Mostra mensagem
-                        rulesStatus.innerHTML = '<span class="success">✓ Regras lidas completamente</span>';
-                        rulesStatus.style.color = '#28c76f';
-                    }
-                });
-                
-                // Evento para aceitar regras
-                btnAceitarRegras.addEventListener('click', function() {
-                    if (!hasReadRules) {
-                        rulesStatus.innerHTML = '<span class="error">⚠️ Leia as regras completamente primeiro</span>';
-                        rulesStatus.style.color = '#ff2d75';
-                        
-                        // Scroll para o topo das regras
-                        rulesScroll.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        });
-                        return;
-                    }
-                    
-                    if (!hasAcceptedRules) {
-                        hasAcceptedRules = true;
-                        aceitoRegrasCheckbox.checked = true;
-                        
-                        // Atualiza botão
-                        this.classList.remove('readable');
-                        this.classList.add('accepted');
-                        this.innerHTML = `
-                            <span class="btn-icon">✓</span>
-                            <span class="btn-text">Regras aceitas</span>
-                        `;
-                        this.style.animation = 'none';
-                        
-                        // Atualiza status
-                        rulesStatus.innerHTML = '<span class="success">✓ Regras aceitas com sucesso</span>';
-                        rulesStatus.style.color = '#28c76f';
-                        
-                        // Habilita botão de envio
-                        if (btnEnviar) {
-                            btnEnviar.disabled = false;
-                            btnEnviar.classList.remove('disabled');
-                        }
-                        
-                        // Scroll suave para o botão de envio
-                        setTimeout(() => {
-                            btnEnviar.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'center'
-                            });
-                        }, 500);
-                    }
-                });
-            }
-            
-            // Botão para limpar formulário
-            const btnLimpar = document.getElementById('btn-limpar');
-            if (btnLimpar) {
-                btnLimpar.addEventListener('click', function() {
-                    if (confirm('Tem certeza que deseja limpar todos os dados do formulário?')) {
-                        // Reseta o checkbox das regras
-                        const aceitoRegras = document.getElementById('aceito_regras');
-                        if (aceitoRegras) aceitoRegras.checked = false;
-                        
-                        // Reseta o botão de aceitação
-                        if (btnAceitarRegras) {
-                            btnAceitarRegras.disabled = true;
-                            btnAceitarRegras.classList.remove('accepted', 'readable');
-                            btnAceitarRegras.classList.add('disabled');
-                            btnAceitarRegras.innerHTML = `
-                                <span class="btn-icon">📜</span>
-                                <span class="btn-text">Role para ler as regras primeiro</span>
-                            `;
-                            btnAceitarRegras.style.animation = 'none';
-                        }
-                        
-                        // Desabilita botão de envio
-                        if (btnEnviar) {
-                            btnEnviar.disabled = true;
-                            btnEnviar.classList.add('disabled');
-                        }
-                        
-                        // Reseta progresso
-                        if (rulesProgress) {
-                            rulesProgress.style.width = '0%';
-                        }
-                        if (rulesProgressText) {
-                            rulesProgressText.textContent = '0% lido';
-                        }
-                        if (rulesStatus) {
-                            rulesStatus.innerHTML = '';
-                        }
-                        
-                        // Reseta contador de caracteres
-                        if (charCountElement) {
-                            charCountElement.textContent = '0';
-                            charCountElement.style.color = '#00eaff';
-                        }
-                        
-                        // Mostra mensagem
-                        showFormMessage('Formulário limpo com sucesso. Preencha novamente para enviar uma nova inscrição.', 'info');
-                    }
-                });
-            }
-            
-            // Função para mostrar mensagens no formulário
-            function showFormMessage(message, type = 'info') {
-                const formStatus = document.getElementById('form-status');
-                if (!formStatus) return;
-                
-                formStatus.innerHTML = `
-                    <div class="message ${type}">
-                        ${message}
-                    </div>
-                `;
-                
-                formStatus.style.display = 'block';
-                
-                // Remove após 10 segundos (exceto erros)
-                if (type !== 'error') {
-                    setTimeout(() => {
-                        formStatus.style.opacity = '0';
-                        formStatus.style.transition = 'opacity 0.5s ease';
-                        setTimeout(() => {
-                            formStatus.style.display = 'none';
-                            formStatus.style.opacity = '1';
-                        }, 500);
-                    }, 10000);
-                }
-            }
-            
-            // Teste de EmailJS (para debug)
-            window.testEmailJS = function() {
-                if (typeof emailjs === 'undefined') {
-                    showFormMessage('EmailJS não está carregado. Verifique a conexão.', 'error');
-                    return;
-                }
-                
-                const testData = {
-                    competicao: 'Wild Clash',
-                    coach: 'Teste Coach',
-                    email_coach: 'teste@email.com',
-                    telefone: '(11) 99999-9999',
-                    nome_equipe: 'Equipe Teste',
-                    top: 'TesteTop#1234',
-                    jng: 'TesteJng#1234',
-                    mid: 'TesteMid#1234',
-                    adc: 'TesteAdc#1234',
-                    sup: 'TesteSup#1234',
-                    observacoes: 'Esta é uma mensagem de teste do sistema',
-                    aceito_regras: 'Sim',
-                    _test: true,
-                    _timestamp: new Date().toISOString()
-                };
-                
-                emailjs.send('service_n23atzb', 'template_9k24qcu', testData)
-                    .then(function(response) {
-                        console.log('✅ Teste bem-sucedido:', response);
-                        showFormMessage('✅ Teste de envio realizado com sucesso! Verifique o email nittocoach@gmail.com', 'success');
-                    }, function(error) {
-                        console.error('❌ Teste falhou:', error);
-                        showFormMessage('❌ Erro no teste: ' + (error.text || 'Verifique o console'), 'error');
-                    });
-            };
-            
-            // Log inicial
-            console.log('📋 Formulário de inscrições configurado com EmailJS');
+            console.log('Configurações específicas da página aplicadas');
         });
     </script>
 </body>

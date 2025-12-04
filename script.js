@@ -2,7 +2,7 @@
 // PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
 // ARQUIVO: script.js
 // DESCRIÇÃO: Funcionalidades do site - carousel, validação de formulários, envio via EmailJS
-// VERSÃO: 5.0
+// VERSÃO: 6.0
 // DATA: Dezembro 2025
 // =============================================================================
 
@@ -19,20 +19,33 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeNavigation();
     initializeFooter();
     
-    console.log('✅ Sistema Wild Clash inicializado com sucesso!');
+    console.log('Sistema Wild Clash inicializado com sucesso!');
 });
 
 // ========== EMAILJS CONFIGURAÇÃO ==========
 function initializeEmailJS() {
+    // Verifica se já foi inicializado no HTML
     if (typeof emailjs === 'undefined') {
         console.error('EmailJS SDK não carregado!');
         return;
     }
     
-    // Inicializa com sua chave pública (SUBSTITUA COM SUA CHAVE)
-    emailjs.init("1bph11qy38lrIRSwK"); // ← SUBSTITUA COM SUA CHAVE PÚBLICA
-    
-    console.log('📧 EmailJS inicializado');
+    try {
+        // Apenas inicializa se não foi feito no HTML
+        if (!emailjs._isInitialized) {
+            emailjs.init({
+                publicKey: "1bph11qy38lrIRSwK",
+                blockHeadless: true,
+                limitRate: {
+                    id: 'wildclash_inscricoes',
+                    throttle: 10000
+                }
+            });
+        }
+        console.log('EmailJS configurado');
+    } catch (error) {
+        console.error('Erro ao configurar EmailJS:', error);
+    }
 }
 
 // ========== CAROUSEL ==========
@@ -48,7 +61,6 @@ function initializeCarousel() {
     let currentIndex = 0;
     let autoPlayInterval;
     
-    // Atualiza slides
     function updateSlides() {
         slides.forEach((slide, index) => {
             slide.classList.remove('active', 'prev', 'next', 'hidden');
@@ -66,15 +78,12 @@ function initializeCarousel() {
             }
         });
         
-        // Atualiza indicadores
         indicators.forEach((indicator, index) => {
-            const isActive = index === currentIndex;
-            indicator.classList.toggle('active', isActive);
-            indicator.setAttribute('aria-selected', isActive);
+            indicator.classList.toggle('active', index === currentIndex);
+            indicator.setAttribute('aria-selected', index === currentIndex);
         });
     }
     
-    // Navegação
     function nextSlide() {
         currentIndex = (currentIndex + 1) % slides.length;
         updateSlides();
@@ -92,7 +101,7 @@ function initializeCarousel() {
         }
     }
     
-    // Configura eventos
+    // Event listeners
     if (prevBtn) {
         prevBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -150,7 +159,7 @@ function initializeCarousel() {
         startAutoPlay();
     }
     
-    // Pausa no hover
+    // Pausa no hover/focus
     carousel.addEventListener('mouseenter', stopAutoPlay);
     carousel.addEventListener('mouseleave', startAutoPlay);
     carousel.addEventListener('focusin', stopAutoPlay);
@@ -165,22 +174,20 @@ function initializeCarousel() {
 
 // ========== FORMULÁRIOS E EMAILJS ==========
 function initializeFormHandlers() {
-    const forms = document.querySelectorAll('form');
+    const forms = document.querySelectorAll('form[data-emailjs]');
     
     forms.forEach(form => {
-        // Adiciona atributo data-emailjs para identificar formulários
-        if (!form.hasAttribute('data-emailjs')) {
-            form.setAttribute('data-emailjs', 'true');
-        }
-        
-        // Validação em tempo real
+        // Configura validação em tempo real
         const inputs = form.querySelectorAll('input, textarea, select');
         inputs.forEach(input => {
             input.addEventListener('blur', validateField);
             input.addEventListener('input', clearFieldError);
         });
         
-        // Envio do formulário
+        // Configura botões especiais
+        configureFormButtons(form);
+        
+        // Configura envio do formulário
         form.addEventListener('submit', handleFormSubmit);
         
         // Previne envio ao pressionar Enter em campos não-submit
@@ -191,7 +198,136 @@ function initializeFormHandlers() {
         });
     });
     
-    console.log('📝 Formulários inicializados:', forms.length);
+    console.log('Formulários inicializados:', forms.length);
+}
+
+function configureFormButtons(form) {
+    const btnEnviar = form.querySelector('#btn-enviar');
+    const btnLimpar = form.querySelector('#btn-limpar');
+    const btnAceitarRegras = form.querySelector('#btn-aceitar-regras');
+    
+    // Configura botão de envio (inicialmente desabilitado)
+    if (btnEnviar) {
+        btnEnviar.disabled = true;
+        btnEnviar.classList.add('disabled');
+        
+        // Adiciona ícone de loading
+        const loadingHTML = `
+            <span class="loading-spinner"></span>
+            <span class="loading-text">Enviando...</span>
+        `;
+        
+        // Salva o HTML original
+        btnEnviar.dataset.originalHTML = btnEnviar.innerHTML;
+        btnEnviar.dataset.loadingHTML = loadingHTML;
+    }
+    
+    // Configura botão de limpar
+    if (btnLimpar) {
+        btnLimpar.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (confirm('Tem certeza que deseja limpar todos os dados do formulário?')) {
+                // Limpa formulário
+                form.reset();
+                
+                // Reseta botões
+                resetFormButtons(form);
+                
+                // Mostra mensagem
+                showFormMessage(form, 
+                    'Formulário limpo com sucesso. Preencha novamente para enviar uma nova inscrição.', 
+                    'info');
+            }
+        });
+    }
+    
+    // Configura botão de aceitar regras
+    if (btnAceitarRegras) {
+        const rulesCheckbox = form.querySelector('#aceito_regras');
+        
+        btnAceitarRegras.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Verifica se já leu as regras
+            if (this.classList.contains('read') || this.classList.contains('accepted')) {
+                if (this.classList.contains('accepted')) {
+                    // Já estava aceito, remove aceitação
+                    this.classList.remove('accepted');
+                    this.classList.add('read');
+                    this.innerHTML = `
+                        <span class="btn-icon">✓</span>
+                        <span class="btn-text">Li e aceito todas as regras</span>
+                    `;
+                    
+                    if (rulesCheckbox) rulesCheckbox.checked = false;
+                    if (btnEnviar) {
+                        btnEnviar.disabled = true;
+                        btnEnviar.classList.add('disabled');
+                    }
+                    
+                    showFormMessage(form, 'Aceitação das regras cancelada.', 'info');
+                } else {
+                    // Aceita as regras
+                    this.classList.remove('read');
+                    this.classList.add('accepted');
+                    this.innerHTML = `
+                        <span class="btn-icon">✓</span>
+                        <span class="btn-text">Regras aceitas!</span>
+                    `;
+                    
+                    if (rulesCheckbox) rulesCheckbox.checked = true;
+                    if (btnEnviar) {
+                        btnEnviar.disabled = false;
+                        btnEnviar.classList.remove('disabled');
+                    }
+                    
+                    showFormMessage(form, 
+                        '✅ Regras aceitas com sucesso! Agora você pode enviar sua inscrição.', 
+                        'success');
+                }
+            } else {
+                // Ainda não leu as regras
+                showFormMessage(form, 
+                    'Leia as regras completamente primeiro. Role até o final das regras para habilitar o botão.', 
+                    'error');
+            }
+        });
+    }
+}
+
+function resetFormButtons(form) {
+    const btnEnviar = form.querySelector('#btn-enviar');
+    const btnAceitarRegras = form.querySelector('#btn-aceitar-regras');
+    const rulesCheckbox = form.querySelector('#aceito_regras');
+    
+    // Reseta botão de envio
+    if (btnEnviar) {
+        btnEnviar.disabled = true;
+        btnEnviar.classList.add('disabled');
+        btnEnviar.innerHTML = btnEnviar.dataset.originalHTML || 'Enviar Inscrição';
+    }
+    
+    // Reseta botão de aceitar regras
+    if (btnAceitarRegras) {
+        btnAceitarRegras.disabled = true;
+        btnAceitarRegras.classList.remove('accepted', 'read');
+        btnAceitarRegras.classList.add('disabled');
+        btnAceitarRegras.innerHTML = '<span class="btn-text">Role para ler as regras primeiro</span>';
+        btnAceitarRegras.style.animation = 'none';
+    }
+    
+    // Reseta checkbox
+    if (rulesCheckbox) {
+        rulesCheckbox.checked = false;
+    }
+    
+    // Reseta progresso das regras
+    const rulesProgress = document.getElementById('rules-progress');
+    const rulesProgressText = document.getElementById('rules-progress-text');
+    
+    if (rulesProgress) rulesProgress.style.width = '0%';
+    if (rulesProgressText) rulesProgressText.textContent = '0% lido';
 }
 
 function validateField(e) {
@@ -224,23 +360,21 @@ function validateField(e) {
                 break;
                 
             case 'tel':
-                // Remove caracteres não numéricos para validação
-                const cleanPhone = value.replace(/\D/g, '');
-                if (cleanPhone.length < 10) {
+                // Validação básica de telefone
+                const phoneRegex = /^\(?\d{2}\)?[\s-]?\d{4,5}[\s-]?\d{4}$/;
+                if (!phoneRegex.test(value)) {
                     isValid = false;
-                    error = 'Telefone inválido (mínimo 10 dígitos)';
+                    error = 'Formato: (DD) 99999-9999';
                 }
                 break;
-                
-            case 'text':
-                // Validação de nome
-                if (field.name === 'coach' || field.name.includes('player')) {
-                    if (value.length < 2) {
-                        isValid = false;
-                        error = 'Nome muito curto';
-                    }
-                }
-                break;
+        }
+        
+        // Validação de Nick#TAG para jogadores
+        if (field.name.match(/top|jng|mid|adc|sup|reserva/)) {
+            if (!value.includes('#') && value.length > 0) {
+                isValid = false;
+                error = 'Formato: Nick#TAG (ex: Player#1234)';
+            }
         }
         
         // Validação por atributos HTML5
@@ -257,14 +391,6 @@ function validateField(e) {
             if (value.length > maxLength) {
                 isValid = false;
                 error = `Máximo ${maxLength} caracteres`;
-            }
-        }
-        
-        // Validação personalizada para campos de jogador
-        if (field.name.match(/top|jng|mid|adc|sup|reserva/)) {
-            if (!value.includes('#') && value.length > 0) {
-                isValid = false;
-                error = 'Inclua o #tag (ex: Nick#1234)';
             }
         }
     }
@@ -286,8 +412,9 @@ function showFieldError(field, message) {
     field.style.borderColor = '#ff2d75';
     field.style.boxShadow = '0 0 0 2px rgba(255, 45, 117, 0.2)';
     
+    // Cria mensagem de erro
     const errorDiv = document.createElement('div');
-    errorDiv.className = 'field-error';
+    errorDiv.className = 'error-message';
     errorDiv.textContent = message;
     errorDiv.style.cssText = `
         color: #ff2d75;
@@ -308,7 +435,7 @@ function clearFieldError(e) {
     field.style.borderColor = '';
     field.style.boxShadow = '';
     
-    const errorDiv = field.parentNode.querySelector('.field-error');
+    const errorDiv = field.parentNode.querySelector('.error-message');
     if (errorDiv) {
         errorDiv.remove();
     }
@@ -321,25 +448,37 @@ async function handleFormSubmit(e) {
     // Valida todos os campos obrigatórios
     const requiredFields = form.querySelectorAll('[required]');
     let allValid = true;
+    let firstInvalidField = null;
     
     requiredFields.forEach(field => {
-        const event = new Event('blur', { bubbles: true });
-        field.dispatchEvent(event);
-        
-        if (field.classList.contains('error') || 
-            (field.required && !field.value.trim())) {
+        const isValid = validateField({ target: field });
+        if (!isValid) {
             allValid = false;
-            
-            // Foca no primeiro campo inválido
-            if (allValid === false) {
-                field.focus();
-                allValid = null; // Para não focar novamente
+            if (!firstInvalidField) {
+                firstInvalidField = field;
             }
         }
     });
     
     if (!allValid) {
-        showFormMessage(form, '❌ Por favor, corrija os erros destacados antes de enviar.', 'error');
+        showFormMessage(form, 'Por favor, corrija os erros destacados antes de enviar.', 'error');
+        if (firstInvalidField) {
+            firstInvalidField.focus();
+        }
+        return;
+    }
+    
+    // Verifica se as regras foram aceitas
+    const rulesCheckbox = form.querySelector('#aceito_regras');
+    if (rulesCheckbox && !rulesCheckbox.checked) {
+        showFormMessage(form, 
+            'Você precisa ler e aceitar as regras do torneio antes de enviar a inscrição.', 
+            'error');
+        
+        const rulesSection = form.querySelector('.rules-container');
+        if (rulesSection) {
+            rulesSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         return;
     }
     
@@ -349,26 +488,25 @@ async function handleFormSubmit(e) {
     
     // Adiciona metadados
     data['_data_envio'] = new Date().toLocaleString('pt-BR');
-    data['_pagina'] = window.location.pathname;
     data['_timestamp'] = new Date().toISOString();
-    data['_formulario'] = form.id || 'formulario_sem_id';
+    data['_pagina'] = window.location.pathname;
     
-    // Mostra loading
+    // Mostra loading no botão de envio
     const submitBtn = form.querySelector('[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    const originalState = submitBtn.disabled;
+    const originalHTML = submitBtn.innerHTML;
     
-    submitBtn.innerHTML = `
+    submitBtn.innerHTML = submitBtn.dataset.loadingHTML || `
         <span class="loading-spinner"></span>
-        <span class="loading-text">Enviando inscrição...</span>
+        <span class="loading-text">Enviando...</span>
     `;
     submitBtn.disabled = true;
+    submitBtn.classList.add('disabled');
     
     // Efeito visual de envio
     form.classList.add('sending');
     
     try {
-        console.log('📤 Enviando formulário via EmailJS...', data);
+        console.log('Enviando formulário via EmailJS...', data);
         
         // Envia via EmailJS
         const response = await emailjs.send(
@@ -377,83 +515,85 @@ async function handleFormSubmit(e) {
             data
         );
         
-        console.log('✅ Resposta EmailJS:', response);
+        console.log('✅ Formulário enviado com sucesso:', response);
         
         if (response.status === 200) {
             // Sucesso
             showFormMessage(form, 
-                '🎉 Inscrição enviada com sucesso!<br>Entraremos em contato em breve.', 
+                '✅ Inscrição enviada com sucesso!<br><br>' +
+                'Em breve você receberá um email de confirmação. ' +
+                'Acompanhe nosso Discord para mais informações: ' +
+                '<a href="https://discord.gg/GPRavHze" style="color: #00eaff;">discord.gg/GPRavHze</a>', 
                 'success'
             );
             
             // Limpa o formulário
             form.reset();
             
+            // Reseta botões e estado
+            resetFormButtons(form);
+            
             // Remove classes de validação
             form.querySelectorAll('.error').forEach(el => {
                 el.classList.remove('error');
-                el.style.borderColor = '';
-                el.style.boxShadow = '';
             });
-            
-            form.querySelectorAll('.field-error').forEach(el => el.remove());
+            form.querySelectorAll('.error-message').forEach(el => el.remove());
             
             // Scroll para mensagem de sucesso
             setTimeout(() => {
                 const message = form.querySelector('.form-message');
                 if (message) {
-                    message.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'center' 
-                    });
+                    message.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 100);
             
-            // Log para debug
-            console.log('📋 Formulário enviado com sucesso:', data);
-            
         } else {
-            throw new Error('Status de resposta inválido');
+            throw new Error('Status de resposta inválido: ' + response.status);
         }
         
     } catch (error) {
         console.error('❌ Erro ao enviar formulário:', error);
         
         // Mensagem de erro amigável
-        let errorMessage = '❌ Erro ao enviar inscrição. ';
+        let errorMessage = 'Erro ao enviar inscrição. ';
         
         if (error.status === 0) {
-            errorMessage += 'Verifique sua conexão com a internet.';
+            errorMessage += 'Verifique sua conexão com a internet e tente novamente.';
         } else if (error.text && error.text.includes('Invalid template')) {
-            errorMessage += 'Erro na configuração do sistema.';
+            errorMessage += 'Erro na configuração do sistema. Entre em contato com o suporte.';
         } else {
-            errorMessage += 'Tente novamente ou entre em contato diretamente: nittocoach@gmail.com';
+            errorMessage += 'Tente novamente em alguns minutos. Se o erro persistir, entre em contato: nittocoach@gmail.com';
         }
         
         showFormMessage(form, errorMessage, 'error');
         
         // Fallback: armazena localmente
         try {
-            const backupKey = `form_backup_${Date.now()}`;
+            const backupKey = `inscricao_backup_${Date.now()}`;
             localStorage.setItem(backupKey, JSON.stringify({
                 data: data,
                 timestamp: new Date().toISOString(),
                 error: error.toString()
             }));
-            console.log('📦 Backup salvo localmente:', backupKey);
+            console.log('Backup salvo localmente:', backupKey);
+            
+            showFormMessage(form, 
+                'Seu formulário foi salvo localmente. Recarregue a página e tente enviar novamente.', 
+                'info');
         } catch (backupError) {
             console.error('Erro ao salvar backup:', backupError);
         }
         
     } finally {
         // Restaura botão
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = originalState;
+        submitBtn.innerHTML = originalHTML;
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('disabled');
         form.classList.remove('sending');
     }
 }
 
-function showFormMessage(form, message, type) {
+function showFormMessage(form, message, type = 'info') {
     // Remove mensagens anteriores
     const oldMessages = form.querySelectorAll('.form-message');
     oldMessages.forEach(msg => msg.remove());
@@ -463,8 +603,8 @@ function showFormMessage(form, message, type) {
     messageDiv.className = `form-message ${type}`;
     messageDiv.innerHTML = message;
     
-    // Estilos
-    const baseStyles = `
+    // Estilos base
+    messageDiv.style.cssText = `
         padding: 15px 20px;
         margin: 20px 0;
         border-radius: 10px;
@@ -476,30 +616,39 @@ function showFormMessage(form, message, type) {
         font-size: 14px;
     `;
     
-    if (type === 'success') {
-        messageDiv.style.cssText = baseStyles + `
-            background: rgba(40, 199, 111, 0.15);
-            border-color: rgba(40, 199, 111, 0.4);
-            color: #28c76f;
-        `;
-    } else if (type === 'error') {
-        messageDiv.style.cssText = baseStyles + `
-            background: rgba(255, 45, 117, 0.15);
-            border-color: rgba(255, 45, 117, 0.4);
-            color: #ff2d75;
-        `;
-    } else {
-        messageDiv.style.cssText = baseStyles + `
-            background: rgba(0, 234, 255, 0.15);
-            border-color: rgba(0, 234, 255, 0.4);
-            color: #00eaff;
-        `;
+    // Estilos específicos por tipo
+    switch(type) {
+        case 'success':
+            messageDiv.style.cssText += `
+                background: rgba(40, 199, 111, 0.15);
+                border-color: rgba(40, 199, 111, 0.4);
+                color: #28c76f;
+            `;
+            break;
+        case 'error':
+            messageDiv.style.cssText += `
+                background: rgba(255, 45, 117, 0.15);
+                border-color: rgba(255, 45, 117, 0.4);
+                color: #ff2d75;
+            `;
+            break;
+        default:
+            messageDiv.style.cssText += `
+                background: rgba(0, 234, 255, 0.15);
+                border-color: rgba(0, 234, 255, 0.4);
+                color: #00eaff;
+            `;
     }
     
-    // Adiciona ao formulário (no início)
-    form.prepend(messageDiv);
+    // Adiciona ao formulário (após o título)
+    const title = form.querySelector('h1') || form.querySelector('h2') || form;
+    if (title.nextSibling) {
+        title.parentNode.insertBefore(messageDiv, title.nextSibling);
+    } else {
+        title.parentNode.appendChild(messageDiv);
+    }
     
-    // Remove após 10 segundos (exceto erros importantes)
+    // Remove após 10 segundos (exceto erros)
     if (type !== 'error') {
         setTimeout(() => {
             if (messageDiv.parentNode) {
@@ -517,177 +666,67 @@ function showFormMessage(form, message, type) {
 
 // ========== SISTEMA DE REGRAS SCROLL ==========
 function initializeRulesScroll() {
-    const rulesContainer = document.querySelector('.rules-scroll');
-    const acceptBtn = document.getElementById('inscricao-accept-btn');
-    const rulesCheckbox = document.getElementById('inscricao-rules-checkbox');
+    const rulesScroll = document.getElementById('rules-scroll');
+    const rulesProgress = document.getElementById('rules-progress');
+    const rulesProgressText = document.getElementById('rules-progress-text');
+    const btnAceitarRegras = document.getElementById('btn-aceitar-regras');
     
-    if (!rulesContainer || !acceptBtn) return;
+    if (!rulesScroll || !btnAceitarRegras) return;
     
-    let hasRead = false;
-    let isAccepted = false;
+    let hasReadRules = false;
     
-    // Configura o botão inicialmente
-    updateAcceptButton();
+    // Configura botão inicialmente
+    btnAceitarRegras.disabled = true;
+    btnAceitarRegras.classList.add('disabled');
     
     // Evento de scroll nas regras
-    rulesContainer.addEventListener('scroll', function() {
-        const scrollBottom = this.scrollHeight - this.scrollTop - this.clientHeight;
+    rulesScroll.addEventListener('scroll', function() {
+        const scrollTop = this.scrollTop;
+        const scrollHeight = this.scrollHeight - this.clientHeight;
+        const scrollPercentage = Math.round((scrollTop / scrollHeight) * 100);
         
-        // Considera que leu se chegou próximo ao final
-        if (scrollBottom <= 100 && !hasRead) {
-            hasRead = true;
-            console.log('📜 Regras lidas completamente');
+        // Atualiza barra de progresso
+        if (rulesProgress) {
+            rulesProgress.style.width = scrollPercentage + '%';
+        }
+        
+        if (rulesProgressText) {
+            rulesProgressText.textContent = scrollPercentage + '% lido';
+        }
+        
+        // Verifica se chegou ao final (95% ou mais)
+        if (scrollPercentage >= 95 && !hasReadRules) {
+            hasReadRules = true;
             
-            // Anima o botão
-            acceptBtn.classList.add('can-accept');
-            acceptBtn.innerHTML = '✓ Li e aceito todas as regras';
-            
-            // Adiciona efeito visual
-            const checkmark = document.createElement('span');
-            checkmark.className = 'checkmark';
-            checkmark.innerHTML = '✓';
-            checkmark.style.cssText = `
-                display: inline-block;
-                margin-right: 8px;
-                font-size: 16px;
-                animation: bounce 0.5s ease;
+            // Habilita botão de aceitação
+            btnAceitarRegras.disabled = false;
+            btnAceitarRegras.classList.remove('disabled');
+            btnAceitarRegras.classList.add('read');
+            btnAceitarRegras.innerHTML = `
+                <span class="btn-icon">✓</span>
+                <span class="btn-text">Li e aceito todas as regras</span>
             `;
             
-            acceptBtn.prepend(checkmark);
+            // Anima o botão
+            btnAceitarRegras.style.animation = 'pulse 2s infinite';
             
-            // Scroll suave para o botão
-            setTimeout(() => {
-                acceptBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
+            // Mostra feedback
+            const rulesStatus = document.getElementById('rules-status');
+            if (rulesStatus) {
+                rulesStatus.innerHTML = '<span class="success">✓ Regras lidas completamente</span>';
+                rulesStatus.style.color = '#28c76f';
+            }
         }
     });
-    
-    // Evento de clique no botão de aceitar
-    acceptBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        if (!hasRead) {
-            showRulesWarning();
-            return;
-        }
-        
-        if (!isAccepted) {
-            isAccepted = true;
-            acceptRules();
-        } else {
-            isAccepted = false;
-            unacceptRules();
-        }
-        
-        updateAcceptButton();
-    });
-    
-    function updateAcceptButton() {
-        if (!hasRead) {
-            acceptBtn.disabled = false;
-            acceptBtn.classList.remove('accepted');
-            acceptBtn.innerHTML = '📜 Role para ler as regras primeiro';
-            acceptBtn.style.opacity = '0.7';
-            
-            if (rulesCheckbox) {
-                rulesCheckbox.checked = false;
-                rulesCheckbox.disabled = true;
-            }
-        } else if (isAccepted) {
-            acceptBtn.disabled = false;
-            acceptBtn.classList.add('accepted');
-            acceptBtn.innerHTML = '✓ Regras aceitas ✓';
-            acceptBtn.style.opacity = '1';
-            
-            if (rulesCheckbox) {
-                rulesCheckbox.checked = true;
-                rulesCheckbox.disabled = false;
-            }
-        } else {
-            acceptBtn.disabled = false;
-            acceptBtn.classList.remove('accepted');
-            acceptBtn.innerHTML = '✓ Li e aceito todas as regras';
-            acceptBtn.style.opacity = '1';
-            
-            if (rulesCheckbox) {
-                rulesCheckbox.checked = false;
-                rulesCheckbox.disabled = false;
-            }
-        }
-    }
-    
-    function acceptRules() {
-        acceptBtn.classList.add('accepted');
-        acceptBtn.style.cssText += `
-            background: linear-gradient(135deg, rgba(0, 234, 255, 0.3), rgba(0, 234, 255, 0.2));
-            border-color: var(--neon-cyan);
-            color: white;
-            box-shadow: 0 0 20px rgba(0, 234, 255, 0.5);
-            animation: pulse 2s infinite;
-        `;
-        
-        console.log('✅ Regras aceitas pelo usuário');
-        
-        // Mostra confirmação
-        showFormMessage(rulesContainer.closest('form') || document.querySelector('form'), 
-            '✅ Regras aceitas! Agora você pode enviar sua inscrição.', 
-            'success');
-    }
-    
-    function unacceptRules() {
-        acceptBtn.classList.remove('accepted');
-        acceptBtn.style.cssText = '';
-        console.log('⚠️ Aceitação das regras cancelada');
-    }
-    
-    function showRulesWarning() {
-        // Cria mensagem de alerta
-        const warning = document.createElement('div');
-        warning.className = 'rules-warning';
-        warning.innerHTML = `
-            <p>⚠️ Por favor, leia todas as regras primeiro!</p>
-            <p>Role até o final do regulamento para habilitar o botão de aceitação.</p>
-        `;
-        warning.style.cssText = `
-            background: rgba(255, 215, 0, 0.15);
-            border: 1px solid rgba(255, 215, 0, 0.4);
-            color: #ffd700;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            text-align: center;
-            animation: shake 0.5s ease;
-        `;
-        
-        // Insere após o botão
-        acceptBtn.parentNode.insertBefore(warning, acceptBtn.nextSibling);
-        
-        // Remove após 5 segundos
-        setTimeout(() => {
-            if (warning.parentNode) {
-                warning.style.opacity = '0';
-                warning.style.transition = 'opacity 0.5s ease';
-                setTimeout(() => {
-                    if (warning.parentNode) {
-                        warning.remove();
-                    }
-                }, 500);
-            }
-        }, 5000);
-        
-        // Scroll para o início das regras
-        rulesContainer.scrollTo({ top: 0, behavior: 'smooth' });
-    }
     
     console.log('📜 Sistema de regras inicializado');
 }
 
 // ========== CARD EFFECTS ==========
 function initializeCardEffects() {
-    const cards = document.querySelectorAll('.card.clickable');
+    const cards = document.querySelectorAll('.card');
     
     cards.forEach(card => {
-        // Efeito de hover
         card.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-10px) scale(1.02)';
             this.style.zIndex = '10';
@@ -697,27 +736,26 @@ function initializeCardEffects() {
             this.style.transform = 'translateY(0) scale(1)';
             this.style.zIndex = '1';
         });
-        
-        // Efeito de clique
-        card.addEventListener('click', function(e) {
-            // Adiciona efeito visual de clique
-            this.style.transform = 'scale(0.98)';
-            
-            // Remove a classe 'external' se for um link interno
-            if (this.href && this.href.includes(window.location.hostname)) {
-                this.classList.remove('external');
-            }
-            
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 150);
-        });
     });
 }
 
 // ========== NAVEGAÇÃO ==========
 function initializeNavigation() {
-    // Navegação suave para âncoras
+    // Marca link ativo
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.nav-link').forEach(link => {
+        const linkPage = link.getAttribute('href');
+        if (linkPage === currentPage || 
+            (currentPage === '' && linkPage === 'index.html')) {
+            link.classList.add('active');
+            link.setAttribute('aria-current', 'page');
+        } else {
+            link.classList.remove('active');
+            link.removeAttribute('aria-current');
+        }
+    });
+    
+    // Navegação suave para âncoras internas
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const href = this.getAttribute('href');
@@ -732,21 +770,9 @@ function initializeNavigation() {
                     behavior: 'smooth'
                 });
                 
-                // Atualiza URL sem recarregar
                 history.pushState(null, null, href);
             }
         });
-    });
-    
-    // Marca link ativo
-    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    document.querySelectorAll('.nav-link').forEach(link => {
-        const linkPage = link.getAttribute('href');
-        if (linkPage === currentPage || 
-            (currentPage === '' && linkPage === 'index.html')) {
-            link.classList.add('active');
-            link.setAttribute('aria-current', 'page');
-        }
     });
 }
 
@@ -757,8 +783,8 @@ function initializeFooter() {
     const currentYear = new Date().getFullYear();
     
     copyrightElements.forEach(element => {
-        if (element.textContent.includes('2025') && currentYear > 2025) {
-            element.innerHTML = element.innerHTML.replace('2025', `2025-${currentYear}`);
+        if (element.textContent.includes('©')) {
+            element.textContent = `© ${currentYear} WILD CLASH`;
         }
     });
     
@@ -772,15 +798,6 @@ function initializeFooter() {
         
         btn.addEventListener('mouseleave', function() {
             this.style.transform = '';
-        });
-        
-        // Previne duplo clique rápido
-        btn.addEventListener('click', function(e) {
-            const originalHref = this.href;
-            
-            setTimeout(() => {
-                this.href = originalHref;
-            }, 1000);
         });
     });
 }
@@ -800,18 +817,6 @@ function initializeFooter() {
             100% { box-shadow: 0 0 0 0 rgba(0, 234, 255, 0); }
         }
         
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -824,17 +829,13 @@ function initializeFooter() {
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: #00eaff;
-            animation: spin 1s ease-in-out infinite;
+            animation: spin 1s linear infinite;
             margin-right: 8px;
             vertical-align: middle;
         }
         
         .form-message {
             animation: fadeIn 0.5s ease !important;
-        }
-        
-        .card {
-            animation: fadeIn 0.6s ease;
         }
     `;
     document.head.appendChild(style);
@@ -844,30 +845,37 @@ function initializeFooter() {
 window.WildClashDebug = {
     testEmailJS: function() {
         if (typeof emailjs === 'undefined') {
-            console.error('EmailJS não está carregado');
-            alert('❌ EmailJS SDK não encontrado!');
+            alert('EmailJS não está carregado!');
             return;
         }
         
         const testData = {
-            to_name: 'Nitto Coach',
-            from_name: 'Teste Wild Clash',
-            message: 'Esta é uma mensagem de teste do sistema de inscrições',
-            reply_to: 'teste@wildclash.com',
+            competicao: 'Wild Clash Teste',
+            coach: 'Nome de Teste',
+            email_coach: 'teste@email.com',
+            telefone: '(11) 99999-9999',
+            nome_equipe: 'Equipe Teste',
+            top: 'TesteTop#1234',
+            jng: 'TesteJng#1234',
+            mid: 'TesteMid#1234',
+            adc: 'TesteAdc#1234',
+            sup: 'TesteSup#1234',
+            observacoes: 'Esta é uma mensagem de teste do sistema',
+            aceito_regras: 'Sim',
             _test: true,
             _timestamp: new Date().toISOString()
         };
         
-        console.log('🧪 Testando EmailJS com dados:', testData);
+        console.log('Testando EmailJS com dados:', testData);
         
         emailjs.send('service_n23atzb', 'template_9k24qcu', testData)
             .then(response => {
-                console.log('✅ Teste bem-sucedido:', response);
+                console.log('Teste bem-sucedido:', response);
                 alert('✅ Teste de EmailJS realizado com sucesso!\nVerifique o email nittocoach@gmail.com');
             })
             .catch(error => {
-                console.error('❌ Teste falhou:', error);
-                alert('❌ Erro no teste de EmailJS:\n' + error.text);
+                console.error('Teste falhou:', error);
+                alert('❌ Erro no teste de EmailJS:\n' + (error.text || error.toString()));
             });
     },
     
@@ -879,31 +887,23 @@ window.WildClashDebug = {
         });
     },
     
-    resetForms: function() {
+    resetAllForms: function() {
         const forms = document.querySelectorAll('form');
         forms.forEach(form => {
             form.reset();
-            form.querySelectorAll('.form-message, .field-error').forEach(el => el.remove());
-            form.querySelectorAll('.error').forEach(el => {
-                el.classList.remove('error');
-                el.style.borderColor = '';
-                el.style.boxShadow = '';
-            });
+            form.querySelectorAll('.form-message, .error-message').forEach(el => el.remove());
+            form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+            
+            const btnAceitarRegras = form.querySelector('#btn-aceitar-regras');
+            if (btnAceitarRegras) {
+                btnAceitarRegras.disabled = true;
+                btnAceitarRegras.classList.remove('read', 'accepted');
+                btnAceitarRegras.classList.add('disabled');
+                btnAceitarRegras.innerHTML = '<span class="btn-text">Role para ler as regras primeiro</span>';
+            }
         });
-        console.log('♻️ Todos os formulários foram resetados');
+        console.log('Todos os formulários resetados');
     }
-};
-
-// ========== FUNÇÕES AUXILIARES GLOBAIS ==========
-window.validateEmail = function(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-};
-
-window.formatPhone = function(phone) {
-    return phone.replace(/\D/g, '')
-        .replace(/(\d{2})(\d)/, '($1) $2')
-        .replace(/(\d{4,5})(\d{4})/, '$1-$2');
 };
 
 // ========== LOG INICIAL ==========
@@ -911,10 +911,10 @@ console.log(`
 ╔══════════════════════════════════════════════╗
 ║          WILD CLASH - SISTEMA ATIVO          ║
 ╠══════════════════════════════════════════════╣
-║ 🎮 Carousel:           ${document.querySelector('.carousel') ? '✔' : '✘'}            ║
-║ 📝 Formulários:        ${document.querySelectorAll('form').length}             ║
-║ 📧 EmailJS:            ${typeof emailjs !== 'undefined' ? '✔' : '✘'}            ║
-║ 🎯 Regras:             ${document.querySelector('.rules-scroll') ? '✔' : '✘'}            ║
-║ 🃏 Cards:              ${document.querySelectorAll('.card').length}             ║
+║ Versão:               6.0                    ║
+║ EmailJS:              ${typeof emailjs !== 'undefined' ? '✅' : '❌'}             ║
+║ Carousel:             ${document.querySelector('.carousel') ? '✅' : '❌'}             ║
+║ Formulários:          ${document.querySelectorAll('form[data-emailjs]').length}             ║
+║ Sistema de Regras:    ${document.querySelector('.rules-scroll') ? '✅' : '❌'}             ║
 ╚══════════════════════════════════════════════╝
 `);
