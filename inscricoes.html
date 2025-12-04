@@ -2,7 +2,7 @@
    PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
    ARQUIVO: inscricoes.html (Página de Inscrições)
    DESCRIÇÃO: Formulário para inscrição em campeonatos, com regras scrolláveis e envio via EmailJS
-   VERSÃO: 4.0
+   VERSÃO: 4.1
    DATA: Dezembro 2025
    INTEGRAÇÃO: EmailJS para envio automático de inscrições
 ============================================================================= -->
@@ -111,9 +111,10 @@
                             Telefone para Contato <span class="required">*</span>
                         </label>
                         <input type="tel" id="telefone" name="telefone" required 
-                               placeholder="(11)999999999"
+                               placeholder="(99)91234567 ou (99)912345678"
                                aria-required="true"
-                               pattern="\([0-9]{2})\[0-9]{4,5}[0-9]{4}">
+                               pattern="\(\d{2}\)\d{8,9}"
+                               title="(DD) + 8 ou 9 números, sem hífen e sem espaços. Exemplo: (11)91234567 ou (11)912345678">
                         <div class="error-message" id="telefone-error" aria-live="polite"></div>
                     </div>
 

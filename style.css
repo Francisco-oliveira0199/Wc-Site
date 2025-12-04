@@ -2,7 +2,7 @@
    PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
    AUTOR: Cline (AI Assistant)
    DESCRIÇÃO: CSS completo para o site do Wild Clash, incluindo estilos para header, hero, carousel, forms, footer, brackets, grupos e responsividade.
-   VERSÃO: 2.0
+   VERSÃO: 2.1
    DATA: Dezembro 2025
 ============================================================================= */
 
@@ -832,7 +832,7 @@ body {
   height: 100%;
   background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
   width: 0%;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease !important;
   border-radius: 3px;
 }
 

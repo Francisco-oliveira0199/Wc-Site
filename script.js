@@ -2,7 +2,7 @@
 // PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
 // ARQUIVO: script.js
 // DESCRIÇÃO: Funcionalidades do site - carousel, validação de formulários, envio via EmailJS
-// VERSÃO: 6.0
+// VERSÃO: 6.1
 // DATA: Dezembro 2025
 // =============================================================================
 
@@ -360,13 +360,16 @@ function validateField(e) {
                 break;
                 
             case 'tel':
-    // Validação de telefone com formatos: (DD)99999999, (DD)999999999, (DD) 99999-9999
-    const phoneRegex = /^\(\d{2}\)[\s-]?\d{4,5}[\s-]?\d{4}$/;
-    if (!phoneRegex.test(value)) {
-        isValid = false;
-        error = 'Formato: (DD)999999999 ou (DD) 99999-9999';
-    }
-    break;
+                // FORMATO CORRIGIDO: (DD) + 8 ou 9 números (sem hífen, sem espaço)
+                // Exemplos: (11)91234567 (8 dígitos) ou (11)912345678 (9 dígitos)
+                const phoneRegex = /^\(\d{2}\)\d{8,9}$/;
+                
+                if (!phoneRegex.test(value)) {
+                    isValid = false;
+                    error = 'Formato: (DD) + 8 ou 9 números<br>Exemplo: (11)91234567 ou (11)912345678<br>Sem hífen, sem espaços';
+                }
+                break;
+        }
         
         // Validação de Nick#TAG para jogadores
         if (field.name.match(/top|jng|mid|adc|sup|reserva/)) {
@@ -414,7 +417,7 @@ function showFieldError(field, message) {
     // Cria mensagem de erro
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-message';
-    errorDiv.textContent = message;
+    errorDiv.innerHTML = message; // Usando innerHTML para permitir <br>
     errorDiv.style.cssText = `
         color: #ff2d75;
         font-size: 12px;
@@ -670,7 +673,10 @@ function initializeRulesScroll() {
     const rulesProgressText = document.getElementById('rules-progress-text');
     const btnAceitarRegras = document.getElementById('btn-aceitar-regras');
     
-    if (!rulesScroll || !btnAceitarRegras) return;
+    if (!rulesScroll || !btnAceitarRegras) {
+        console.log('Elementos das regras não encontrados');
+        return;
+    }
     
     let hasReadRules = false;
     
@@ -678,11 +684,13 @@ function initializeRulesScroll() {
     btnAceitarRegras.disabled = true;
     btnAceitarRegras.classList.add('disabled');
     
-    // Evento de scroll nas regras
+    // Evento de scroll nas regras - CORRIGIDO
     rulesScroll.addEventListener('scroll', function() {
         const scrollTop = this.scrollTop;
         const scrollHeight = this.scrollHeight - this.clientHeight;
         const scrollPercentage = Math.round((scrollTop / scrollHeight) * 100);
+        
+        console.log(`Scroll: ${scrollTop}px de ${scrollHeight}px (${scrollPercentage}%)`);
         
         // Atualiza barra de progresso
         if (rulesProgress) {
@@ -715,8 +723,27 @@ function initializeRulesScroll() {
                 rulesStatus.innerHTML = '<span class="success">✓ Regras lidas completamente</span>';
                 rulesStatus.style.color = '#28c76f';
             }
+            
+            console.log('✅ Regras lidas completamente - botão habilitado');
         }
     });
+    
+    // Força verificação inicial
+    setTimeout(() => {
+        const scrollHeight = rulesScroll.scrollHeight - rulesScroll.clientHeight;
+        if (scrollHeight <= 0) {
+            // Se não há scroll necessário, habilita o botão automaticamente
+            hasReadRules = true;
+            btnAceitarRegras.disabled = false;
+            btnAceitarRegras.classList.remove('disabled');
+            btnAceitarRegras.classList.add('read');
+            btnAceitarRegras.innerHTML = `
+                <span class="btn-icon">✓</span>
+                <span class="btn-text">Li e aceito todas as regras</span>
+            `;
+            console.log('✅ Conteúdo das regras carregado - botão habilitado automaticamente');
+        }
+    }, 500);
     
     console.log('📜 Sistema de regras inicializado');
 }
@@ -836,6 +863,10 @@ function initializeFooter() {
         .form-message {
             animation: fadeIn 0.5s ease !important;
         }
+        
+        .progress-fill {
+            transition: width 0.3s ease !important;
+        }
     `;
     document.head.appendChild(style);
 })();
@@ -902,6 +933,14 @@ window.WildClashDebug = {
             }
         });
         console.log('Todos os formulários resetados');
+    },
+    
+    testRulesScroll: function() {
+        const rulesScroll = document.getElementById('rules-scroll');
+        if (rulesScroll) {
+            rulesScroll.scrollTop = rulesScroll.scrollHeight;
+            console.log('Scroll das regras testado');
+        }
     }
 };
 
@@ -910,7 +949,7 @@ console.log(`
 ╔══════════════════════════════════════════════╗
 ║          WILD CLASH - SISTEMA ATIVO          ║
 ╠══════════════════════════════════════════════╣
-║ Versão:               6.0                    ║
+║ Versão:               6.1                    ║
 ║ EmailJS:              ${typeof emailjs !== 'undefined' ? '✅' : '❌'}             ║
 ║ Carousel:             ${document.querySelector('.carousel') ? '✅' : '❌'}             ║
 ║ Formulários:          ${document.querySelectorAll('form[data-emailjs]').length}             ║
