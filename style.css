@@ -462,10 +462,9 @@ body {
 
 .cards.grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  width: 100%;
-  align-items: stretch;
+  grid-template-columns: repeat(2, 1fr); /* 2 colunas */
+  grid-template-rows: repeat(2, auto);
+  gap: 2rem;
   justify-items: center;
 }
 
