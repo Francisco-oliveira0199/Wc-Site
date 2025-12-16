@@ -2,7 +2,7 @@
 // PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
 // ARQUIVO: script.js
 // DESCRIÇÃO: Funcionalidades do site - carousel, validação de formulários, envio via EmailJS
-// VERSÃO: 6.1
+// VERSÃO: 6.2 - Removida função de navegação nas chaves
 // DATA: Dezembro 2025
 // =============================================================================
 
@@ -949,7 +949,7 @@ console.log(`
 ╔══════════════════════════════════════════════╗
 ║          WILD CLASH - SISTEMA ATIVO          ║
 ╠══════════════════════════════════════════════╣
-║ Versão:               6.1                    ║
+║ Versão:               6.2                    ║
 ║ EmailJS:              ${typeof emailjs !== 'undefined' ? '✅' : '❌'}             ║
 ║ Carousel:             ${document.querySelector('.carousel') ? '✅' : '❌'}             ║
 ║ Formulários:          ${document.querySelectorAll('form[data-emailjs]').length}             ║

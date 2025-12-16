@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Wild Clash - Fase de Grupos e Eliminatória. Acompanhe os times e resultados do torneio de Wild Rift.">
   <title>WILD CLASH — GRUPOS</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -10,7 +11,7 @@
   <div id="background" aria-hidden="true"></div>
 
   <header class="glass header">
-    <div class="logo"><div class="logo-placeholder"><img src="imagens/wild clash logo colorido.png" alt="descrição da imagem"></div></div>
+    <div class="logo"><div class="logo-placeholder"><img src="imagens/wild clash logo colorido.png" alt="Logo Wild Clash"></div></div>
     <nav class="nav">
       <a href="index.html" class="nav-link">Home</a>
       <a href="scrim.html" class="nav-link">Scrim</a>
@@ -23,11 +24,11 @@
       <div class="hero-content glass">
         <h1 class="section-title">WILD CLASH — GRUPOS</h1>
 
-        <!-- GROUP PHASE - 8 GROUPS IN 4 COLUMNS (2 per row) -->
+        <!-- FASE DE GRUPOS -->
         <h2 style="text-align: center; margin: 30px 0; color: var(--neon-cyan); text-shadow: 0 0 4px rgba(0,234,255,0.3);">FASE DE GRUPOS</h2>
 
         <div class="group-phase-grid">
-          <!-- LINHA 1 -->
+          <!-- GRUPO A -->
           <article class="group-card compact glass" role="group" aria-label="GRUPO A">
             <div class="group-title">GRUPO A</div>
             <ol class="group-list" aria-label="Tabela da GRUPO A">
@@ -47,6 +48,7 @@
             </ol>
           </article>
 
+          <!-- GRUPO B -->
           <article class="group-card compact glass" role="group" aria-label="GRUPO B">
             <div class="group-title">GRUPO B</div>
             <ol class="group-list" aria-label="Tabela da GRUPO B">
@@ -66,7 +68,7 @@
             </ol>
           </article>
 
-          <!-- LINHA 2 -->
+          <!-- GRUPO C -->
           <article class="group-card compact glass" role="group" aria-label="GRUPO C">
             <div class="group-title">GRUPO C</div>
             <ol class="group-list" aria-label="Tabela da GRUPO C">
@@ -86,6 +88,7 @@
             </ol>
           </article>
 
+          <!-- GRUPO D -->
           <article class="group-card compact glass" role="group" aria-label="GRUPO D">
             <div class="group-title">GRUPO D</div>
             <ol class="group-list" aria-label="Tabela da GRUPO D">
@@ -105,7 +108,7 @@
             </ol>
           </article>
 
-          <!-- LINHA 3 -->
+          <!-- GRUPO E -->
           <article class="group-card compact glass" role="group" aria-label="GRUPO E">
             <div class="group-title">GRUPO E</div>
             <ol class="group-list" aria-label="Tabela da GRUPO E">
@@ -125,6 +128,7 @@
             </ol>
           </article>
 
+          <!-- GRUPO F -->
           <article class="group-card compact glass" role="group" aria-label="GRUPO F">
             <div class="group-title">GRUPO F</div>
             <ol class="group-list" aria-label="Tabela da GRUPO F">
@@ -144,7 +148,7 @@
             </ol>
           </article>
 
-          <!-- LINHA 4 -->
+          <!-- GRUPO G -->
           <article class="group-card compact glass" role="group" aria-label="GRUPO G">
             <div class="group-title">GRUPO G</div>
             <ol class="group-list" aria-label="Tabela da GRUPO G">
@@ -164,6 +168,7 @@
             </ol>
           </article>
 
+          <!-- GRUPO H -->
           <article class="group-card compact glass" role="group" aria-label="GRUPO H">
             <div class="group-title">GRUPO H</div>
             <ol class="group-list" aria-label="Tabela da GRUPO H">
@@ -184,7 +189,7 @@
           </article>
         </div>
 
-        <!-- PLAYOFFS SECTION -->
+        <!-- FASE ELIMINATÓRIA -->
         <h2 style="text-align: center; margin: 60px 0 30px 0; color: var(--neon-cyan); text-shadow: 0 0 4px rgba(0,234,255,0.3);">FASE ELIMINATÓRIA</h2>
 
         <!-- GROUP TABS -->
@@ -193,16 +198,16 @@
           <button class="tab-button" data-group="group-b">GRUPO B</button>
         </div>
 
-        <!-- GROUP A BRACKET -->
-        <div class="bracket-content" id="group-a-content">
-          <h2>Chaveamento do Grupo A</h2>
+        <!-- Container das chaves com scroll tátil -->
+        <!-- GRUPO A BRACKET -->
+        <div class="bracket-content active" id="group-a-content">
+          <h3 style="text-align: center; color: var(--neon-cyan); margin-bottom: 20px;">Chaveamento - Grupo A</h3>
+          
           <div class="bracket-container">
-
               <!-- WINNERS BRACKET -->
               <div class="winners-bracket">
-
                   <div class="round">
-                      <h2>Rodada 1</h2>
+                      <h4>Rodada 1</h4>
                       <div class="match"><div class="team">Equipe A1</div><div class="team">Equipe A2</div></div>
                       <div class="match"><div class="team">Equipe A3</div><div class="team">Equipe A4</div></div>
                       <div class="match"><div class="team">Equipe A5</div><div class="team">Equipe A6</div></div>
@@ -210,55 +215,51 @@
                   </div>
 
                   <div class="round">
-                      <h2>Rodada 2</h2>
+                      <h4>Rodada 2</h4>
                       <div class="match"><div class="team">Vencedor A1/A2</div><div class="team">Vencedor A3/A4</div></div>
                       <div class="match"><div class="team">Vencedor A5/A6</div><div class="team">Vencedor A7/A8</div></div>
                   </div>
 
                   <div class="round">
-                      <h2>Semifinal</h2>
+                      <h4>Semifinal</h4>
                       <div class="match"><div class="team">Vencedor R2-1</div><div class="team">Vencedor R2-2</div></div>
                   </div>
 
                   <div class="round">
-                      <h2>Final dos Vencedores</h2>
+                      <h4>Final dos Vencedores</h4>
                       <div class="match"><div class="team">Vencedor Semi</div><div class="team">Vencedor Semi</div></div>
                   </div>
-
               </div>
 
               <!-- LOSERS BRACKET -->
               <div class="losers-bracket">
-
                   <div class="round">
-                      <h2>Rodada dos Perdedores 1</h2>
+                      <h4>Rodada dos Perdedores 1</h4>
                       <div class="match"><div class="team">Perdedor A5/A6</div><div class="team">Perdedor A1/A2</div></div>
                       <div class="match"><div class="team">Perdedor A7/A8</div><div class="team">Perdedor A3/A4</div></div>
                   </div>
 
                   <div class="round">
-                      <h2>Rodada dos Perdedores 2</h2>
+                      <h4>Rodada dos Perdedores 2</h4>
                       <div class="match"><div class="team">Vencedor P1-1</div><div class="team">Perdedor R2-1</div></div>
                       <div class="match"><div class="team">Vencedor P1-2</div><div class="team">Perdedor R2-2</div></div>
                   </div>
 
                   <div class="round">
-                      <h2>Semifinal dos Perdedores</h2>
+                      <h4>Semifinal dos Perdedores</h4>
                       <div class="match"><div class="team">Vencedor P2-1</div><div class="team">Vencedor P2-2</div></div>
                   </div>
 
                   <div class="round">
-                      <h2>Final dos Perdedores</h2>
+                      <h4>Final dos Perdedores</h4>
                       <div class="match"><div class="team">Vencedor PSemi</div><div class="team">Perdedor da Final dos Vencedores</div></div>
                   </div>
-
               </div>
 
               <!-- FINALS BRACKET -->
               <div class="finals-bracket">
-
                   <div class="round">
-                      <h2>Grande Final</h2>
+                      <h4>Grande Final</h4>
                       <div class="match">
                           <div class="team">Vencedor dos Vencedores</div>
                           <div class="team">Vencedor dos Perdedores</div>
@@ -266,28 +267,25 @@
                   </div>
 
                   <div class="round">
-                      <h2>Desempate (se necessário)</h2>
+                      <h4>Desempate (se necessário)</h4>
                       <div class="match reset">
                           <div class="team">Vencedor da Grande Final</div>
                           <div class="team">Perdedor da Grande Final</div>
                       </div>
                   </div>
-
               </div>
-
           </div>
         </div>
 
-        <!-- GROUP B BRACKET -->
+        <!-- GRUPO B BRACKET -->
         <div class="bracket-content hidden" id="group-b-content">
-          <h2>Chaveamento do Grupo B</h2>
+          <h3 style="text-align: center; color: var(--neon-cyan); margin-bottom: 20px;">Chaveamento - Grupo B</h3>
+          
           <div class="bracket-container">
-
               <!-- WINNERS BRACKET -->
               <div class="winners-bracket">
-
                   <div class="round">
-                      <h2>Rodada 1</h2>
+                      <h4>Rodada 1</h4>
                       <div class="match"><div class="team">Equipe B1</div><div class="team">Equipe B2</div></div>
                       <div class="match"><div class="team">Equipe B3</div><div class="team">Equipe B4</div></div>
                       <div class="match"><div class="team">Equipe B5</div><div class="team">Equipe B6</div></div>
@@ -295,55 +293,51 @@
                   </div>
 
                   <div class="round">
-                      <h2>Rodada 2</h2>
+                      <h4>Rodada 2</h4>
                       <div class="match"><div class="team">Vencedor B1/B2</div><div class="team">Vencedor B3/B4</div></div>
                       <div class="match"><div class="team">Vencedor B5/B6</div><div class="team">Vencedor B7/B8</div></div>
                   </div>
 
                   <div class="round">
-                      <h2>Semifinal</h2>
+                      <h4>Semifinal</h4>
                       <div class="match"><div class="team">Vencedor R2-1</div><div class="team">Vencedor R2-2</div></div>
                   </div>
 
                   <div class="round">
-                      <h2>Final dos Vencedores</h2>
+                      <h4>Final dos Vencedores</h4>
                       <div class="match"><div class="team">Vencedor Semi</div><div class="team">Vencedor Semi</div></div>
                   </div>
-
               </div>
 
               <!-- LOSERS BRACKET -->
               <div class="losers-bracket">
-
                   <div class="round">
-                      <h2>Rodada dos Perdedores 1</h2>
+                      <h4>Rodada dos Perdedores 1</h4>
                       <div class="match"><div class="team">Perdedor B5/B6</div><div class="team">Perdedor B1/B2</div></div>
                       <div class="match"><div class="team">Perdedor B7/B8</div><div class="team">Perdedor B3/B4</div></div>
                   </div>
 
                   <div class="round">
-                      <h2>Rodada dos Perdedores 2</h2>
+                      <h4>Rodada dos Perdedores 2</h4>
                       <div class="match"><div class="team">Vencedor P1-1</div><div class="team">Perdedor R2-1</div></div>
                       <div class="match"><div class="team">Vencedor P1-2</div><div class="team">Perdedor R2-2</div></div>
                   </div>
 
                   <div class="round">
-                      <h2>Semifinal dos Perdedores</h2>
+                      <h4>Semifinal dos Perdedores</h4>
                       <div class="match"><div class="team">Vencedor P2-1</div><div class="team">Vencedor P2-2</div></div>
                   </div>
 
                   <div class="round">
-                      <h2>Final dos Perdedores</h2>
+                      <h4>Final dos Perdedores</h4>
                       <div class="match"><div class="team">Vencedor PSemi</div><div class="team">Perdedor da Final dos Vencedores</div></div>
                   </div>
-
               </div>
 
               <!-- FINALS BRACKET -->
               <div class="finals-bracket">
-
                   <div class="round">
-                      <h2>Grande Final</h2>
+                      <h4>Grande Final</h4>
                       <div class="match">
                           <div class="team">Vencedor dos Vencedores</div>
                           <div class="team">Vencedor dos Perdedores</div>
@@ -351,15 +345,13 @@
                   </div>
 
                   <div class="round">
-                      <h2>Desempate (se necessário)</h2>
+                      <h4>Desempate (se necessário)</h4>
                       <div class="match reset">
                           <div class="team">Vencedor da Grande Final</div>
                           <div class="team">Perdedor da Grande Final</div>
                       </div>
                   </div>
-
               </div>
-
           </div>
         </div>
 
@@ -367,8 +359,107 @@
     </section>
   </main>
 
-  <footer class="glass footer">© WILD CLASH</footer>
+  <footer class="glass footer">
+    <div class="footer-content">
+      <div class="footer-copyright">© WILD CLASH</div>
+      <div class="social-media-links">
+        <a href="https://discord.gg/smJ9Q2V3VB" class="social-btn discord" aria-label="Discord" target="_blank" rel="noopener noreferrer">
+          <div class="social-icon">
+            <img src="imagens/disc-icon.png" alt="Discord" onerror="this.style.display='none'">
+            <span class="default-icon"></span>
+          </div>
+          <span class="social-label">Discord</span>
+        </a>
+
+        <a href="https://www.tiktok.com/@nittosono?is_from_webapp=1&sender_device=pc" class="social-btn tiktok" aria-label="TikTok" target="_blank" rel="noopener noreferrer">
+          <div class="social-icon">
+            <img src="imagens/tiktok-icon.png" alt="TikTok" onerror="this.style.display='none'">
+            <span class="default-icon"></span>
+          </div>
+          <span class="social-label">TikTok</span>
+        </a>
+
+        <a href="https://www.instagram.com/wildclash_wildrift?igsh=b2U2Y2V2YWx5ODd0" class="social-btn instagram" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+          <div class="social-icon">
+            <img src="imagens/insta-icon.png" alt="Instagram" onerror="this.style.display='none'">
+            <span class="default-icon"></span>
+          </div>
+          <span class="social-label">Instagram</span>
+        </a>
+
+        <a href="https://www.youtube.com/channel/UCCNOSn3tTp2IqPKTKC2_umw/live" class="social-btn youtube" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+          <div class="social-icon">
+            <img src="imagens/youtube-icon.png" alt="YouTube" onerror="this.style.display='none'">
+            <span class="default-icon"></span>
+          </div>
+          <span class="social-label">YouTube</span>
+        </a>
+      </div>
+    </div>
+  </footer>
 
   <script src="script.js"></script>
+  
+  <script>
+  // Sistema de abas para grupos
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const bracketContents = document.querySelectorAll('.bracket-content');
+    
+    tabButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active de todos os botões
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        // Adiciona active ao botão clicado
+        this.classList.add('active');
+        
+        // Esconde todos os conteúdos
+        bracketContents.forEach(content => {
+          content.classList.remove('active');
+          content.classList.add('hidden');
+        });
+        
+        // Mostra o conteúdo correspondente
+        const groupId = this.getAttribute('data-group');
+        const targetContent = document.getElementById(`${groupId}-content`);
+        if (targetContent) {
+          targetContent.classList.remove('hidden');
+          targetContent.classList.add('active');
+        }
+      });
+    });
+    
+    // Dica discreta para mobile (scroll tátil)
+    if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        const hint = document.createElement('div');
+        hint.style.cssText = `
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background: rgba(0, 234, 255, 0.15);
+          border: 1px solid var(--neon-cyan);
+          color: var(--neon-cyan);
+          padding: 8px 12px;
+          border-radius: 8px;
+          font-size: 12px;
+          z-index: 1000;
+          animation: fadeInOut 4s forwards;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+          pointer-events: none;
+        `;
+        hint.innerHTML = 'Arraste para os lados';
+        document.body.appendChild(hint);
+        
+        // Remover após animação
+        setTimeout(() => {
+          if (hint.parentNode) hint.parentNode.removeChild(hint);
+        }, 4000);
+      }, 1000);
+    }
+  });
+  </script>
+  
+  
 </body>
 </html>

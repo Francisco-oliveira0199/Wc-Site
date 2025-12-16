@@ -1,8 +1,6 @@
 /* =============================================================================
    PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
-   AUTOR: Cline (AI Assistant)
-   DESCRIÇÃO: CSS completo para o site do Wild Clash, incluindo estilos para header, hero, carousel, forms, footer, brackets, grupos e responsividade.
-   VERSÃO: 2.1
+   VERSÃO: 5.1 - Barra de Scroll Invisível e Aviso Mobile
    DATA: Dezembro 2025
 ============================================================================= */
 
@@ -18,14 +16,7 @@ html,body {
   background: #0b0b0b; 
   color: #e6eef6; 
   -webkit-font-smoothing:antialiased; 
-}
-
-/* ========== ESCALA PROPORCIONAL ========== */
-body {
-  transform-origin: top left;
-  transform: scale(calc(100vw / 1920));
-  width: calc(1920px / (100vw / 1920));
-  height: calc(1080px / (100vh / 1080));
+  overflow-x: hidden;
 }
 
 /* ========== VARIÁVEIS DE COR ========== */
@@ -37,6 +28,9 @@ body {
   --glass-border: rgba(255,255,255,0.06);
   --text-muted: #b7c7d6;
   --max-width: 1200px;
+  --gold: #ffd700;
+  --success: #28c76f;
+  --warning: #ffd166;
 }
 
 /* ========== BACKGROUND ========== */
@@ -171,7 +165,7 @@ body {
   background: transparent;
 }
 
-/* ========== BOTÃO DE ACEITAÇÃO DE REGRAS (MESMO ESTILO PARA TODOS OS BOTÕES PRINCIPAIS) ========== */
+/* BOTÕES ESPECÍFICOS DO FORMULÁRIO */
 .checkbox-btn,
 .btn-submit,
 .btn-reset {
@@ -235,7 +229,6 @@ body {
   font-weight: bold;
 }
 
-/* Estilo específico para botão de limpar */
 .btn-reset {
   border: 2px solid var(--neon-pink);
   background: linear-gradient(135deg, rgba(255,45,117,0.1), rgba(255,45,117,0.05));
@@ -462,7 +455,7 @@ body {
 
 .cards.grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 colunas */
+  grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, auto);
   gap: 2rem;
   justify-items: center;
@@ -630,7 +623,7 @@ body {
   border: 1px solid rgba(255,255,255,0.05);
 }
 
-/* FORM FIELDS ESPECÍFICOS (DA VERSÃO ANTIGA) */
+/* ESTILOS DO FORMULÁRIO DE SCRIM */
 .lineup-fields {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -659,7 +652,6 @@ body {
   width: 150px;
 }
 
-/* FORMAT SELECTION (DA VERSÃO ANTIGA) */
 .format-selection {
   display: flex;
   gap: 20px;
@@ -714,17 +706,6 @@ body {
   outline: none;
   border-color: var(--neon-cyan);
   box-shadow: 0 0 10px rgba(0,234,255,0.3);
-}
-
-/* Select dropdown options styling */
-.form-section select option {
-  color: white;
-  background: #0b0b0b;
-  padding: 8px;
-}
-
-.form-section select option:hover {
-  background: rgba(0,234,255,0.2);
 }
 
 /* ========== CONTROLE DE REGRAS ========== */
@@ -853,7 +834,7 @@ body {
 }
 
 .rules-status .success {
-  color: #28c76f;
+  color: var(--success);
 }
 
 .rules-status .error {
@@ -910,52 +891,8 @@ body {
   height: 16px;
   border: 2px solid rgba(255,255,255,0.3);
   border-radius: 50%;
-  border-top-color: #00eaff;
+  border-top-color: var(--neon-cyan);
   animation: spin 1s linear infinite;
-}
-
-/* ========== MENSAGENS DO FORMULÁRIO ========== */
-.form-status {
-  margin-bottom: 20px;
-  display: none;
-}
-
-.form-status .message {
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  text-align: center;
-  animation: fadeIn 0.5s ease;
-}
-
-.form-status .message.success {
-  background: rgba(40, 199, 111, 0.15);
-  border: 1px solid rgba(40, 199, 111, 0.4);
-  color: #28c76f;
-}
-
-.form-status .message.error {
-  background: rgba(255, 45, 117, 0.15);
-  border: 1px solid rgba(255, 45, 117, 0.4);
-  color: #ff2d75;
-}
-
-.form-status .message.info {
-  background: rgba(0, 234, 255, 0.15);
-  border: 1px solid rgba(0, 234, 255, 0.4);
-  color: #00eaff;
-}
-
-/* ========== CONTADOR DE CARACTERES ========== */
-.char-counter {
-  text-align: right;
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 5px;
-}
-
-.char-counter span {
-  font-weight: bold;
 }
 
 /* ========== FOOTER ========== */
@@ -1093,6 +1030,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 60px;
+    width: 100%;
 }
 
 /* ROUND COLUMN LAYOUT */
@@ -1122,6 +1060,44 @@ body {
     font-size: 1.1rem;
 }
 
+/* TÍTULOS DAS CHAVES */
+.phase-title {
+  text-align: center;
+  margin: 30px 0;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 4px rgba(0,234,255,0.3);
+  font-size: 2rem;
+  font-weight: 700;
+  width: 100%;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+.bracket-title {
+  text-align: center;
+  color: var(--neon-cyan);
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-shadow: 0 0 4px rgba(0,234,255,0.3);
+  margin-bottom: 20px;
+  width: 100%;
+  padding: 0 15px;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.bracket-subtitle {
+  text-align: center;
+  color: var(--neon-cyan);
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  width: 100%;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
 /* MATCH STYLE */
 .match {
     border: 2px solid var(--neon-cyan);
@@ -1142,6 +1118,24 @@ body {
         0 6px 20px rgba(0,0,0,0.5),
         0 0 12px rgba(255,45,117,0.2);
     transform: scale(1.02);
+}
+
+/* CLASSES PARA VENCEDORES E PRÓXIMOS JOGOS */
+.match .winner {
+    color: var(--success);
+    font-weight: 700;
+}
+
+.match .upcoming {
+    color: var(--warning);
+    font-style: italic;
+}
+
+.match.reset {
+    background: rgba(0,234,255,0.02);
+    font-style: italic;
+    border-color: rgba(0,234,255,0.4);
+    color: var(--text-muted);
 }
 
 /* WINNERS BRACKET - CIANO */
@@ -1176,9 +1170,9 @@ body {
     transform: scale(1.02);
 }
 
-/* FINALS BRACKET - AMARELA MAIOR COM BRILHO NEON */
+/* FINALS BRACKET - AMARELA */
 .finals-bracket .match {
-    border: 3px solid #ffd700;
+    border: 3px solid var(--gold);
     width: 280px;
     box-shadow:
         0 6px 24px rgba(0,0,0,0.6),
@@ -1188,7 +1182,7 @@ body {
 }
 
 .finals-bracket .match:hover {
-    border-color: #ffd700;
+    border-color: var(--gold);
     box-shadow:
         0 8px 32px rgba(0,0,0,0.7),
         0 0 20px rgba(255,215,0,0.6),
@@ -1213,39 +1207,104 @@ body {
     color: white;
 }
 
-/* CONNECTING LINES */
-.match::after {
-    content: "";
-    position: absolute;
-    right: -40px;
-    top: 50%;
-    width: 40px;
-    height: 2px;
-    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
-    opacity: 0.6;
+/* ========== CONTAINER DE SCROLL PARA CHAVES - BARRA INVISÍVEL ========== */
+.bracket-scroll-container {
+  position: relative;
+  width: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 20px 0;
+  padding: 20px 0;
+  border: 1px solid rgba(0,234,255,0.1);
+  border-radius: 12px;
+  background: rgba(0,0,0,0.2);
+  /* Barra de scroll invisível */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
-/* LAST COLUMN WITHOUT LINES */
-.round:last-child .match::after {
+.bracket-scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Container para agrupar winners e losers */
+.brackets-group-container {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  min-width: min-content;
+}
+
+/* Aviso de deslize para mobile */
+.scroll-hint-notification {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, rgba(0,234,255,0.9), rgba(255,45,117,0.9));
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  z-index: 50;
+  animation: slideHint 6s ease-in-out forwards;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  text-align: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  pointer-events: none;
+}
+
+@keyframes slideHint {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  85% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
     display: none;
+  }
 }
 
-/* GRAND FINAL */
-.grand-final {
-    text-align: center;
+.bracket-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 15px 0;
+  padding: 0 10px;
 }
 
-.grand-final .match {
-    margin: 0 auto 20px auto;
-    width: 240px;
-    border-color: var(--neon-pink);
+.bracket-nav-btn {
+  padding: 10px 15px;
+  background: rgba(0, 234, 255, 0.1);
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  min-width: 120px;
+  justify-content: center;
 }
 
-.reset {
-    background: rgba(0,234,255,0.02);
-    font-style: italic;
-    border-color: rgba(0,234,255,0.4);
-    color: var(--text-muted);
+.bracket-nav-btn:hover {
+  background: rgba(0, 234, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 /* ========== GROUP TABS SYSTEM ========== */
@@ -1254,6 +1313,8 @@ body {
     justify-content: center;
     gap: 10px;
     margin-bottom: 30px;
+    flex-wrap: wrap;
+    padding: 0 15px;
 }
 
 .tab-button {
@@ -1300,6 +1361,8 @@ body {
     gap: 20px;
     width: 100%;
     margin-bottom: 40px;
+    padding: 0 15px;
+    box-sizing: border-box;
 }
 
 /* GROUP CARD STYLES */
@@ -1419,74 +1482,15 @@ body {
     color: white;
 }
 
-/* ========== ESTILOS ESPECÍFICOS DA PÁGINA DE CAMPEONATOS ========== */
-.page-campeonatos .cards.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  justify-items: center;
-  align-items: start;
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 8px;
-}
-
-.page-campeonatos .cards.grid > .card {
-  width: auto !important;
-  max-width: 422px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  min-height: 320px;
-}
-
-/* Flex override: quando a grid tiver a classe .div-pai, use flexbox */
-.campeonatos-grid.div-pai {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  justify-content: center;
-  align-items: flex-start;
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 8px;
-}
-
-.campeonatos-grid.div-pai > .campeonato-card {
-  flex: 1 1 420px;
-  max-width: 560px;
-  min-width: 280px;
-  width: auto;
-}
-
-.cards.grid.cards-row,
-.cards-row {
-  gap: 24px;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.cards.grid.cards-row > .card,
-.cards-row > .campeonato-card,
-.cards-row > .card {
-  flex: 0 1 calc((100% - 48px) / 3);
-  max-width: 420px;
-  min-width: 280px;
-  width: auto !important;
-  box-sizing: border-box;
-}
-
-/* ========== RESTAURAR CORES V/D/E/P ========== */
-.group-card.compact .stat-badge.stat-v { background: #28c76f; color: #fff !important; }
+/* ========== CORES V/D/E/P ========== */
+.group-card.compact .stat-badge.stat-v { background: var(--success); color: #fff !important; }
 .group-card.compact .stat-badge.stat-d { background: #ff6b6b; color: #fff !important; }
-.group-card.compact .stat-badge.stat-e { background: #ffd166; color: #222 !important; }
+.group-card.compact .stat-badge.stat-e { background: var(--warning); color: #222 !important; }
 .group-card.compact .stat-badge.stat-p { background: #00e2c6; color: #002 !important; }
 
 .group-card.compact .team-stats .stat-val.stat-v,
 .group-card.compact .team-stats .stat-value.stat-v {
-  color: #28c76f !important;
+  color: var(--success) !important;
   background: rgba(255,255,255,0.02);
 }
 .group-card.compact .team-stats .stat-val.stat-d,
@@ -1546,373 +1550,7 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-@keyframes glow {
-  0% { box-shadow: 0 0 0 rgba(0,234,255,0.4); }
-  50% { box-shadow: 0 0 20px rgba(0,234,255,0.8); }
-  100% { box-shadow: 0 0 0 rgba(0,234,255,0.4); }
-}
-
 .neon-title { animation: subtleGlow 6s infinite ease-in-out; }
-
-/* ========== RESPONSIVO ========== */
-@media (max-width: 1024px) {
-  .cards.grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .carousel-container {
-    height: 250px;
-  }
-  
-  .hero-description-video {
-    flex-direction: column;
-    align-items: center; /* Centraliza tudo horizontalmente */
-    text-align: center; /* Centraliza o texto */
-    gap: 40px; /* Espaço entre descrição e carousel */
-  }
-  
-  .hero-description {
-    margin-right: 0;
-    margin-bottom: 40px; /* Mais espaço entre descrição e carousel */
-    width: 90%; /* Largura controlada */
-    max-width: 800px; /* Limite máximo */
-    margin-left: auto; /* Centraliza horizontalmente */
-    margin-right: auto; /* Centraliza horizontalmente */
-  }
-  
-  .carousel {
-    width: 90%; /* Largura controlada */
-    max-width: 500px; /* Limite máximo para o carousel */
-    margin: 0 auto; /* Centraliza horizontalmente */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centraliza conteúdo interno */
-  }
-  
-  .carousel-container {
-    width: 100%; /* Ocupa toda a largura disponível */
-  }
-  
-  .carousel-indicators {
-    justify-content: center; /* Centraliza os indicadores */
-    margin-top: 15px;
-  }
-  
-  /* Ajusta as setas para não ficarem muito coladas nas bordas */
-  .arrow.prev {
-    left: 10px;
-  }
-  
-  .arrow.next {
-    right: 10px;
-  }
-  
-  .group-phase-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .header{ 
-    margin:12px; 
-    padding:12px; 
-  }
-  
-  .hero-content{ 
-    padding:18px; 
-  }
-  
-  .nav{ 
-    gap:8px; 
-  }
-  
-  .cards.grid {
-    grid-template-columns: 1fr;
-    max-width: 500px; /* Limite máximo para os cards */
-    margin: 0 auto; /* Centraliza o grid */
-    width: 90%; /* Largura controlada */
-  }
-  
-  .carousel-container {
-    height: 200px;
-  }
-  
-  /* Centralização do carousel */
-  .carousel {
-    width: 95%; /* Largura controlada */
-    max-width: 400px; /* Limite máximo */
-    margin: 0 auto; /* Centraliza horizontalmente */
-  }
-  
-  .hero-description-video {
-    flex-direction: column;
-    align-items: center; /* Centraliza horizontalmente */
-    text-align: center; /* Centraliza texto */
-    gap: 30px; /* Espaço entre elementos */
-  }
-  
-  .hero-description {
-    margin-right: 0;
-    margin-bottom: 30px;
-    width: 95%; /* Largura controlada */
-    max-width: 700px; /* Limite máximo */
-    margin-left: auto; /* Centraliza */
-    margin-right: auto; /* Centraliza */
-    padding: 0 10px; /* Padding lateral */
-  }
-  
-  .card {
-    height: 400px;
-    min-height: 400px;
-  }
-  
-  .card-title {
-    font-size: clamp(1.5rem, 5vw, 2.5rem); /* Fonte responsiva */
-  }
-  
-  .form-section {
-    padding: 10px;
-    margin: 10px;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .btn-submit, .btn-reset {
-    width: 100%;
-    min-width: unset;
-  }
-  
-  .lineup-grid, .lineup-fields {
-    grid-template-columns: 1fr;
-  }
-  
-  .reserves-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .rules-scroll {
-    max-height: 200px;
-  }
-  
-  .footer-content {
-    flex-direction: column;
-    gap: 15px;
-    text-align: center;
-  }
-  
-  .winners-bracket,
-  .losers-bracket,
-  .finals-bracket {
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .round {
-    width: 100%;
-  }
-  
-  .match {
-    width: 100% !important;
-    max-width: 300px;
-    margin: 0 auto;
-  }
-  
-  .group-phase-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .group-card.compact {
-    padding: 12px;
-    min-height: auto;
-  }
-
-  .group-list li {
-    gap: 8px;
-    padding: 6px 2px;
-  }
-
-  .pos {
-    width: 28px;
-    height: 28px;
-    font-size: 0.8rem;
-  }
-
-  .team-chip {
-    font-size: 0.8rem;
-    padding: 4px 8px;
-  }
-
-  .stat-val {
-    min-width: 20px;
-    font-size: 0.8rem;
-    padding: 3px 4px;
-  }
-  
-  .cards.grid.cards-row > .card,
-  .cards-row > .campeonato-card,
-  .cards-row > .card {
-    flex: 0 1 calc((100% - 24px) / 2);
-    max-width: 520px;
-  }
-  
-  /* Centraliza os indicadores do carousel */
-  .carousel-indicators {
-    justify-content: center;
-  }
-  
-  /* Ajusta posição das setas */
-  .arrow.prev {
-    left: 5px;
-  }
-  
-  .arrow.next {
-    right: 5px;
-  }
-}
-
-@media (max-width: 640px) {
-  .cards.grid.cards-row > .card,
-  .cards-row > .campeonato-card,
-  .cards-row > .card {
-    flex: 1 1 100%;
-    max-width: 100%;
-  }
-  
-  .hero-description {
-    width: 100%;
-    padding: 0 15px;
-    font-size: 0.95rem;
-  }
-  
-  .carousel {
-    width: 100%;
-    max-width: 350px;
-    padding: 0 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .carousel-container {
-    height: 150px;
-  }
-  
-  .carousel {
-    max-width: 320px;
-  }
-  
-  .hero-description {
-    padding: 0 10px;
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-  
-  .card {
-    height: 300px;
-    min-height: 300px;
-  }
-  
-  .card-title {
-    font-size: clamp(1.2rem, 6vw, 1.8rem); /* Mais responsivo */
-    top: 15px; /* Ajuste de posição */
-  }
-  
-  .neon-title {
-    font-size: 32px;
-  }
-  
-  .form-section h1 {
-    font-size: 1.8rem;
-  }
-  
-  .checkbox-btn {
-    font-size: 12px;
-    padding: 6px 10px;
-  }
-  
-  .format-selection {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  /* Ajustes finos para mobile */
-  .arrow {
-    width: 30px;
-    height: 30px;
-    font-size: 16px;
-  }
-  
-  .arrow.prev {
-    left: 2px;
-  }
-  
-  .arrow.next {
-    right: 2px;
-  }
-  
-  .carousel-indicators {
-    gap: 8px;
-  }
-  
-  .indicator {
-    width: 10px;
-    height: 10px;
-  }
-}
-
-@media (max-width: 640px) {
-  .cards.grid.cards-row > .card,
-  .cards-row > .campeonato-card,
-  .cards-row > .card {
-    flex: 1 1 100%;
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .carousel-container {
-    height: 150px;
-  }
-  
-  .card {
-    height: 300px;
-    min-height: 300px;
-  }
-  
-  .card-title {
-    font-size: 24px;
-  }
-  
-  .neon-title {
-    font-size: 32px;
-  }
-  
-  .form-section h1 {
-    font-size: 1.8rem;
-  }
-  
-  .checkbox-btn {
-    font-size: 12px;
-    padding: 6px 10px;
-  }
-  
-  .format-selection {
-    flex-direction: column;
-    gap: 10px;
-  }
-}
-
-/* ========== Ajuste para a escala proporcional em telas menores ========== */
-@media (max-width: 1920px) {
-  body {
-    transform: scale(1);
-    width: 100%;
-    height: auto;
-  }
-}
 
 /* ========== HERO DESCRIPTION VIDEO ========== */
 .hero-description-video {
@@ -1948,6 +1586,49 @@ body {
   box-shadow: 0 0 0 2px rgba(255, 45, 117, 0.2);
 }
 
+/* ========== MENSAGENS DO FORMULÁRIO ========== */
+.form-status {
+  margin-bottom: 20px;
+  display: none;
+}
+
+.form-status .message {
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+.form-status .message.success {
+  background: rgba(40, 199, 111, 0.15);
+  border: 1px solid rgba(40, 199, 111, 0.4);
+  color: var(--success);
+}
+
+.form-status .message.error {
+  background: rgba(255, 45, 117, 0.15);
+  border: 1px solid rgba(255, 45, 117, 0.4);
+  color: var(--neon-pink);
+}
+
+.form-status .message.info {
+  background: rgba(0, 234, 255, 0.15);
+  border: 1px solid rgba(0, 234, 255, 0.4);
+  color: var(--neon-cyan);
+}
+
+.char-counter {
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+
+.char-counter span {
+  font-weight: bold;
+}
+
 /* ========== PAGE WRAP ========== */
 .page-wrap {
   min-height: calc(100vh - 200px);
@@ -1966,4 +1647,421 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
   outline: 2px solid rgba(0,234,255,0.14); 
   outline-offset:3px; 
   border-radius:8px; 
+}
+
+/* ========== CLASSES ADICIONAIS ========== */
+.hidden {
+  display: none !important;
+}
+
+.active {
+  display: block !important;
+}
+
+/* ========== CORREÇÕES MOBILE ========== */
+@media (max-width: 768px) {
+  /* HEADER MOBILE */
+  .header {
+    padding: 10px 15px;
+    margin: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .nav {
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  .nav-link {
+    padding: 6px 8px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  
+  .logo-placeholder img {
+    max-height: 40px;
+  }
+  
+  /* HERO MOBILE */
+  .hero {
+    padding: 20px 15px;
+  }
+  
+  .hero-content {
+    padding: 20px;
+  }
+  
+  .hero-description-video {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .hero-description {
+    margin: 0 0 20px 0;
+    min-width: 100%;
+    text-align: center;
+  }
+  
+  /* CARROSSEL CENTRALIZADO */
+  .carousel {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  .carousel-container {
+    height: 200px;
+  }
+  
+  .arrow {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+  
+  .arrow.prev {
+    left: 5px;
+  }
+  
+  .arrow.next {
+    right: 5px;
+  }
+  
+  /* CARDS MOBILE - MANTENDO PROPORÇÃO */
+  .cards.grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 0 10px;
+  }
+  
+  .card {
+    height: 180px;
+    min-height: 180px;
+    width: 100%;
+  }
+  
+  .card-title {
+    font-size: 24px;
+    top: 10px;
+    text-shadow: 0 0 3px var(--neon-pink), 0 0 5px var(--neon-pink);
+  }
+  
+  /* TÍTULOS PARA MOBILE - FONTE REDUZIDA */
+  .section-title {
+    font-size: 1.6rem;
+    padding: 0 15px;
+  }
+  
+  .phase-title {
+    font-size: 1.4rem;
+    margin: 20px 0;
+    padding: 0 15px;
+  }
+  
+  .bracket-title {
+    font-size: 1.2rem;
+    padding: 0 15px;
+    margin-bottom: 15px;
+  }
+  
+  .bracket-subtitle {
+    font-size: 1.1rem;
+    padding: 0 15px;
+    margin-bottom: 15px;
+  }
+  
+  .round h2, .round h4 {
+    font-size: 0.9rem;
+    padding: 0 5px;
+  }
+  
+  /* LAYOUT DAS CHAVES PARA MOBILE - LADO A LADO COM SCROLL */
+  .bracket-container {
+    gap: 30px;
+    width: auto;
+  }
+  
+  /* Container principal de scroll (já configurado com barra invisível) */
+  .bracket-scroll-container {
+    margin: 15px 0;
+    padding: 15px 0;
+  }
+  
+  /* Container que agrupa winners e losers lado a lado */
+  .brackets-group-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    min-width: min-content;
+    padding: 0 15px;
+  }
+  
+  /* Winners e Losers lado a lado em layout horizontal */
+  .winners-bracket,
+  .losers-bracket {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    padding: 10px 5px;
+    min-width: max-content;
+    justify-content: flex-start;
+  }
+  
+  /* Cada rodada como coluna */
+  .round {
+    flex-shrink: 0;
+    width: 180px;
+    gap: 15px;
+  }
+  
+  .match {
+    width: 100%;
+    min-width: 160px;
+  }
+  
+  .team {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  
+  /* Finals bracket abaixo, em linha única centralizada */
+  .finals-bracket {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    margin-top: 30px;
+    padding: 0 15px;
+    flex-wrap: wrap;
+  }
+  
+  .finals-bracket .round {
+    width: 250px;
+  }
+  
+  /* FASE DE GRUPOS MOBILE */
+  .group-phase-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 0 10px;
+  }
+  
+  .group-card.compact {
+    width: 100%;
+    padding: 12px;
+  }
+  
+  .group-title {
+    font-size: 1.1rem;
+  }
+  
+  .team-chip {
+    font-size: 0.85rem;
+    padding: 4px 6px;
+  }
+  
+  .stat-val {
+    font-size: 0.85rem;
+  }
+  
+  /* ABAS DE GRUPOS */
+  .group-tabs {
+    padding: 0 10px;
+  }
+  
+  .tab-button {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    min-width: 120px;
+    flex: 1;
+  }
+  
+  /* FORMULÁRIOS MOBILE */
+  .form-section {
+    margin: 15px;
+    padding: 15px;
+  }
+  
+  .form-section h1 {
+    font-size: 1.8rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .btn-submit, .btn-reset {
+    width: 100%;
+  }
+  
+  .lineup-grid, .lineup-fields {
+    grid-template-columns: 1fr;
+  }
+  
+  .reserves-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .rules-scroll {
+    max-height: 200px;
+  }
+  
+  /* CONTROLES DE NAVEGAÇÃO DAS CHAVES */
+  .bracket-controls {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .bracket-nav-btn {
+    width: 90%;
+    max-width: 200px;
+  }
+  
+  /* AVISO DE DESLIZE PARA MOBILE */
+  .scroll-hint-notification {
+    font-size: 13px;
+    padding: 10px 16px;
+    animation: slideHint 5s ease-in-out forwards;
+  }
+  
+  /* FOOTER MOBILE */
+  .footer-content {
+    padding: 20px 15px;
+  }
+  
+  .footer .social-btn {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .footer .social-icon {
+    width: 25px;
+    height: 25px;
+  }
+  
+  .footer .social-label {
+    font-size: 9px;
+  }
+}
+
+/* TELAS MUITO PEQUENAS */
+@media (max-width: 480px) {
+  .cards.grid {
+    gap: 10px;
+  }
+  
+  .card {
+    height: 160px;
+    min-height: 160px;
+  }
+  
+  .card-title {
+    font-size: 20px;
+    top: 8px;
+  }
+  
+  .nav-link {
+    font-size: 11px;
+    padding: 5px 6px;
+  }
+  
+  /* AJUSTES ADICIONAIS PARA CHAVES EM TELAS MUITO PEQUENAS */
+  .phase-title {
+    font-size: 1.2rem;
+  }
+  
+  .bracket-title {
+    font-size: 1.1rem;
+  }
+  
+  .bracket-container .round {
+    width: 160px;
+  }
+  
+  .match {
+    min-width: 150px;
+  }
+  
+  .team {
+    font-size: 11px;
+    padding: 5px 6px;
+  }
+  
+  .finals-bracket .round {
+    width: 220px;
+  }
+  
+  .tab-button {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .scroll-hint-notification {
+    font-size: 12px;
+    padding: 8px 14px;
+    width: 90%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* TELAS EXTREMAMENTE PEQUENAS */
+@media (max-width: 360px) {
+  .cards.grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .card {
+    height: 200px;
+    min-height: 200px;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+  
+  .card-title {
+    font-size: 22px;
+  }
+  
+  .nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .logo {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .group-phase-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* AJUSTES FINAIS PARA CHAVES EM TELAS MÍNIMAS */
+  .bracket-container .round {
+    width: 140px;
+  }
+  
+  .match {
+    min-width: 130px;
+  }
+}
+
+/* PARA DESKTOP GRANDE */
+@media (min-width: 1440px) {
+  .cards.grid {
+    gap: 30px;
+  }
+  
+  .card {
+    max-width: 600px;
+    height: 280px;
+    min-height: 280px;
+  }
 }
