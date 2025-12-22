@@ -1,6 +1,6 @@
 /* =============================================================================
    PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
-   VERSÃO: 5.1 - Barra de Scroll Invisível e Aviso Mobile
+   VERSÃO: 5.3 - Correção Bug Grande Final Desktop
    DATA: Dezembro 2025
 ============================================================================= */
 
@@ -1033,13 +1033,19 @@ html,body {
     width: 100%;
 }
 
-/* ROUND COLUMN LAYOUT */
+/* ROUND COLUMN LAYOUT - DESKTOP */
 .winners-bracket,
-.losers-bracket,
-.finals-bracket {
+.losers-bracket {
     display: flex;
     gap: 40px;
     justify-content: center;
+}
+
+.finals-bracket {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
 }
 
 .round {
@@ -1764,7 +1770,7 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
   .bracket-title {
     font-size: 1.2rem;
     padding: 0 15px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
   }
   
   .bracket-subtitle {
@@ -1773,53 +1779,42 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
     margin-bottom: 15px;
   }
   
-  .round h2, .round h4 {
-    font-size: 0.9rem;
-    padding: 0 5px;
-  }
-  
-  /* LAYOUT DAS CHAVES PARA MOBILE - LADO A LADO COM SCROLL */
+  /* LAYOUT DAS CHAVES PARA MOBILE - APENAS NO MOBILE */
   .bracket-container {
-    gap: 30px;
-    width: auto;
+    gap: 40px;
+    width: 100%;
   }
   
-  /* Container principal de scroll (já configurado com barra invisível) */
-  .bracket-scroll-container {
-    margin: 15px 0;
-    padding: 15px 0;
+  /* Título do bracket centralizado acima do grid (MOBILE) */
+  .winners-bracket .bracket-title,
+  .losers-bracket .bracket-title,
+  .finals-bracket .bracket-title {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 20px;
   }
   
-  /* Container que agrupa winners e losers lado a lado */
-  .brackets-group-container {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    min-width: min-content;
-    padding: 0 15px;
-  }
-  
-  /* Winners e Losers lado a lado em layout horizontal */
-  .winners-bracket,
-  .losers-bracket {
-    display: flex;
-    flex-direction: row;
+  /* GRID DE RODADAS - APENAS NO MOBILE (2 colunas lado a lado) */
+  .bracket-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 15px;
-    padding: 10px 5px;
-    min-width: max-content;
-    justify-content: flex-start;
+    width: 100%;
+    padding: 0 10px;
   }
   
-  /* Cada rodada como coluna */
+  /* Cada rodada se adapta ao grid (MOBILE) */
   .round {
-    flex-shrink: 0;
-    width: 180px;
+    display: flex;
+    flex-direction: column;
     gap: 15px;
+    width: 100%;
   }
   
+  /* Match ocupa 100% da célula do grid (MOBILE) */
   .match {
     width: 100%;
-    min-width: 160px;
+    min-width: auto;
   }
   
   .team {
@@ -1827,20 +1822,12 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
     font-size: 12px;
   }
   
-  /* Finals bracket abaixo, em linha única centralizada */
-  .finals-bracket {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 20px;
-    width: 100%;
-    margin-top: 30px;
-    padding: 0 15px;
-    flex-wrap: wrap;
-  }
-  
-  .finals-bracket .round {
-    width: 250px;
+  /* Títulos das rodadas ajustados (MOBILE) */
+  .round h3 {
+    font-size: 0.95rem;
+    text-align: center;
+    margin-bottom: 8px;
+    color: var(--neon-cyan);
   }
   
   /* FASE DE GRUPOS MOBILE */
@@ -1979,21 +1966,23 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
     font-size: 1.1rem;
   }
   
-  .bracket-container .round {
-    width: 160px;
+  /* Em telas muito pequenas, 1 coluna (APENAS MOBILE) */
+  .bracket-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .round {
+    width: 100%;
   }
   
   .match {
-    min-width: 150px;
+    min-width: auto;
   }
   
   .team {
     font-size: 11px;
     padding: 5px 6px;
-  }
-  
-  .finals-bracket .round {
-    width: 220px;
   }
   
   .tab-button {
@@ -2044,12 +2033,12 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
   }
   
   /* AJUSTES FINAIS PARA CHAVES EM TELAS MÍNIMAS */
-  .bracket-container .round {
-    width: 140px;
+  .round {
+    width: 100%;
   }
   
   .match {
-    min-width: 130px;
+    min-width: auto;
   }
 }
 
@@ -2063,5 +2052,63 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
     max-width: 600px;
     height: 280px;
     min-height: 280px;
+  }
+}
+
+/* ========== ESTILOS PARA DESKTOP - CORREÇÃO GRANDE FINAL ========== */
+/* Desktop: mantém layout flex horizontal para winners/losers, coluna para finals */
+@media (min-width: 769px) {
+  .bracket-grid {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .winners-bracket,
+  .losers-bracket {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+  }
+  
+  /* Remove qualquer grid do desktop para winners/losers */
+  .winners-bracket .bracket-grid,
+  .losers-bracket .bracket-grid {
+    display: flex;
+    gap: 40px;
+  }
+  
+  .round {
+    width: 200px;
+  }
+  
+  .match {
+    width: 200px;
+  }
+  
+  /* CORREÇÃO ESPECÍFICA PARA FINALS BRACKET - EVITA SOBREPOSIÇÃO */
+  .finals-bracket {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .finals-bracket .bracket-grid {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    justify-content: center;
+    width: auto;
+  }
+  
+  .finals-bracket .round {
+    width: 280px;
+  }
+  
+  .finals-bracket .match {
+    width: 100%;
   }
 }
