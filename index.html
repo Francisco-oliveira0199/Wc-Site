@@ -11,28 +11,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Wild Clash - Campeonatos profissionais de Wild Rift. Competições, inscrições e muito mais.">
+  <meta name="keywords" content="Wild Rift, Wild Clash, campeonato, torneio, competição, esports, Next Reload, Relegation">
   <title>WILD CLASH — Campeonatos de Wild Rift</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/x-icon" href="imagens/favicon.ico">
 </head>
 <body>
   <!-- BACKGROUND: substitua a imagem de fundo trocando a URL no style.css em #background -->
   <div id="background" aria-hidden="true"></div>
 
-  <header class="glass header">
+  <header class="glass header" role="banner">
     <div class="logo">
       <div class="logo-placeholder"><img src="imagens/wild clash logo colorido.png" alt="Logo Wild Clash"></div>
     </div>
-    <nav class="nav">
-      <a href="index.html" class="nav-link">Home</a>
+    <nav class="nav" role="navigation" aria-label="Navegação principal">
+      <a href="index.html" class="nav-link active" aria-current="page">Home</a>
       <a href="scrim.html" class="nav-link">Scrim</a>
       <a href="inscricoes.html" class="nav-link">Inscreva-se</a>
     </nav>
   </header>
 
   <main>
-    <section class="hero">
+    <section class="hero" aria-labelledby="main-title">
       <div class="hero-content glass">
-        <h1 class="neon-title">WILD CLASH</h1>
+        <h1 class="neon-title" id="main-title">WILD CLASH</h1>
         <div class="hero-buttons larger-btns">
           <a href="inscricoes.html" class="btn outline-neon">Inscreva-se</a>
         </div>
@@ -47,17 +50,17 @@
           <section class="carousel" aria-label="Carrossel de competições">
             <button class="arrow prev" aria-label="Anterior"></button>
             <div class="carousel-container">
-              <div class="carousel-slide active">
+              <div class="carousel-slide active" role="group" aria-label="Slide 1 de 3">
                 <div class="competition-card glass">
                   <div class="card-logo"><img src="imagens/wild clash.png" alt="Logo Wild Clash"></div>
                 </div>
               </div>
-              <div class="carousel-slide">
+              <div class="carousel-slide" role="group" aria-label="Slide 2 de 3">
                 <div class="competition-card glass">
                   <div class="card-logo"><img src="imagens/ongoing wild clash.png" alt="Logo Campeonatos em Andamento"></div>
                 </div>
               </div>
-              <div class="carousel-slide">
+              <div class="carousel-slide" role="group" aria-label="Slide 3 de 3">
                 <div class="competition-card glass">
                   <div class="card-logo"><img src="imagens/relegation.png" alt="Logo Wild Clash Relegation"></div>
                 </div>
@@ -65,24 +68,24 @@
             </div>
             <button class="arrow next" aria-label="Próximo"></button>
             <div class="carousel-indicators">
-              <span class="indicator active" data-slide="0"></span>
-              <span class="indicator" data-slide="1"></span>
-              <span class="indicator" data-slide="2"></span>
+              <span class="indicator active" data-slide="0" aria-label="Slide 1" aria-current="true"></span>
+              <span class="indicator" data-slide="1" aria-label="Slide 2"></span>
+              <span class="indicator" data-slide="2" aria-label="Slide 3"></span>
             </div>
           </section>
         </div>
       </div>
     </section>
 
-    <section id="cards" class="cards-section">
-      <h2 class="section-title">COMPETIÇÕES</h2>
+    <section id="cards" class="cards-section" aria-labelledby="competitions-title">
+      <h2 class="section-title" id="competitions-title">COMPETIÇÕES</h2>
       <div class="cards grid">
         <a class="card glass clickable wild-clash-card" href="wildclash.html" aria-label="Abrir Wild Clash — chaves e times">
           <div class="card-title wild-clash-title">WILD CLASH</div>
           <div class="card-image-placeholder"><img src="imagens/wild clash.png" alt="Logo Wild Clash"></div>
         </a>
 
-        <a class="card glass clickable external" href="https://www.youtube.com/channel/UCCNOSn3tTp2IqPKTKC2_umw/live" target="_blank" rel="noopener noreferrer" aria-label="Abrir campeonatos em andamento no YouTube">
+        <a class="card glass clickable external" href="https://www.youtube.com/channel/UCCNOSn3tTp2IqPKTKC2_umw/live" target="_blank" rel="noopener noreferrer" aria-label="Abrir campeonatos em andamento no YouTube (nova aba)">
           <div class="card-title">CAMP EM ANDAMENTO</div>
           <div class="card-image-placeholder"><img src="./imagens/ongoing wild clash.png" alt="Logo Campeonatos em Andamento"></div>
         </a>
@@ -101,11 +104,11 @@
 
   </main>
 
-  <footer class="glass footer">
+  <footer class="glass footer" role="contentinfo">
     <div class="footer-content">
       <div class="footer-copyright">© WILD CLASH</div>
       <div class="social-media-links">
-        <a href="https://discord.gg/smJ9Q2V3VB" class="social-btn discord" aria-label="Discord" target="_blank" rel="noopener noreferrer">
+        <a href="https://discord.gg/smJ9Q2V3VB" class="social-btn discord" aria-label="Discord (nova aba)" target="_blank" rel="noopener noreferrer">
           <div class="social-icon">
             <img src="imagens/disc-icon.png" alt="Discord" onerror="this.style.display='none'">
             <span class="default-icon"></span>
@@ -113,7 +116,7 @@
           <span class="social-label">Discord</span>
         </a>
 
-        <a href="https://www.tiktok.com/@nittosono?is_from_webapp=1&sender_device=pc" class="social-btn tiktok" aria-label="TikTok" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.tiktok.com/@nittosono?is_from_webapp=1&sender_device=pc" class="social-btn tiktok" aria-label="TikTok (nova aba)" target="_blank" rel="noopener noreferrer">
           <div class="social-icon">
             <img src="imagens/tiktok-icon.png" alt="TikTok" onerror="this.style.display='none'">
             <span class="default-icon"></span>
@@ -121,7 +124,7 @@
           <span class="social-label">TikTok</span>
         </a>
 
-        <a href="https://www.instagram.com/wildclash_wildrift?igsh=b2U2Y2V2YWx5ODd0" class="social-btn instagram" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.instagram.com/wildclash_wildrift?igsh=b2U2Y2V2YWx5ODd0" class="social-btn instagram" aria-label="Instagram (nova aba)" target="_blank" rel="noopener noreferrer">
           <div class="social-icon">
             <img src="imagens/insta-icon.png" alt="Instagram" onerror="this.style.display='none'">
             <span class="default-icon"></span>
@@ -129,7 +132,7 @@
           <span class="social-label">Instagram</span>
         </a>
 
-        <a href="https://www.youtube.com/channel/UCCNOSn3tTp2IqPKTKC2_umw/live" class="social-btn youtube" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.youtube.com/channel/UCCNOSn3tTp2IqPKTKC2_umw/live" class="social-btn youtube" aria-label="YouTube (nova aba)" target="_blank" rel="noopener noreferrer">
           <div class="social-icon">
             <img src="imagens/youtube-icon.png" alt="YouTube" onerror="this.style.display='none'">
             <span class="default-icon"></span>

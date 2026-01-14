@@ -1,6 +1,6 @@
 /* =============================================================================
    PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
-   VERSÃO: 5.7 - Correções Alinhamento Rodada 1 e Layout Grande Final Desktop
+   VERSÃO: 6.0 - Layout Desktop para Mobile com Zoom e Scroll Horizontal
    DATA: Dezembro 2025
 ============================================================================= */
 
@@ -16,7 +16,8 @@ html,body {
   background: #0b0b0b; 
   color: #e6eef6; 
   -webkit-font-smoothing:antialiased; 
-  overflow-x: hidden;
+  overflow-x: auto;
+  overflow-y: auto;
 }
 
 /* ========== VARIÁVEIS DE COR ========== */
@@ -424,7 +425,8 @@ html,body {
   background: var(--neon-cyan);
 }
 
-/* ========== CARDS ========== */
+/* ========== CARDS RESPONSIVOS COM IMAGEM COMPLETA ========== */
+/* Estilos gerais dos cards - Desktop */
 .cards-section{ 
   padding: 60px 0; 
   width: 100%;
@@ -466,6 +468,11 @@ html,body {
   grid-template-rows: repeat(2, auto);
   gap: 2rem;
   justify-items: center;
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .card {
@@ -504,6 +511,8 @@ html,body {
   width: 90%;
   padding: 0;
   margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .card-image-placeholder {
@@ -517,6 +526,7 @@ html,body {
   border-radius: 14px;
   z-index: 0;
   pointer-events: none;
+  overflow: hidden;
 }
 
 .card-image-placeholder img {
@@ -524,6 +534,161 @@ html,body {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .card-image-placeholder img {
+  transform: scale(1.05);
+}
+
+/* Títulos específicos para cards longos */
+.card.relegation-title .card-title {
+  font-size: 42px;
+  line-height: 1.1;
+}
+
+.card .wild-clash-title {
+  font-size: 54px;
+}
+
+/* ========== RESPONSIVIDADE - MANTENDO LAYOUT DESKTOP NO MOBILE ========== */
+/* OPÇÃO A: Proporção fixa exata (774x1654 = 1:2.14) */
+@media (max-width: 768px) {
+  /* Em mobile, mantemos o layout grid 2x2 mas ajustamos tamanhos */
+  .cards.grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 1rem;
+    padding: 0 10px;
+  }
+  
+  /* Cards com altura calculada baseada na proporção 774:1654 (1:2.14) */
+  .card {
+    /* Proporção aproximada 774:1654 = 1:2.14 */
+    height: calc(100vw * 2.14 / 2); /* Divide por 2 porque são 2 colunas */
+    min-height: calc(100vw * 2.14 / 2);
+    max-width: 100%;
+    margin: 0;
+  }
+  
+  /* Títulos ajustados para mobile */
+  .card-title {
+    font-size: 26px;
+    top: 15px;
+    text-shadow: 0 0 3px var(--neon-pink), 0 0 6px var(--neon-pink), 1px 1px 3px rgba(0,0,0,0.8);
+  }
+  
+  /* Títulos específicos ajustados */
+  .card.relegation-title .card-title {
+    font-size: 22px;
+  }
+  
+  .card .wild-clash-title {
+    font-size: 26px;
+  }
+  
+  /* Container da imagem - full art para mobile */
+  .card-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  /* Imagem - full art para mobile (igual ao desktop) */
+  .card-image-placeholder img {
+    object-fit: contain; /* Mostra imagem completa */
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Para telas muito pequenas, ainda mantemos grid 2x2 */
+  .cards.grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 0.8rem;
+    padding: 0 8px;
+  }
+  
+  /* Ajuste de proporção para telas menores */
+  .card {
+    height: calc(100vw * 2.14 / 2);
+    min-height: calc(100vw * 2.14 / 2);
+  }
+  
+  .card-title {
+    font-size: 22px;
+    top: 10px;
+  }
+  
+  .card.relegation-title .card-title {
+    font-size: 18px;
+  }
+  
+  .card .wild-clash-title {
+    font-size: 22px;
+  }
+  
+  /* Manter a mesma solução para imagens completas */
+  .card-image-placeholder img {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  /* Para telas extremamente pequenas, ajustamos mais */
+  .cards.grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 0.6rem;
+    padding: 0 6px;
+  }
+  
+  .card {
+    height: calc(100vw * 2.14 / 2);
+    min-height: calc(100vw * 2.14 / 2);
+  }
+  
+  .card-title {
+    font-size: 20px;
+  }
+  
+  .card.relegation-title .card-title {
+    font-size: 16px;
+  }
+  
+  .card .wild-clash-title {
+    font-size: 20px;
+  }
+  
+  /* Manter a mesma solução para imagens completas */
+  .card-image-placeholder img {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* ========== BOTÕES NO HERO ========== */
+.hero-buttons {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.hero-buttons.larger-btns .btn {
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
 /* ========== FORM ========== */
@@ -1237,19 +1402,39 @@ html,body {
 .bracket-scroll-container {
   position: relative;
   width: 100%;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   margin: 20px 0;
   padding: 20px 0;
   border: 1px solid rgba(0,234,255,0.1);
   border-radius: 12px;
   background: rgba(0,0,0,0.2);
-  scrollbar-width: none;
+  scrollbar-width: thin;
   -ms-overflow-style: none;
+  min-width: 100vw; /* Permite scroll horizontal em telas pequenas */
+  max-width: 100%;
 }
 
 .bracket-scroll-container::-webkit-scrollbar {
-  display: none;
+  height: 8px;
+  width: 8px;
+}
+
+.bracket-scroll-container::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+.bracket-scroll-container::-webkit-scrollbar-thumb {
+  background: var(--neon-cyan);
+  border-radius: 4px;
+  box-shadow: 0 0 6px rgba(0,234,255,0.4);
+}
+
+.bracket-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-pink);
+  box-shadow: 0 0 8px rgba(255,45,117,0.6);
 }
 
 /* Container para agrupar winners e losers */
@@ -1258,6 +1443,8 @@ html,body {
   flex-direction: row;
   gap: 40px;
   min-width: min-content;
+  width: max-content;
+  padding: 0 20px;
 }
 
 /* Aviso de deslize para mobile */
@@ -1373,6 +1560,9 @@ html,body {
 .bracket-content {
     display: block;
     animation: fadeIn 0.5s ease;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
 }
 
 .bracket-content.hidden {
@@ -1388,12 +1578,16 @@ html,body {
     margin-bottom: 40px;
     padding: 0 15px;
     box-sizing: border-box;
+    min-width: 0;
+    overflow-x: auto;
 }
 
 /* GROUP CARD STYLES */
 .group-card.compact {
     padding: 16px;
     min-height: 300px;
+    width: 100%;
+    min-width: 280px;
 }
 
 .group-title {
@@ -1656,7 +1850,8 @@ html,body {
 
 /* ========== PAGE WRAP ========== */
 .page-wrap {
-  min-height: calc(100vh - 200px);
+  min-height: auto;
+  padding-bottom: 40px;
 }
 
 /* ========== TEAMS GRID (para outras páginas) ========== */
@@ -1683,239 +1878,118 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
   display: block !important;
 }
 
-/* ========== CORREÇÕES MOBILE ========== */
+/* ========== CONTROLES DE ZOOM E DICA MÓVEL ========== */
+.mobile-scroll-hint {
+  display: none;
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, rgba(0,234,255,0.9), rgba(255,45,117,0.9));
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  z-index: 999;
+  animation: pulseHint 3s ease-in-out infinite;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  text-align: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  pointer-events: none;
+}
+
+@keyframes pulseHint {
+  0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(0.95); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+/* Em desktop, o scroll horizontal não é necessário */
+@media (min-width: 769px) {
+  body {
+    overflow-x: hidden;
+  }
+  
+  .bracket-scroll-container {
+    overflow-x: hidden;
+    min-width: auto;
+  }
+  
+  .group-phase-grid {
+    overflow-x: hidden;
+    min-width: auto;
+  }
+}
+
+/* Em mobile, mostrar a dica e permitir scroll/zoom */
 @media (max-width: 768px) {
-  /* HEADER MOBILE - FIX: Reduzir tamanho e melhorar organização */
+  .mobile-scroll-hint {
+    display: block;
+  }
+  
+  .bracket-scroll-container {
+    min-width: 800px;
+  }
+  
+  .group-phase-grid {
+    min-width: 600px;
+  }
+}
+
+/* Apenas ajustes mínimos para melhor visualização em mobile */
+@media (max-width: 768px) {
+  /* Permitir zoom e scroll */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
+  body {
+    min-width: 320px;
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+  
+  /* Ajustar header para caber melhor */
   .header {
     padding: 12px 16px;
     margin: 10px;
     flex-wrap: nowrap;
-    gap: 10px;
-    position: relative;
-    justify-content: space-between;
-    min-height: auto;
   }
   
   .logo-placeholder img {
     max-height: 40px;
-    width: auto;
-  }
-  
-  .nav {
-    gap: 6px;
-    flex-wrap: nowrap;
-    justify-content: flex-end;
-    width: auto;
-    margin-top: 0;
-    align-items: center;
   }
   
   .nav-link {
     padding: 6px 10px;
     font-size: 13px;
-    white-space: nowrap;
-    border-radius: 8px;
   }
   
-  /* HERO MOBILE */
-  .hero {
-    padding: 20px 16px;
-  }
-  
-  .hero-content {
-    padding: 20px;
-  }
-  
-  .hero-description-video {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .hero-description {
-    margin: 0 0 20px 0;
-    min-width: 100%;
-    text-align: center;
-  }
-  
-  /* CARROSSEL CENTRALIZADO */
-  .carousel {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-  }
-  
-  .carousel-container {
-    height: 200px;
-  }
-  
-  .arrow {
-    width: 30px;
-    height: 30px;
-    font-size: 16px;
-  }
-  
-  .arrow.prev {
-    left: 5px;
-  }
-  
-  .arrow.next {
-    right: 5px;
-  }
-  
-  /* CARDS MOBILE - MANTENDO PROPORÇÃO */
-  .cards.grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 0 10px;
-  }
-  
-  .card {
-    height: 180px;
-    min-height: 180px;
-    width: 100%;
-  }
-  
-  .card-title {
-    font-size: 24px;
-    top: 10px;
-    text-shadow: 0 0 3px var(--neon-pink), 0 0 5px var(--neon-pink);
-  }
-  
-  /* TÍTULOS PARA MOBILE - FONTE REDUZIDA */
+  /* Ajustar títulos */
   .section-title {
     font-size: 1.6rem;
-    padding: 0 15px;
-  }
-  
-  .phase-title {
-    font-size: 1.4rem;
-    margin: 20px 0;
-    padding: 0 15px;
   }
   
   .bracket-title {
-    font-size: 1.2rem;
-    padding: 0 15px;
-    margin-bottom: 20px;
-  }
-  
-  .bracket-subtitle {
-    font-size: 1.1rem;
-    padding: 0 15px;
-    margin-bottom: 15px;
-  }
-  
-  /* CORREÇÃO MOBILE NEXTRELOAD - TÍTULOS ACIMA DAS CHAVES E CENTRALIZAÇÃO */
-  .bracket-container {
-    gap: 30px;
-    width: 100%;
-  }
-  
-  /* Para mobile, os brackets devem ter layout de coluna */
-  .winners-bracket,
-  .losers-bracket,
-  .finals-bracket {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    width: 100%;
-  }
-  
-  /* Título do bracket centralizado acima do conteúdo */
-  .winners-bracket .bracket-title,
-  .losers-bracket .bracket-title,
-  .finals-bracket .bracket-title {
-    text-align: center;
-    width: 100%;
-    margin-bottom: 15px;
     font-size: 1.4rem;
   }
   
-  /* Para mobile, a Grande Final volta a ser coluna */
-  .finals-bracket {
-    margin-top: 20px;
-    gap: 20px;
+  /* Garantir que os containers de brackets sejam visíveis */
+  .bracket-scroll-container {
+    min-width: 800px; /* Largura mínima para manter layout desktop */
+    margin: 10px;
   }
   
-  /* CORREÇÃO: Em mobile, o bracket-grid deve ser uma coluna única centralizada */
-  .bracket-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 100%;
-    align-items: center;
-    padding: 0;
-  }
-  
-  /* Cada rodada em mobile deve ocupar toda a largura disponível */
-  .round {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    width: 100%;
-    max-width: 300px;
-    align-items: center;
-  }
-  
-  .round h3 {
-    font-size: 1rem;
-    text-align: center;
-    margin-bottom: 8px;
-    color: var(--neon-cyan);
-    width: 100%;
-  }
-  
-  /* Match ocupa 100% da largura da rodada */
-  .match {
-    width: 100%;
-    min-width: auto;
-  }
-  
-  .team {
-    padding: 10px 12px;
-    font-size: 13px;
-    min-height: 42px;
-  }
-  
-  /* FASE DE GRUPOS MOBILE */
   .group-phase-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
+    min-width: 600px; /* Largura mínima para manter grid 2 colunas */
+    overflow-x: auto;
     padding: 0 10px;
   }
   
-  .group-card.compact {
-    width: 100%;
-    padding: 12px;
-  }
-  
-  .group-title {
-    font-size: 1.1rem;
-  }
-  
-  .team-chip {
-    font-size: 0.85rem;
-    padding: 4px 6px;
-  }
-  
-  .stat-val {
-    font-size: 0.85rem;
-  }
-  
-  /* ABAS DE GRUPOS */
-  .group-tabs {
-    padding: 0 10px;
-  }
-  
-  .tab-button {
-    padding: 10px 15px;
-    font-size: 0.9rem;
-    min-width: 120px;
-    flex: 1;
-  }
-  
-  /* FORMULÁRIOS MOBILE */
+  /* Ajustar formulários */
   .form-section {
     margin: 15px;
     padding: 15px;
@@ -1925,46 +1999,7 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
     font-size: 1.8rem;
   }
   
-  .form-actions {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .btn-submit, .btn-reset {
-    width: 100%;
-  }
-  
-  .lineup-grid, .lineup-fields {
-    grid-template-columns: 1fr;
-  }
-  
-  .reserves-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .rules-scroll {
-    max-height: 200px;
-  }
-  
-  /* CONTROLES DE NAVEGAÇÃO DAS CHAVES */
-  .bracket-controls {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .bracket-nav-btn {
-    width: 90%;
-    max-width: 200px;
-  }
-  
-  /* AVISO DE DESLIZE PARA MOBILE */
-  .scroll-hint-notification {
-    font-size: 13px;
-    padding: 10px 16px;
-    animation: slideHint 5s ease-in-out forwards;
-  }
-  
-  /* FOOTER MOBILE */
+  /* Footer mobile */
   .footer-content {
     padding: 20px 15px;
   }
@@ -1974,31 +2009,32 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
     height: 60px;
   }
   
-  .footer .social-icon {
-    width: 25px;
-    height: 25px;
+  /* Ajustes no carrossel para mobile */
+  .hero-description-video {
+    flex-direction: column;
   }
   
-  .footer .social-label {
-    font-size: 9px;
+  .hero-description {
+    margin-right: 0;
+    margin-bottom: 20px;
+    min-width: 100%;
+  }
+  
+  .carousel {
+    min-width: 100%;
+  }
+  
+  .carousel-container {
+    height: 250px;
   }
 }
 
-/* TELAS MUITO PEQUENAS */
+/* Ajustes para telas muito pequenas */
 @media (max-width: 480px) {
-  /* HEADER AINDA MENOR */
+  /* Header mais compacto */
   .header {
     padding: 10px 12px;
     margin: 8px;
-    gap: 8px;
-  }
-  
-  .logo-placeholder img {
-    max-height: 35px;
-  }
-  
-  .nav {
-    gap: 4px;
   }
   
   .nav-link {
@@ -2006,58 +2042,17 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
     font-size: 12px;
   }
   
-  .cards.grid {
-    gap: 10px;
+  /* Brackets com scroll horizontal visível */
+  .bracket-scroll-container {
+    min-width: 700px;
   }
   
-  .card {
-    height: 160px;
-    min-height: 160px;
-  }
-  
-  .card-title {
-    font-size: 20px;
-    top: 8px;
-  }
-  
-  /* AJUSTES ADICIONAIS PARA CHAVES EM TELAS MUITO PEQUENAS */
-  .phase-title {
-    font-size: 1.2rem;
-  }
-  
-  .bracket-title {
-    font-size: 1.1rem;
-  }
-  
-  .round {
-    max-width: 280px;
-  }
-  
-  .match {
-    width: 100%;
-  }
-  
-  .team {
-    font-size: 12px;
-    padding: 8px 10px;
-    min-height: 40px;
-  }
-  
-  .tab-button {
-    padding: 8px 12px;
-    font-size: 0.8rem;
-  }
-  
-  .scroll-hint-notification {
-    font-size: 12px;
-    padding: 8px 14px;
-    width: 90%;
-    left: 50%;
-    transform: translateX(-50%);
+  .group-phase-grid {
+    min-width: 500px;
   }
 }
 
-/* TELAS EXTREMAMENTE PEQUENAS (360px ou menos) */
+/* Para telas extremamente pequenas (360px ou menos) */
 @media (max-width: 360px) {
   .header {
     flex-wrap: wrap;
@@ -2080,170 +2075,168 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
     font-size: 11px;
     padding: 4px 6px;
   }
-  
-  .cards.grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-  
-  .card {
-    height: 200px;
-    min-height: 200px;
-    max-width: 280px;
-    margin: 0 auto;
-  }
-  
-  .card-title {
-    font-size: 22px;
-  }
-  
-  .group-phase-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .round {
-    max-width: 260px;
-  }
-  
-  .match {
-    width: 100%;
+}
+
+/* ========== ESTILOS PARA DESKTOP - LAYOUT PADRÃO ========== */
+/* Mantemos o layout desktop para todas as resoluções */
+
+/* CORREÇÃO: Rodada 1 da chave dos vencedores */
+.bracket-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  justify-content: center;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.winners-bracket,
+.losers-bracket {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.winners-bracket .bracket-grid,
+.losers-bracket .bracket-grid {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Garantir que todas as rodadas estejam alinhadas pelo topo */
+.round {
+  width: 200px;
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Ajuste específico para garantir que a rodada 1 não fique torta */
+.winners-bracket .round:first-child {
+  margin-top: 0;
+}
+
+.match {
+  width: 200px;
+}
+
+/* CORREÇÃO ESPECÍFICA PARA FINALS BRACKET - TÍTULO ACIMA DA CHAVE */
+.finals-bracket {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  margin-top: 40px;
+  width: 100%;
+}
+
+/* Título "GRANDE FINAL" acima da chave */
+.finals-bracket .bracket-title {
+  margin-bottom: 20px;
+  padding-top: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+  align-self: center;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.finals-bracket .bracket-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  justify-content: center;
+  width: auto;
+  align-items: flex-start;
+}
+
+.finals-bracket .round {
+  width: 280px;
+}
+
+.finals-bracket .match {
+  width: 100%;
+}
+
+/* CORREÇÃO ESPECIAL: Centralizar o texto das divs team apenas na Grande Final */
+.finals-bracket .team {
+  justify-content: center;
+  text-align: center;
+  min-height: 48px;
+  padding: 12px 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: auto;
+}
+
+/* Estilo geral para todas as divs team */
+.team {
+  min-height: 48px;
+  padding: 12px 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: auto;
+}
+
+.match {
+  overflow: hidden;
+  min-height: 100px;
+}
+
+/* Alinhamento das semifinais */
+.losers-bracket .round:nth-child(3) {
+  margin-top: 0;
+}
+
+.winners-bracket .round:nth-child(3) {
+  margin-top: 0;
+}
+
+/* ========== ESTILOS ADICIONAIS PARA ZOOM (MOBILE APENAS) ========== */
+@media (max-width: 768px) {
+  body {
+    transform-origin: center top;
+    transition: transform 0.3s ease;
   }
 }
 
-/* PARA DESKTOP GRANDE */
-@media (min-width: 1440px) {
-  .cards.grid {
-    gap: 30px;
+/* ========== MELHORIAS DE ACESSIBILIDADE ========== */
+.card:focus {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 3px;
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 3px;
+}
+
+/* ========== ANIMAÇÃO DE ENTRADA DOS CARDS ========== */
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
   }
-  
-  .card {
-    max-width: 600px;
-    height: 280px;
-    min-height: 280px;
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
-/* ========== ESTILOS PARA DESKTOP - CORREÇÕES FINAIS ========== */
-@media (min-width: 769px) {
-  /* CORREÇÃO: Rodada 1 da chave dos vencedores não está mais torta */
-  .bracket-grid {
-    display: flex;
-    flex-direction: row;
-    gap: 40px;
-    justify-content: center;
-    width: 100%;
-    align-items: flex-start;
-  }
-  
-  .winners-bracket,
-  .losers-bracket {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
-  }
-  
-  .winners-bracket .bracket-grid,
-  .losers-bracket .bracket-grid {
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
-    justify-content: center;
-  }
-  
-  /* Garantir que todas as rodadas estejam alinhadas pelo topo */
-  .round {
-    width: 200px;
-    min-height: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-  }
-  
-  /* Ajuste específico para garantir que a rodada 1 não fique torta */
-  .winners-bracket .round:first-child {
-    margin-top: 0;
-  }
-  
-  .match {
-    width: 200px;
-  }
-  
-  /* CORREÇÃO ESPECÍFICA PARA FINALS BRACKET - TÍTULO ACIMA DA CHAVE */
-  .finals-bracket {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
-    margin-top: 40px;
-    width: 100%;
-  }
-  
-  /* Título "GRANDE FINAL" acima da chave, igual aos outros */
-  .finals-bracket .bracket-title {
-    margin-bottom: 20px;
-    padding-top: 0;
-    width: 100%;
-    text-align: center;
-    font-size: 1.8rem;
-    flex-shrink: 0;
-    align-self: center;
-    white-space: normal;
-    line-height: 1.2;
-    word-spacing: normal;
-    letter-spacing: normal;
-  }
-  
-  .finals-bracket .bracket-grid {
-    display: flex;
-    flex-direction: row;
-    gap: 40px;
-    justify-content: center;
-    width: auto;
-    align-items: flex-start;
-  }
-  
-  .finals-bracket .round {
-    width: 280px;
-  }
-  
-  .finals-bracket .match {
-    width: 100%;
-  }
-  
-  /* CORREÇÃO ESPECIAL: Centralizar o texto das divs team apenas na Grande Final (Desktop) */
-  .finals-bracket .team {
-    justify-content: center; /* Centraliza o texto horizontalmente */
-    text-align: center; /* Garante que o texto esteja centralizado */
-    min-height: 48px;
-    padding: 12px 14px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    height: auto;
-  }
-  
-  /* Estilo geral para todas as divs team (mantém para as outras chaves) */
-  .team {
-    min-height: 48px;
-    padding: 12px 14px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    height: auto;
-  }
-  
-  .match {
-    overflow: hidden;
-    min-height: 100px;
-  }
-  
-  /* Alinhamento das semifinais */
-  .losers-bracket .round:nth-child(3) {
-    margin-top: 0;
-  }
-  
-  .winners-bracket .round:nth-child(3) {
-    margin-top: 0;
-  }
+.card {
+  animation: cardAppear 0.6s ease-out;
 }
+
+/* Delay para cada card */
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }

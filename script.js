@@ -2,7 +2,7 @@
 // PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
 // ARQUIVO: script.js
 // DESCRIÇÃO: Funcionalidades do site - carousel, validação de formulários, envio via EmailJS
-// VERSÃO: 6.2 - Removida função de navegação nas chaves
+// VERSÃO: 6.3 - Com funcionalidades de zoom mobile e sistema de abas
 // DATA: Dezembro 2025
 // =============================================================================
 
@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeCardEffects();
     initializeNavigation();
     initializeFooter();
+    initializeBracketTabs(); // Para wildclash.html
+    initializeMobileZoom();   // Para zoom mobile
     
     console.log('Sistema Wild Clash inicializado com sucesso!');
 });
@@ -828,6 +830,103 @@ function initializeFooter() {
     });
 }
 
+// ========== SISTEMA DE ABAS PARA BRACKETS ==========
+function initializeBracketTabs() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    if (tabButtons.length === 0) return; // Não tem abas nesta página
+    
+    const bracketContents = document.querySelectorAll('.bracket-content');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active de todos os botões
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            // Adiciona active ao botão clicado
+            this.classList.add('active');
+            
+            // Esconde todos os conteúdos
+            bracketContents.forEach(content => {
+                content.classList.remove('active');
+                content.classList.add('hidden');
+            });
+            
+            // Mostra o conteúdo correspondente
+            const groupId = this.getAttribute('data-group');
+            const targetContent = document.getElementById(`${groupId}-content`);
+            if (targetContent) {
+                targetContent.classList.remove('hidden');
+                targetContent.classList.add('active');
+            }
+        });
+    });
+    
+    console.log('📊 Sistema de abas para brackets inicializado');
+}
+
+// ========== SISTEMA DE ZOOM PARA MOBILE ==========
+function initializeMobileZoom() {
+    const hint = document.querySelector('.mobile-scroll-hint');
+    
+    // Remove a dica após 5 segundos
+    if (hint) {
+        setTimeout(() => {
+            hint.style.opacity = '0';
+            hint.style.transition = 'opacity 1s ease';
+            setTimeout(() => {
+                if (hint.parentNode) {
+                    hint.parentNode.removeChild(hint);
+                }
+            }, 1000);
+        }, 5000);
+    }
+    
+    // Suporte a gestos de zoom em mobile
+    let initialDistance = null;
+    let currentZoom = 1;
+    const minZoom = 0.5;
+    const maxZoom = 3;
+    
+    // Aplica zoom ao body
+    function applyZoom() {
+        document.body.style.transform = `scale(${currentZoom})`;
+        document.body.style.transformOrigin = 'center top';
+    }
+    
+    // Eventos de touch para zoom
+    document.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 2) {
+            initialDistance = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+        }
+    });
+    
+    document.addEventListener('touchmove', function(e) {
+        if (e.touches.length === 2 && initialDistance !== null) {
+            e.preventDefault();
+            const currentDistance = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+            
+            const zoomChange = (currentDistance - initialDistance) / 100;
+            
+            if (Math.abs(zoomChange) > 0.05) {
+                currentZoom = Math.max(minZoom, Math.min(maxZoom, currentZoom + zoomChange));
+                applyZoom();
+                initialDistance = currentDistance;
+            }
+        }
+    });
+    
+    document.addEventListener('touchend', function() {
+        initialDistance = null;
+    });
+    
+    console.log('📱 Sistema de zoom mobile inicializado');
+}
+
 // ========== ANIMAÇÕES CSS DINÂMICAS ==========
 (function addAnimations() {
     const style = document.createElement('style');
@@ -866,6 +965,12 @@ function initializeFooter() {
         
         .progress-fill {
             transition: width 0.3s ease !important;
+        }
+        
+        /* Animação para dica mobile */
+        @keyframes pulseHint {
+            0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(0.95); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1); }
         }
     `;
     document.head.appendChild(style);
@@ -941,6 +1046,16 @@ window.WildClashDebug = {
             rulesScroll.scrollTop = rulesScroll.scrollHeight;
             console.log('Scroll das regras testado');
         }
+    },
+    
+    testMobileZoom: function() {
+        const hint = document.querySelector('.mobile-scroll-hint');
+        if (hint) {
+            hint.style.display = 'block';
+            hint.style.opacity = '1';
+            console.log('Dica mobile reativada');
+        }
+        console.log('Sistema de zoom testado');
     }
 };
 
@@ -949,10 +1064,12 @@ console.log(`
 ╔══════════════════════════════════════════════╗
 ║          WILD CLASH - SISTEMA ATIVO          ║
 ╠══════════════════════════════════════════════╣
-║ Versão:               6.2                    ║
+║ Versão:               6.3                    ║
 ║ EmailJS:              ${typeof emailjs !== 'undefined' ? '✅' : '❌'}             ║
 ║ Carousel:             ${document.querySelector('.carousel') ? '✅' : '❌'}             ║
 ║ Formulários:          ${document.querySelectorAll('form[data-emailjs]').length}             ║
 ║ Sistema de Regras:    ${document.querySelector('.rules-scroll') ? '✅' : '❌'}             ║
+║ Sistema de Abas:      ${document.querySelectorAll('.tab-button').length}             ║
+║ Sistema de Zoom:      ${window.innerWidth <= 768 ? '✅ Mobile' : '✅ Desktop'}       ║
 ╚══════════════════════════════════════════════╝
 `);

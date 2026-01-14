@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Wild Clash - Fase de Grupos e Eliminatória. Acompanhe os times e resultados do torneio de Wild Rift.">
   <title>WILD CLASH — GRUPOS</title>
   <link rel="stylesheet" href="style.css" />
@@ -20,12 +20,14 @@
   </header>
 
   <main>
+    <div class="mobile-scroll-hint">📱 Use dois dedos para mover e zoom</div>
+    
     <section class="hero">
       <div class="hero-content glass">
         <h1 class="section-title">WILD CLASH — GRUPOS</h1>
 
         <!-- FASE DE GRUPOS -->
-        <h2 style="text-align: center; margin: 30px 0; color: var(--neon-cyan); text-shadow: 0 0 4px rgba(0,234,255,0.3);">FASE DE GRUPOS</h2>
+        <h2 class="phase-title">FASE DE GRUPOS</h2>
 
         <div class="group-phase-grid">
           <!-- GRUPO A -->
@@ -190,7 +192,7 @@
         </div>
 
         <!-- FASE ELIMINATÓRIA -->
-        <h2 style="text-align: center; margin: 60px 0 30px 0; color: var(--neon-cyan); text-shadow: 0 0 4px rgba(0,234,255,0.3);">FASE ELIMINATÓRIA</h2>
+        <h2 class="phase-title" style="margin-top: 60px;">FASE ELIMINATÓRIA</h2>
 
         <!-- GROUP TABS -->
         <div class="group-tabs">
@@ -201,157 +203,179 @@
         <!-- Container das chaves com scroll tátil -->
         <!-- GRUPO A BRACKET -->
         <div class="bracket-content active" id="group-a-content">
-          <h3 style="text-align: center; color: var(--neon-cyan); margin-bottom: 20px;">Chaveamento - Grupo A</h3>
+          <h3 class="bracket-subtitle">Chaveamento - Grupo A</h3>
           
-          <div class="bracket-container">
+          <div class="bracket-scroll-container">
+            <div class="bracket-container">
               <!-- WINNERS BRACKET -->
               <div class="winners-bracket">
+                <h2 class="bracket-title">CHAVE DOS VENCEDORES</h2>
+                <div class="bracket-grid">
                   <div class="round">
-                      <h4>Rodada 1</h4>
-                      <div class="match"><div class="team">Equipe A1</div><div class="team">Equipe A2</div></div>
-                      <div class="match"><div class="team">Equipe A3</div><div class="team">Equipe A4</div></div>
-                      <div class="match"><div class="team">Equipe A5</div><div class="team">Equipe A6</div></div>
-                      <div class="match"><div class="team">Equipe A7</div><div class="team">Equipe A8</div></div>
+                    <h4>Rodada 1</h4>
+                    <div class="match"><div class="team">Equipe A1</div><div class="team">Equipe A2</div></div>
+                    <div class="match"><div class="team">Equipe A3</div><div class="team">Equipe A4</div></div>
+                    <div class="match"><div class="team">Equipe A5</div><div class="team">Equipe A6</div></div>
+                    <div class="match"><div class="team">Equipe A7</div><div class="team">Equipe A8</div></div>
                   </div>
 
                   <div class="round">
-                      <h4>Rodada 2</h4>
-                      <div class="match"><div class="team">Vencedor A1/A2</div><div class="team">Vencedor A3/A4</div></div>
-                      <div class="match"><div class="team">Vencedor A5/A6</div><div class="team">Vencedor A7/A8</div></div>
+                    <h4>Rodada 2</h4>
+                    <div class="match"><div class="team">Vencedor A1/A2</div><div class="team">Vencedor A3/A4</div></div>
+                    <div class="match"><div class="team">Vencedor A5/A6</div><div class="team">Vencedor A7/A8</div></div>
                   </div>
 
                   <div class="round">
-                      <h4>Semifinal</h4>
-                      <div class="match"><div class="team">Vencedor R2-1</div><div class="team">Vencedor R2-2</div></div>
+                    <h4>Semifinal</h4>
+                    <div class="match"><div class="team">Vencedor R2-1</div><div class="team">Vencedor R2-2</div></div>
                   </div>
 
                   <div class="round">
-                      <h4>Final dos Vencedores</h4>
-                      <div class="match"><div class="team">Vencedor Semi</div><div class="team">Vencedor Semi</div></div>
+                    <h4>Final dos Vencedores</h4>
+                    <div class="match"><div class="team">Vencedor Semi</div><div class="team">Vencedor Semi</div></div>
                   </div>
+                </div>
               </div>
 
               <!-- LOSERS BRACKET -->
               <div class="losers-bracket">
+                <h2 class="bracket-title">CHAVE DOS PERDEDORES</h2>
+                <div class="bracket-grid">
                   <div class="round">
-                      <h4>Rodada dos Perdedores 1</h4>
-                      <div class="match"><div class="team">Perdedor A5/A6</div><div class="team">Perdedor A1/A2</div></div>
-                      <div class="match"><div class="team">Perdedor A7/A8</div><div class="team">Perdedor A3/A4</div></div>
+                    <h4>Rodada dos Perdedores 1</h4>
+                    <div class="match"><div class="team">Perdedor A5/A6</div><div class="team">Perdedor A1/A2</div></div>
+                    <div class="match"><div class="team">Perdedor A7/A8</div><div class="team">Perdedor A3/A4</div></div>
                   </div>
 
                   <div class="round">
-                      <h4>Rodada dos Perdedores 2</h4>
-                      <div class="match"><div class="team">Vencedor P1-1</div><div class="team">Perdedor R2-1</div></div>
-                      <div class="match"><div class="team">Vencedor P1-2</div><div class="team">Perdedor R2-2</div></div>
+                    <h4>Rodada dos Perdedores 2</h4>
+                    <div class="match"><div class="team">Vencedor P1-1</div><div class="team">Perdedor R2-1</div></div>
+                    <div class="match"><div class="team">Vencedor P1-2</div><div class="team">Perdedor R2-2</div></div>
                   </div>
 
                   <div class="round">
-                      <h4>Semifinal dos Perdedores</h4>
-                      <div class="match"><div class="team">Vencedor P2-1</div><div class="team">Vencedor P2-2</div></div>
+                    <h4>Semifinal dos Perdedores</h4>
+                    <div class="match"><div class="team">Vencedor P2-1</div><div class="team">Vencedor P2-2</div></div>
                   </div>
 
                   <div class="round">
-                      <h4>Final dos Perdedores</h4>
-                      <div class="match"><div class="team">Vencedor PSemi</div><div class="team">Perdedor da Final dos Vencedores</div></div>
+                    <h4>Final dos Perdedores</h4>
+                    <div class="match"><div class="team">Vencedor PSemi</div><div class="team">Perdedor da Final dos Vencedores</div></div>
                   </div>
+                </div>
               </div>
 
               <!-- FINALS BRACKET -->
               <div class="finals-bracket">
+                <h2 class="bracket-title">GRANDE FINAL</h2>
+                <div class="bracket-grid">
                   <div class="round">
-                      <h4>Grande Final</h4>
-                      <div class="match">
-                          <div class="team">Vencedor dos Vencedores</div>
-                          <div class="team">Vencedor dos Perdedores</div>
-                      </div>
+                    <h4>Grande Final</h4>
+                    <div class="match">
+                      <div class="team">Vencedor dos Vencedores</div>
+                      <div class="team">Vencedor dos Perdedores</div>
+                    </div>
                   </div>
 
                   <div class="round">
-                      <h4>Desempate (se necessário)</h4>
-                      <div class="match reset">
-                          <div class="team">Vencedor da Grande Final</div>
-                          <div class="team">Perdedor da Grande Final</div>
-                      </div>
+                    <h4>Desempate (se necessário)</h4>
+                    <div class="match reset">
+                      <div class="team">Vencedor da Grande Final</div>
+                      <div class="team">Perdedor da Grande Final</div>
+                    </div>
                   </div>
+                </div>
               </div>
+            </div>
           </div>
         </div>
 
         <!-- GRUPO B BRACKET -->
         <div class="bracket-content hidden" id="group-b-content">
-          <h3 style="text-align: center; color: var(--neon-cyan); margin-bottom: 20px;">Chaveamento - Grupo B</h3>
+          <h3 class="bracket-subtitle">Chaveamento - Grupo B</h3>
           
-          <div class="bracket-container">
+          <div class="bracket-scroll-container">
+            <div class="bracket-container">
               <!-- WINNERS BRACKET -->
               <div class="winners-bracket">
+                <h2 class="bracket-title">CHAVE DOS VENCEDORES</h2>
+                <div class="bracket-grid">
                   <div class="round">
-                      <h4>Rodada 1</h4>
-                      <div class="match"><div class="team">Equipe B1</div><div class="team">Equipe B2</div></div>
-                      <div class="match"><div class="team">Equipe B3</div><div class="team">Equipe B4</div></div>
-                      <div class="match"><div class="team">Equipe B5</div><div class="team">Equipe B6</div></div>
-                      <div class="match"><div class="team">Equipe B7</div><div class="team">Equipe B8</div></div>
+                    <h4>Rodada 1</h4>
+                    <div class="match"><div class="team">Equipe B1</div><div class="team">Equipe B2</div></div>
+                    <div class="match"><div class="team">Equipe B3</div><div class="team">Equipe B4</div></div>
+                    <div class="match"><div class="team">Equipe B5</div><div class="team">Equipe B6</div></div>
+                    <div class="match"><div class="team">Equipe B7</div><div class="team">Equipe B8</div></div>
                   </div>
 
                   <div class="round">
-                      <h4>Rodada 2</h4>
-                      <div class="match"><div class="team">Vencedor B1/B2</div><div class="team">Vencedor B3/B4</div></div>
-                      <div class="match"><div class="team">Vencedor B5/B6</div><div class="team">Vencedor B7/B8</div></div>
+                    <h4>Rodada 2</h4>
+                    <div class="match"><div class="team">Vencedor B1/B2</div><div class="team">Vencedor B3/B4</div></div>
+                    <div class="match"><div class="team">Vencedor B5/B6</div><div class="team">Vencedor B7/B8</div></div>
                   </div>
 
                   <div class="round">
-                      <h4>Semifinal</h4>
-                      <div class="match"><div class="team">Vencedor R2-1</div><div class="team">Vencedor R2-2</div></div>
+                    <h4>Semifinal</h4>
+                    <div class="match"><div class="team">Vencedor R2-1</div><div class="team">Vencedor R2-2</div></div>
                   </div>
 
                   <div class="round">
-                      <h4>Final dos Vencedores</h4>
-                      <div class="match"><div class="team">Vencedor Semi</div><div class="team">Vencedor Semi</div></div>
+                    <h4>Final dos Vencedores</h4>
+                    <div class="match"><div class="team">Vencedor Semi</div><div class="team">Vencedor Semi</div></div>
                   </div>
+                </div>
               </div>
 
               <!-- LOSERS BRACKET -->
               <div class="losers-bracket">
+                <h2 class="bracket-title">CHAVE DOS PERDEDORES</h2>
+                <div class="bracket-grid">
                   <div class="round">
-                      <h4>Rodada dos Perdedores 1</h4>
-                      <div class="match"><div class="team">Perdedor B5/B6</div><div class="team">Perdedor B1/B2</div></div>
-                      <div class="match"><div class="team">Perdedor B7/B8</div><div class="team">Perdedor B3/B4</div></div>
+                    <h4>Rodada dos Perdedores 1</h4>
+                    <div class="match"><div class="team">Perdedor B5/B6</div><div class="team">Perdedor B1/B2</div></div>
+                    <div class="match"><div class="team">Perdedor B7/B8</div><div class="team">Perdedor B3/B4</div></div>
                   </div>
 
                   <div class="round">
-                      <h4>Rodada dos Perdedores 2</h4>
-                      <div class="match"><div class="team">Vencedor P1-1</div><div class="team">Perdedor R2-1</div></div>
-                      <div class="match"><div class="team">Vencedor P1-2</div><div class="team">Perdedor R2-2</div></div>
+                    <h4>Rodada dos Perdedores 2</h4>
+                    <div class="match"><div class="team">Vencedor P1-1</div><div class="team">Perdedor R2-1</div></div>
+                    <div class="match"><div class="team">Vencedor P1-2</div><div class="team">Perdedor R2-2</div></div>
                   </div>
 
                   <div class="round">
-                      <h4>Semifinal dos Perdedores</h4>
-                      <div class="match"><div class="team">Vencedor P2-1</div><div class="team">Vencedor P2-2</div></div>
+                    <h4>Semifinal dos Perdedores</h4>
+                    <div class="match"><div class="team">Vencedor P2-1</div><div class="team">Vencedor P2-2</div></div>
                   </div>
 
                   <div class="round">
-                      <h4>Final dos Perdedores</h4>
-                      <div class="match"><div class="team">Vencedor PSemi</div><div class="team">Perdedor da Final dos Vencedores</div></div>
+                    <h4>Final dos Perdedores</h4>
+                    <div class="match"><div class="team">Vencedor PSemi</div><div class="team">Perdedor da Final dos Vencedores</div></div>
                   </div>
+                </div>
               </div>
 
               <!-- FINALS BRACKET -->
               <div class="finals-bracket">
+                <h2 class="bracket-title">GRANDE FINAL</h2>
+                <div class="bracket-grid">
                   <div class="round">
-                      <h4>Grande Final</h4>
-                      <div class="match">
-                          <div class="team">Vencedor dos Vencedores</div>
-                          <div class="team">Vencedor dos Perdedores</div>
-                      </div>
+                    <h4>Grande Final</h4>
+                    <div class="match">
+                      <div class="team">Vencedor dos Vencedores</div>
+                      <div class="team">Vencedor dos Perdedores</div>
+                    </div>
                   </div>
 
                   <div class="round">
-                      <h4>Desempate (se necessário)</h4>
-                      <div class="match reset">
-                          <div class="team">Vencedor da Grande Final</div>
-                          <div class="team">Perdedor da Grande Final</div>
-                      </div>
+                    <h4>Desempate (se necessário)</h4>
+                    <div class="match reset">
+                      <div class="team">Vencedor da Grande Final</div>
+                      <div class="team">Perdedor da Grande Final</div>
+                    </div>
                   </div>
+                </div>
               </div>
+            </div>
           </div>
         </div>
 
@@ -399,67 +423,5 @@
   </footer>
 
   <script src="script.js"></script>
-  
-  <script>
-  // Sistema de abas para grupos
-  document.addEventListener('DOMContentLoaded', function() {
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const bracketContents = document.querySelectorAll('.bracket-content');
-    
-    tabButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        // Remove active de todos os botões
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        // Adiciona active ao botão clicado
-        this.classList.add('active');
-        
-        // Esconde todos os conteúdos
-        bracketContents.forEach(content => {
-          content.classList.remove('active');
-          content.classList.add('hidden');
-        });
-        
-        // Mostra o conteúdo correspondente
-        const groupId = this.getAttribute('data-group');
-        const targetContent = document.getElementById(`${groupId}-content`);
-        if (targetContent) {
-          targetContent.classList.remove('hidden');
-          targetContent.classList.add('active');
-        }
-      });
-    });
-    
-    // Dica discreta para mobile (scroll tátil)
-    if (window.innerWidth <= 768) {
-      setTimeout(() => {
-        const hint = document.createElement('div');
-        hint.style.cssText = `
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
-          background: rgba(0, 234, 255, 0.15);
-          border: 1px solid var(--neon-cyan);
-          color: var(--neon-cyan);
-          padding: 8px 12px;
-          border-radius: 8px;
-          font-size: 12px;
-          z-index: 1000;
-          animation: fadeInOut 4s forwards;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-          pointer-events: none;
-        `;
-        hint.innerHTML = 'Arraste para os lados';
-        document.body.appendChild(hint);
-        
-        // Remover após animação
-        setTimeout(() => {
-          if (hint.parentNode) hint.parentNode.removeChild(hint);
-        }, 4000);
-      }, 1000);
-    }
-  });
-  </script>
-  
-  
 </body>
 </html>
