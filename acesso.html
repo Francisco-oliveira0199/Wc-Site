@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="description" content="Wild Clash - Acesso às inscrições com código de verificação">
+    <meta name="keywords" content="Wild Rift, código de acesso, inscrição, campeonato, torneio">
+    <meta name="author" content="Wild Clash">
+    
+    <title>Wild Clash — Acesso às Inscrições</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="./src/css/style.css">
+    <link rel="stylesheet" href="./src/css/acesso.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./src/frontend/imagens/favicon.ico">
+</head>
+<body>
+    <!-- Background -->
+    <div id="background" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="glass header" role="banner">
+        <div class="logo">
+            <div class="logo-placeholder"><img src="./src/frontend/imagens/wild clash logo colorido.png" alt="Wild Clash Logo"></div>
+        </div>
+        <nav class="nav" role="navigation" aria-label="Navegação principal">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="scrim.html" class="nav-link">Scrim</a>
+            <a href="acesso.html" class="nav-link active" aria-current="page">Inscreva-se</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page-wrap">
+        <section class="form-section glass" aria-labelledby="access-title">
+            <h1 id="access-title" class="neon-title">ACESSO ÀS INSCRIÇÕES</h1>
+            
+            <div class="access-container">
+                <div class="access-info">
+                    <p>Para acessar o formulário de inscrição, você precisa de um código de acesso válido.</p>
+                    <p>Os códigos são distribuídos exclusivamente para times convidados ou aprovados pela organização.</p>
+                    
+                    <div class="access-steps">
+                        <h3>Como obter um código:</h3>
+                        <ol>
+                            <li>Entre em contato via Discord</li>
+                            <li>Solicite o código ao administrador do torneio</li>
+                            <li>Use o código recebido no campo abaixo</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="contact-info">
+                        <!-- <p><strong>Contato para código:</strong></p>
+                        <a href="https://discord.gg/smJ9Q2V3VB" class="btn outline-neon" target="_blank" rel="noopener noreferrer">
+                            Discord do Wild Clash
+                        </a> -->
+                    </div>
+                </div>
+                
+                <div class="access-form">
+                    <div class="form-group">
+                        <label for="access-code">Código de Acesso <span class="required">*</span></label>
+                        <input type="text" id="access-code" 
+                               placeholder="Digite o código recebido"
+                               maxlength="20"
+                               autocomplete="off">
+                        <div class="error-message" id="code-error"></div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button id="btn-verificar" class="btn-submit neon">
+                            Verificar Código
+                        </button>
+                        
+                        <button id="btn-limpar-codigo" class="btn-reset outline-neon">
+                            Limpar
+                        </button>
+                    </div>
+                    
+                    <div class="access-note">
+                        <p><strong>Nota:</strong> Cada código é válido para uma única inscrição. Códigos expiram após 7 dias.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="access-status" class="form-status" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass footer" role="contentinfo">
+        <div class="footer-content">
+            <div class="footer-copyright">© WILD CLASH</div>
+            <div class="social-media-links">
+                <a href="https://discord.gg/smJ9Q2V3VB" class="social-btn discord" aria-label="Discord" target="_blank" rel="noopener noreferrer">
+                    <div class="social-icon">
+                        <img src="./src/frontend/imagens/disc-icon.png" alt="Discord" onerror="this.style.display='none'">
+                        <span class="default-icon"></span>
+                    </div>
+                    <span class="social-label">Discord</span>
+                </a>
+
+                <a href="https://www.tiktok.com/@nittosono?is_from_webapp=1&sender_device=pc" class="social-btn tiktok" aria-label="TikTok" target="_blank" rel="noopener noreferrer">
+                    <div class="social-icon">
+                        <img src="./src/frontend/imagens/tiktok-icon.png" alt="TikTok" onerror="this.style.display='none'">
+                        <span class="default-icon"></span>
+                    </div>
+                    <span class="social-label">TikTok</span>
+                </a>
+
+                <a href="https://www.instagram.com/wildclash_wildrift?igsh=b2U2Y2V2YWx5ODd0" class="social-btn instagram" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                    <div class="social-icon">
+                        <img src="./src/frontend/imagens/insta-icon.png" alt="Instagram" onerror="this.style.display='none'">
+                        <span class="default-icon"></span>
+                    </div>
+                    <span class="social-label">Instagram</span>
+                </a>
+
+                <a href="https://www.youtube.com/channel/UCCNOSn3tTp2IqPKTKC2_umw/live" class="social-btn youtube" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+                    <div class="social-icon">
+                        <img src="./src/frontend/imagens/youtube-icon.png" alt="YouTube" onerror="this.style.display='none'">
+                        <span class="default-icon"></span>
+                    </div>
+                    <span class="social-label">YouTube</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="./src/js/script.js"></script>
+    <script src="./src/js/acesso.js"></script>
+</body>
+</html>

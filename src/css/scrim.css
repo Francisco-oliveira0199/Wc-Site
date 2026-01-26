@@ -1,0 +1,324 @@
+/* =============================================================================
+   PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
+   ARQUIVO: scrim.css - Estilos específicos para scrim.html
+   VERSÃO: 7.2
+   DATA: Dezembro 2025
+============================================================================= */
+
+/* ========== FORM ========== */
+.form-section{
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+}
+.form-section h1{
+  font-size: 2.5rem;
+  color: white;
+  text-shadow: 0 0 10px var(--neon-cyan);
+  text-align: center;
+  margin-bottom: 20px;
+}
+.form-section form{ display: grid; gap: 16px; }
+.form-section label{
+  display: block;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.form-section input, .form-section textarea, .form-section select{
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,234,255,0.2);
+  background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  backdrop-filter: blur(6px);
+  color: white;
+  font-size: 14px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.form-section input:focus, .form-section textarea:focus, .form-section select:focus{
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0,234,255,0.3);
+}
+.form-section textarea{
+  resize: vertical;
+  min-height: 80px;
+}
+.form-actions{
+  margin-top: 20px;
+  text-align: center;
+}
+.form-note{
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+/* ========== SEÇÕES DO FORMULÁRIO ========== */
+.form-section-group {
+  margin-bottom: 30px;
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+}
+
+.form-group-title {
+  color: var(--neon-cyan);
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0,234,255,0.2);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-instruction {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+.required {
+  color: var(--neon-pink);
+}
+
+/* ========== GRIDS DO FORMULÁRIO ========== */
+.lineup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+}
+
+.reserves-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.reserve-item {
+  background: rgba(255,255,255,0.03);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ESTILOS DO FORMULÁRIO DE SCRIM */
+.lineup-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.reserves-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.reserve-field {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.reserve-field input {
+  flex: 1;
+}
+
+.reserve-field select {
+  width: 150px;
+}
+
+.format-selection {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.format-btn {
+  padding: 12px 24px;
+  border: 2px solid var(--neon-cyan);
+  background: linear-gradient(135deg, rgba(0,234,255,0.1), rgba(0,234,255,0.05));
+  color: var(--neon-cyan);
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  text-align: center;
+  min-width: 80px;
+}
+
+.format-btn:hover {
+  background: linear-gradient(135deg, rgba(0,234,255,0.2), rgba(0,234,255,0.1));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,234,255,0.3);
+}
+
+.format-btn.active {
+  background: linear-gradient(135deg, rgba(0,234,255,0.3), rgba(0,234,255,0.2));
+  color: white;
+  box-shadow: 0 0 20px rgba(0,234,255,0.5);
+}
+
+.game-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,234,255,0.2);
+  background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  backdrop-filter: blur(6px);
+  color: white;
+  font-size: 14px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.game-select:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0,234,255,0.3);
+}
+
+/* ========== CONTROLE DE REGRAS ========== */
+.rules-container {
+  margin-top: 24px;
+  position: relative;
+}
+
+.rules-label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.rules-scroll {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 20px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(0,234,255,0.12);
+  border-radius: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--neon-cyan) rgba(0,0,0,0.3);
+  margin-bottom: 15px;
+}
+
+.rules-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.rules-scroll::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+.rules-scroll::-webkit-scrollbar-thumb {
+  background: var(--neon-cyan);
+  border-radius: 4px;
+  box-shadow: 0 0 6px rgba(0,234,255,0.4);
+}
+
+.rules-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-pink);
+  box-shadow: 0 0 8px rgba(255,45,117,0.6);
+}
+
+/* ========== BOTÕES ESPECÍFICOS DO FORMULÁRIO DE SCRIM ========== */
+.checkbox-btn {
+  padding: 12px 24px;
+  border: 2px solid var(--neon-pink);
+  background: linear-gradient(135deg, rgba(255,45,117,0.1), rgba(255,45,117,0.05));
+  color: var(--neon-pink);
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  text-align: center;
+  display: inline-block;
+  margin-top: 12px;
+  width: 100%;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.checkbox-btn:hover:not(.accepted) {
+  background: linear-gradient(135deg, rgba(255,45,117,0.2), rgba(255,45,117,0.1));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255,45,117,0.3);
+}
+
+.checkbox-btn.read {
+  box-shadow: 0 0 20px rgba(255,45,117,0.5);
+  background: linear-gradient(135deg, rgba(255,45,117,0.15), rgba(255,45,117,0.1));
+  color: white;
+}
+
+.checkbox-btn.accepted {
+  border: 2px solid var(--neon-cyan);
+  background: linear-gradient(135deg, rgba(0,234,255,0.3), rgba(0,234,255,0.2));
+  color: white;
+  box-shadow: 0 0 20px rgba(0,234,255,0.5);
+}
+
+.checkbox-btn.accepted:hover {
+  background: linear-gradient(135deg, rgba(0,234,255,0.4), rgba(0,234,255,0.3));
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(0,234,255,0.7);
+}
+
+.checkbox-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ========== RESPONSIVIDADE DO FORMULÁRIO SCRIM ========== */
+@media (max-width: 768px) {
+  .form-section {
+    margin: 15px;
+    padding: 15px;
+  }
+  
+  .form-section h1 {
+    font-size: 1.8rem;
+  }
+  
+  .lineup-fields {
+    grid-template-columns: 1fr;
+  }
+  
+  .reserve-field {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .reserve-field select {
+    width: 100%;
+  }
+  
+  .format-selection {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

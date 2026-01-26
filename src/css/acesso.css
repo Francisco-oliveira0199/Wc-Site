@@ -1,0 +1,196 @@
+/* =============================================================================
+   PROJETO: Wild Clash - Estilos da Página de Acesso
+   ARQUIVO: acesso.css
+   DESCRIÇÃO: Estilos específicos para a página acesso.html
+============================================================================= */
+
+/* Estilos específicos para a página de acesso */
+.access-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 30px;
+}
+
+.access-info {
+    padding: 20px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(0,234,255,0.1);
+}
+
+.access-steps {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(0,234,255,0.05);
+    border-radius: 8px;
+    border-left: 3px solid var(--neon-cyan);
+}
+
+.access-steps h3 {
+    color: var(--neon-cyan);
+    margin-bottom: 10px;
+}
+
+.access-steps ol {
+    margin-left: 20px;
+    color: var(--text-muted);
+}
+
+.access-steps li {
+    margin-bottom: 8px;
+}
+
+.contact-info {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.access-form {
+    padding: 20px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(0,234,255,0.1);
+}
+
+.access-note {
+    margin-top: 20px;
+    padding: 10px;
+    background: rgba(255,215,0,0.1);
+    border-radius: 8px;
+    border-left: 3px solid var(--warning);
+    font-size: 13px;
+}
+
+@media (max-width: 768px) {
+    .access-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+.message {
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.message.success {
+    background: rgba(40, 199, 111, 0.15);
+    border: 1px solid rgba(40, 199, 111, 0.4);
+    color: var(--success);
+}
+
+.message.error {
+    background: rgba(255, 45, 117, 0.15);
+    border: 1px solid rgba(255, 45, 117, 0.4);
+    color: var(--neon-pink);
+}
+
+.message.info {
+    background: rgba(0, 234, 255, 0.15);
+    border: 1px solid rgba(0, 234, 255, 0.4);
+    color: var(--neon-cyan);
+}
+
+/* Estilos do formulário na página de acesso */
+.form-section {
+    max-width: var(--max-width);
+    width: 100%;
+    margin: 40px auto;
+    padding: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--neon-cyan);
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 234, 255, 0.3);
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 0 2px rgba(0, 234, 255, 0.2);
+}
+
+.required {
+    color: var(--neon-pink);
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.btn-submit, .btn-reset {
+    flex: 1;
+    padding: 14px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 8px;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, var(--neon-cyan), #00a8cc);
+    color: white;
+}
+
+.btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 234, 255, 0.3);
+}
+
+.btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-reset {
+    background: rgba(255, 255, 255, 0.1);
+    color: #a0a0c0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-reset:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.form-status {
+    margin-top: 20px;
+}
+
+.error-message {
+    color: var(--danger);
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.error-message.show {
+    display: block;
+}

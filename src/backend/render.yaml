@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: wildclash-api
+    env: node
+    plan: free
+    region: ohio
+    buildCommand: npm install
+    startCommand: npm run migrate && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: DB_HOST
+        fromDatabase:
+          name: wildclash-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: wildclash-db
+          property: port
+      - key: DB_USER
+        fromDatabase:
+          name: wildclash-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: wildclash-db
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: wildclash-db
+          property: database
+    healthCheckPath: /api/health
+    autoDeploy: true
+
+databases:
+  - name: wildclash-db
+    plan: free
+    region: ohio
+    databaseName: wildclash_db
+    user: wildclash_user

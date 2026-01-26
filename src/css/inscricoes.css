@@ -1,0 +1,729 @@
+/* =============================================================================
+   PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
+   ARQUIVO: inscricoes.css - Estilos específicos para inscricoes.html
+   VERSÃO: 7.3
+   DATA: Dezembro 2025
+============================================================================= */
+
+/* ========== DICA MOBILE ========== */
+.mobile-scroll-hint {
+  display: none;
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, rgba(0,234,255,0.9), rgba(255,45,117,0.9));
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  z-index: 999;
+  animation: pulseHint 3s ease-in-out infinite;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  text-align: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  pointer-events: none;
+}
+
+@keyframes pulseHint {
+  0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(0.95); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+/* ========== FORM ========== */
+.form-section{
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+}
+.form-section h1{
+  font-size: 2.5rem;
+  color: white;
+  text-shadow: 0 0 10px var(--neon-cyan);
+  text-align: center;
+  margin-bottom: 20px;
+}
+.form-section form{ display: grid; gap: 16px; }
+.form-section label{
+  display: block;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.form-section input, .form-section textarea, .form-section select{
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,234,255,0.2);
+  background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  backdrop-filter: blur(6px);
+  color: white;
+  font-size: 14px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.form-section input:focus, .form-section textarea:focus, .form-section select:focus{
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0,234,255,0.3);
+}
+.form-section textarea{
+  resize: vertical;
+  min-height: 80px;
+}
+.form-actions{
+  margin-top: 20px;
+  text-align: center;
+}
+.form-note{
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+/* ========== SEÇÕES DO FORMULÁRIO ========== */
+.form-section-group {
+  margin-bottom: 30px;
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+}
+
+.form-group-title {
+  color: var(--neon-cyan);
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0,234,255,0.2);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-instruction {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+.required {
+  color: var(--neon-pink);
+}
+
+/* ========== GRIDS DO FORMULÁRIO ========== */
+.lineup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+}
+
+.reserves-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.reserve-item {
+  background: rgba(255,255,255,0.03);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ========== UPLOAD DE LOGO ========== */
+.upload-container {
+  margin-bottom: 20px;
+}
+
+.upload-label {
+  display: block;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.upload-label .required {
+  color: var(--neon-pink);
+}
+
+.upload-box {
+  border: 2px dashed rgba(0, 234, 255, 0.3);
+  border-radius: 12px;
+  padding: 30px 20px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-box:hover {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 234, 255, 0.05);
+}
+
+.upload-box.has-file {
+  border-color: var(--success);
+  background: rgba(40, 199, 111, 0.05);
+}
+
+.upload-icon {
+  font-size: 40px;
+  color: var(--neon-cyan);
+  margin-bottom: 10px;
+}
+
+.upload-text {
+  color: var(--text-muted);
+  margin-bottom: 5px;
+}
+
+.upload-note {
+  font-size: 12px;
+  color: #888;
+}
+
+.upload-input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.upload-preview {
+  margin-top: 15px;
+  display: none;
+}
+
+.upload-preview.show {
+  display: block;
+  animation: fadeIn 0.5s ease;
+}
+
+.preview-container {
+  position: relative;
+  display: inline-block;
+  max-width: 200px;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 8px;
+  border: 2px solid var(--neon-cyan);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 5px;
+}
+
+.remove-preview {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: var(--neon-pink);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: all 0.3s ease;
+}
+
+.remove-preview:hover {
+  background: #ff0050;
+  transform: scale(1.1);
+}
+
+.file-info {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+/* ========== CONTROLE DE REGRAS ========== */
+.rules-container {
+  margin-top: 24px;
+  position: relative;
+}
+
+.rules-label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.rules-scroll {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 20px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(0,234,255,0.12);
+  border-radius: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--neon-cyan) rgba(0,0,0,0.3);
+  margin-bottom: 15px;
+}
+
+.rules-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.rules-scroll::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+.rules-scroll::-webkit-scrollbar-thumb {
+  background: var(--neon-cyan);
+  border-radius: 4px;
+  box-shadow: 0 0 6px rgba(0,234,255,0.4);
+}
+
+.rules-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-pink);
+  box-shadow: 0 0 8px rgba(255,45,117,0.6);
+}
+
+.rules-content {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.rules-content h3 {
+  color: var(--neon-cyan);
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.rules-content h4 {
+  color: var(--neon-pink);
+  margin: 20px 0 10px 0;
+}
+
+.rules-content h5 {
+  color: #fff;
+  margin: 15px 0 8px 0;
+}
+
+.rules-content ul {
+  margin-left: 20px;
+  margin-bottom: 15px;
+}
+
+.rules-content li {
+  margin-bottom: 5px;
+}
+
+.rules-end {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  color: var(--neon-cyan);
+}
+
+/* ========== CONTROLES DE REGRAS ========== */
+.rules-controls {
+  margin-top: 20px;
+}
+
+.rules-progress {
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+  width: 0%;
+  transition: width 0.3s ease !important;
+  border-radius: 3px;
+}
+
+.progress-text {
+  display: block;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.rules-acceptance {
+  text-align: center;
+}
+
+.rules-status {
+  margin-top: 10px;
+  font-size: 12px;
+  min-height: 20px;
+}
+
+.rules-status .success {
+  color: var(--success);
+}
+
+.rules-status .error {
+  color: var(--neon-pink);
+}
+
+/* ========== CONTROLE DE ENVIO ========== */
+.form-submit-container {
+  text-align: center;
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(0,234,255,0.1);
+}
+
+.form-required-note {
+  margin-bottom: 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.btn-submit {
+  min-width: 200px;
+  padding: 12px 24px;
+}
+
+.btn-reset {
+  min-width: 150px;
+  padding: 12px 24px;
+}
+
+.btn-submit .submit-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: var(--neon-cyan);
+  animation: spin 1s linear infinite;
+}
+
+/* ========== BOTÕES ESPECÍFICOS DO FORMULÁRIO ========== */
+.checkbox-btn,
+.btn-submit,
+.btn-reset {
+  padding: 12px 24px;
+  border: 2px solid var(--neon-pink);
+  background: linear-gradient(135deg, rgba(255,45,117,0.1), rgba(255,45,117,0.05));
+  color: var(--neon-pink);
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  text-align: center;
+  display: inline-block;
+  margin-top: 12px;
+  width: 100%;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.checkbox-btn:hover:not(.accepted),
+.btn-submit:hover:not(:disabled),
+.btn-reset:hover {
+  background: linear-gradient(135deg, rgba(255,45,117,0.2), rgba(255,45,117,0.1));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255,45,117,0.3);
+}
+
+.checkbox-btn.read {
+  box-shadow: 0 0 20px rgba(255,45,117,0.5);
+  background: linear-gradient(135deg, rgba(255,45,117,0.15), rgba(255,45,117,0.1));
+  color: white;
+}
+
+.checkbox-btn.accepted,
+.btn-submit {
+  border: 2px solid var(--neon-cyan);
+  background: linear-gradient(135deg, rgba(0,234,255,0.3), rgba(0,234,255,0.2));
+  color: white;
+  box-shadow: 0 0 20px rgba(0,234,255,0.5);
+}
+
+.checkbox-btn.accepted:hover,
+.btn-submit:hover {
+  background: linear-gradient(135deg, rgba(0,234,255,0.4), rgba(0,234,255,0.3));
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(0,234,255,0.7);
+}
+
+.checkbox-btn:disabled,
+.btn-submit:disabled,
+.btn-reset:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.checkbox-btn .btn-icon {
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.btn-reset {
+  border: 2px solid var(--neon-pink);
+  background: linear-gradient(135deg, rgba(255,45,117,0.1), rgba(255,45,117,0.05));
+  color: var(--neon-pink);
+}
+
+.btn-reset:hover {
+  background: linear-gradient(135deg, rgba(255,45,117,0.2), rgba(255,45,117,0.1));
+  box-shadow: 0 4px 15px rgba(255,45,117,0.3);
+}
+
+/* ========== ERROR MESSAGES ========== */
+.error-message {
+  color: var(--neon-pink);
+  font-size: 12px;
+  margin-top: 4px;
+  display: none;
+  padding: 4px 8px;
+  background: rgba(255, 45, 117, 0.1);
+  border-radius: 4px;
+  animation: fadeIn 0.3s ease;
+}
+
+.error-message:not(:empty) {
+  display: block;
+}
+
+.form-section input.error,
+.form-section textarea.error,
+.form-section select.error {
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 0 2px rgba(255, 45, 117, 0.2);
+}
+
+/* ========== MENSAGENS DO FORMULÁRIO ========== */
+.form-status {
+  margin: 20px 0;
+  display: none;
+}
+
+.form-status .message {
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+  border: 1px solid;
+  backdrop-filter: blur(10px);
+  font-size: 14px;
+}
+
+.form-status .message.success {
+  background: rgba(40, 199, 111, 0.15);
+  border-color: rgba(40, 199, 111, 0.4);
+  color: var(--success);
+}
+
+.form-status .message.error {
+  background: rgba(255, 45, 117, 0.15);
+  border-color: rgba(255, 45, 117, 0.4);
+  color: var(--neon-pink);
+}
+
+.form-status .message.info {
+  background: rgba(0, 234, 255, 0.15);
+  border-color: rgba(0, 234, 255, 0.4);
+  color: var(--neon-cyan);
+}
+
+.char-counter {
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+
+.char-counter span {
+  font-weight: bold;
+}
+
+/* ========== MENSAGENS DE FORMULÁRIO ========== */
+.form-message {
+  padding: 15px 20px;
+  margin: 20px 0;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 500;
+  animation: fadeIn 0.5s ease;
+  border: 1px solid;
+  backdrop-filter: blur(10px);
+  font-size: 14px;
+}
+
+.form-message.success {
+  background: rgba(40, 199, 111, 0.15);
+  border-color: rgba(40, 199, 111, 0.4);
+  color: var(--success);
+}
+
+.form-message.error {
+  background: rgba(255, 45, 117, 0.15);
+  border-color: rgba(255, 45, 117, 0.4);
+  color: var(--neon-pink);
+}
+
+.form-message.info {
+  background: rgba(0, 234, 255, 0.15);
+  border-color: rgba(0, 234, 255, 0.4);
+  color: var(--neon-cyan);
+}
+
+.form-message.warning {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.4);
+  color: #ffd700;
+}
+
+.form-message a {
+  color: inherit !important;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.form-message.success a {
+  color: #28c76f !important;
+}
+
+.form-message.warning a {
+  color: #ffd700 !important;
+}
+
+.form-message.info a {
+  color: #00eaff !important;
+}
+
+/* ========== ERRO DE ACESSO ========== */
+.access-error {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.access-error h2 {
+  color: var(--neon-pink);
+  margin-bottom: 20px;
+}
+
+.access-error p {
+  color: var(--text-muted);
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+
+.access-error .btn {
+  margin-top: 20px;
+}
+
+/* ========== ESTILOS DE FORMULÁRIO ENVIANDO ========== */
+.sending {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.submit-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.loading-text {
+  vertical-align: middle;
+}
+
+/* ========== RESPONSIVIDADE DO FORMULÁRIO INSCRIÇÕES ========== */
+@media (max-width: 768px) {
+  .mobile-scroll-hint {
+    display: block;
+  }
+  
+  .form-section {
+    margin: 15px;
+    padding: 15px;
+  }
+  
+  .form-section h1 {
+    font-size: 1.8rem;
+  }
+  
+  .lineup-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .reserves-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn-submit,
+  .btn-reset {
+    min-width: 100%;
+  }
+  
+  .upload-box {
+    padding: 20px 15px;
+  }
+  
+  .preview-container {
+    max-width: 150px;
+  }
+  
+  .rules-scroll {
+    max-height: 250px;
+  }
+}

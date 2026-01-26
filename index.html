@@ -1,11 +1,3 @@
-<!-- =============================================================================
-   PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
-   ARQUIVO: index.html (Página Inicial)
-   DESCRIÇÃO: Página principal com hero, carousel de competições e rodapé.
-   RESPONSÁVEL: Seção hero com título, subtítulo e carousel rotativo.
-   LINKADO A: style.css (estilos), script.js (funcionalidades carousel).
-   NOTAS: Carousel exibe 3 cards de competições; substituiu vídeo anterior.
-============================================================================= -->
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -14,30 +6,84 @@
   <meta name="description" content="Wild Clash - Campeonatos profissionais de Wild Rift. Competições, inscrições e muito mais.">
   <meta name="keywords" content="Wild Rift, Wild Clash, campeonato, torneio, competição, esports, Next Reload, Relegation">
   <title>WILD CLASH — Campeonatos de Wild Rift</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/x-icon" href="imagens/favicon.ico">
+  <link rel="stylesheet" href="./src/css/style.css" />
+  <link rel="icon" type="image/x-icon" href="./src/imagens/favicon.ico">
 </head>
 <body>
-  <!-- BACKGROUND: substitua a imagem de fundo trocando a URL no style.css em #background -->
+  <!-- Background -->
   <div id="background" aria-hidden="true"></div>
+
+  <!-- Modal de Acesso -->
+  <div id="accessModal" class="access-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <div class="access-modal-content glass">
+      <button class="close-modal" id="closeModal" aria-label="Fechar modal">&times;</button>
+      
+      <div class="modal-header">
+        <h2 id="modalTitle">ACESSO ÀS INSCRIÇÕES</h2>
+        <p>Para acessar o formulário de inscrição, você precisa de um código de acesso válido.</p>
+      </div>
+
+      <div class="access-form-modal">
+        <div class="form-group">
+          <label for="access-code-modal">Código de Acesso <span class="required">*</span></label>
+          <input type="text" 
+                 id="access-code-modal" 
+                 placeholder="Digite o código recebido"
+                 maxlength="20"
+                 autocomplete="off"
+                 aria-required="true"
+                 aria-describedby="code-error-modal">
+          <div class="error-message-modal" id="code-error-modal" role="alert"></div>
+        </div>
+
+        <div class="form-actions-modal">
+          <button id="btn-verificar-modal" class="btn-verify-modal" type="button">
+            Verificar Código
+          </button>
+          <button id="btn-limpar-codigo-modal" class="btn-clear-modal" type="button">
+            Limpar
+          </button>
+        </div>
+
+        <div class="access-note-modal">
+          <p><strong>Nota:</strong> Os códigos são distribuídos exclusivamente para times convidados ou aprovados pela organização. Cada código é válido para uma única inscrição e expira após 7 dias.</p>
+          <p style="margin-top: 10px;">
+            <!-- <strong>Contato para código:</strong>
+            <a href="https://discord.gg/smJ9Q2V3VB" target="_blank" rel="noopener noreferrer" style="color: #00eaff; text-decoration: none;">
+              Discord do Wild Clash
+            </a> -->
+          </p>
+          <p style="margin-top: 10px; font-size: 12px; color: #aaa;">
+            <strong>Para testes:</strong> Use <strong>teste123</strong> para inscrições ou <strong>admin123</strong> para painel admin
+          </p>
+        </div>
+
+        <div id="access-status-modal" class="form-status" style="margin-top: 20px;" role="status"></div>
+      </div>
+    </div>
+  </div>
 
   <header class="glass header" role="banner">
     <div class="logo">
-      <div class="logo-placeholder"><img src="imagens/wild clash logo colorido.png" alt="Logo Wild Clash"></div>
+      <div class="logo-placeholder">
+        <img src="./src/imagens/wild clash logo colorido.png" alt="Logo Wild Clash" width="200" height="60">
+      </div>
     </div>
     <nav class="nav" role="navigation" aria-label="Navegação principal">
-      <a href="index.html" class="nav-link active" aria-current="page">Home</a>
-      <a href="scrim.html" class="nav-link">Scrim</a>
-      <a href="inscricoes.html" class="nav-link">Inscreva-se</a>
+      <ul class="nav-list">
+        <li><a href="index.html" class="nav-link active" aria-current="page">Home</a></li>
+        <li><a href="scrim.html" class="nav-link">Scrim</a></li>
+        <li><button class="nav-link nav-button" id="inscreva-se-link" type="button">Inscreva-se</button></li>
+      </ul>
     </nav>
-  </header>
+  </header> 
 
   <main>
     <section class="hero" aria-labelledby="main-title">
       <div class="hero-content glass">
         <h1 class="neon-title" id="main-title">WILD CLASH</h1>
         <div class="hero-buttons larger-btns">
-          <a href="inscricoes.html" class="btn outline-neon">Inscreva-se</a>
+          <button class="btn outline-neon" id="inscreva-se-btn" type="button">Inscreva-se</button>
         </div>
 
         <div class="hero-description-video">
@@ -52,17 +98,23 @@
             <div class="carousel-container">
               <div class="carousel-slide active" role="group" aria-label="Slide 1 de 3">
                 <div class="competition-card glass">
-                  <div class="card-logo"><img src="imagens/wild clash.png" alt="Logo Wild Clash"></div>
+                  <div class="card-logo">
+                    <img src="./src/imagens/wild clash.png" alt="Logo Wild Clash">
+                  </div>
                 </div>
               </div>
               <div class="carousel-slide" role="group" aria-label="Slide 2 de 3">
                 <div class="competition-card glass">
-                  <div class="card-logo"><img src="imagens/ongoing wild clash.png" alt="Logo Campeonatos em Andamento"></div>
+                  <div class="card-logo">
+                    <img src="./src/imagens/ongoing wild clash.png" alt="Logo Campeonatos em Andamento">
+                  </div>
                 </div>
               </div>
               <div class="carousel-slide" role="group" aria-label="Slide 3 de 3">
                 <div class="competition-card glass">
-                  <div class="card-logo"><img src="imagens/relegation.png" alt="Logo Wild Clash Relegation"></div>
+                  <div class="card-logo">
+                    <img src="./src/imagens/relegation.png" alt="Logo Wild Clash Relegation">
+                  </div>
                 </div>
               </div>
             </div>
@@ -82,26 +134,19 @@
       <div class="cards grid">
         <a class="card glass clickable wild-clash-card" href="wildclash.html" aria-label="Abrir Wild Clash — chaves e times">
           <div class="card-title wild-clash-title">WILD CLASH</div>
-          <div class="card-image-placeholder"><img src="imagens/wild clash.png" alt="Logo Wild Clash"></div>
+          <div class="card-image-placeholder">
+            <img src="./src/imagens/wild clash.png" alt="Logo Wild Clash">
+          </div>
         </a>
 
         <a class="card glass clickable external" href="https://www.youtube.com/channel/UCCNOSn3tTp2IqPKTKC2_umw/live" target="_blank" rel="noopener noreferrer" aria-label="Abrir campeonatos em andamento no YouTube (nova aba)">
           <div class="card-title">CAMP EM ANDAMENTO</div>
-          <div class="card-image-placeholder"><img src="./imagens/ongoing wild clash.png" alt="Logo Campeonatos em Andamento"></div>
-        </a>
-
-        <a class="card glass clickable next-reload-card" href="nextreload.html" aria-label="Abrir Next Reload — chaves e times">
-          <div class="card-title">NEXT RELOAD</div>
-          <div class="card-image-placeholder"><img src="./imagens/NEXT_RELOAD.png" alt="Logo Next Reload"></div>
-        </a>
-
-        <a class="card glass clickable wild-clash-relegation-card relegation-title" href="relegation.html" aria-label="Abrir Wild Clash Relegation — chaves e times">
-          <div class="card-title">WILD CLASH RELEGATION</div>
-          <div class="card-image-placeholder"><img src="imagens/relegation.png" alt="Logo Wild Clash Relegation"></div>
+          <div class="card-image-placeholder">
+            <img src="./src/imagens/ongoing wild clash.png" alt="Logo Campeonatos em Andamento">
+          </div>
         </a>
       </div>
     </section>
-
   </main>
 
   <footer class="glass footer" role="contentinfo">
@@ -110,7 +155,7 @@
       <div class="social-media-links">
         <a href="https://discord.gg/smJ9Q2V3VB" class="social-btn discord" aria-label="Discord (nova aba)" target="_blank" rel="noopener noreferrer">
           <div class="social-icon">
-            <img src="imagens/disc-icon.png" alt="Discord" onerror="this.style.display='none'">
+            <img src="./src/imagens/disc-icon.png" alt="Discord" onerror="this.style.display='none'">
             <span class="default-icon"></span>
           </div>
           <span class="social-label">Discord</span>
@@ -118,7 +163,7 @@
 
         <a href="https://www.tiktok.com/@nittosono?is_from_webapp=1&sender_device=pc" class="social-btn tiktok" aria-label="TikTok (nova aba)" target="_blank" rel="noopener noreferrer">
           <div class="social-icon">
-            <img src="imagens/tiktok-icon.png" alt="TikTok" onerror="this.style.display='none'">
+            <img src="./src/imagens/tiktok-icon.png" alt="TikTok" onerror="this.style.display='none'">
             <span class="default-icon"></span>
           </div>
           <span class="social-label">TikTok</span>
@@ -126,7 +171,7 @@
 
         <a href="https://www.instagram.com/wildclash_wildrift?igsh=b2U2Y2V2YWx5ODd0" class="social-btn instagram" aria-label="Instagram (nova aba)" target="_blank" rel="noopener noreferrer">
           <div class="social-icon">
-            <img src="imagens/insta-icon.png" alt="Instagram" onerror="this.style.display='none'">
+            <img src="./src/imagens/insta-icon.png" alt="Instagram" onerror="this.style.display='none'">
             <span class="default-icon"></span>
           </div>
           <span class="social-label">Instagram</span>
@@ -134,7 +179,7 @@
 
         <a href="https://www.youtube.com/channel/UCCNOSn3tTp2IqPKTKC2_umw/live" class="social-btn youtube" aria-label="YouTube (nova aba)" target="_blank" rel="noopener noreferrer">
           <div class="social-icon">
-            <img src="imagens/youtube-icon.png" alt="YouTube" onerror="this.style.display='none'">
+            <img src="./src/imagens/youtube-icon.png" alt="YouTube" onerror="this.style.display='none'">
             <span class="default-icon"></span>
           </div>
           <span class="social-label">YouTube</span>
@@ -143,6 +188,151 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <!-- Scripts -->
+  <script src="./src/js/script.js"></script>
+  <script src="./src/js/acesso.js"></script>
+  
+  <!-- Script inline para garantir funcionamento do modal -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Script inline do modal carregado');
+      
+      // Elementos do modal
+      const btnNav = document.getElementById('inscreva-se-link');
+      const btnHero = document.getElementById('inscreva-se-btn');
+      const btnClose = document.getElementById('closeModal');
+      const modal = document.getElementById('accessModal');
+      
+      // Função para abrir modal
+      function openModal(event) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        
+        console.log('Abrindo modal de acesso...');
+        
+        if (modal) {
+          modal.classList.add('active');
+          modal.removeAttribute('hidden');
+          modal.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+          
+          // Animar entrada
+          modal.style.opacity = '0';
+          const modalContent = modal.querySelector('.access-modal-content');
+          if (modalContent) {
+            modalContent.style.transform = 'translateY(-20px)';
+            modalContent.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+          }
+          
+          setTimeout(() => {
+            modal.style.opacity = '1';
+            if (modalContent) {
+              modalContent.style.transform = 'translateY(0)';
+            }
+          }, 10);
+        }
+        
+        return false;
+      }
+      
+      // Função para fechar modal
+      function closeModal(event) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        
+        console.log('Fechando modal...');
+        
+        if (modal) {
+          modal.classList.remove('active');
+          modal.style.opacity = '0';
+          const modalContent = modal.querySelector('.access-modal-content');
+          if (modalContent) {
+            modalContent.style.transform = 'translateY(-20px)';
+          }
+          
+          setTimeout(() => {
+            modal.setAttribute('hidden', true);
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+          }, 300);
+        }
+        
+        return false;
+      }
+      
+      // Adicionar eventos
+      if (btnNav) {
+        btnNav.addEventListener('click', openModal);
+        console.log('Evento adicionado ao botão de navegação');
+      }
+      
+      if (btnHero) {
+        btnHero.addEventListener('click', openModal);
+        console.log('Evento adicionado ao botão do hero');
+      }
+      
+      if (btnClose) {
+        btnClose.addEventListener('click', closeModal);
+        console.log('Evento adicionado ao botão fechar');
+      }
+      
+      if (modal) {
+        // Fechar ao clicar fora
+        modal.addEventListener('click', function(event) {
+          if (event.target === modal) {
+            closeModal(event);
+          }
+        });
+        
+        // Fechar com ESC
+        document.addEventListener('keydown', function(event) {
+          if (event.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal(event);
+          }
+        });
+        
+        // Prevenir fechamento ao clicar dentro do conteúdo
+        const modalContent = modal.querySelector('.access-modal-content');
+        if (modalContent) {
+          modalContent.addEventListener('click', function(event) {
+            event.stopPropagation();
+          });
+        }
+      }
+      
+      // Debug: adicionar atalhos de teclado para testes
+      document.addEventListener('keydown', function(event) {
+        // Ctrl+Shift+A para testar código ADMIN
+        if (event.ctrlKey && event.shiftKey && event.key === 'A') {
+          event.preventDefault();
+          console.log('Atalho: Testando acesso ADMIN');
+          if (modal && !modal.classList.contains('active')) {
+            openModal();
+          }
+          const input = document.getElementById('access-code-modal');
+          if (input) {
+            input.value = 'ADMIN123';
+          }
+        }
+        
+        // Ctrl+Shift+T para testar código TESTE
+        if (event.ctrlKey && event.shiftKey && event.key === 'T') {
+          event.preventDefault();
+          console.log('Atalho: Testando acesso TESTE');
+          if (modal && !modal.classList.contains('active')) {
+            openModal();
+          }
+          const input = document.getElementById('access-code-modal');
+          if (input) {
+            input.value = 'TESTE123';
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>
