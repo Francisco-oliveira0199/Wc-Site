@@ -1,0 +1,60 @@
+{
+  "monitors": [
+    {
+      "name": "Wild Clash API Health",
+      "type": "http",
+      "url": "https://wildclash-api.onrender.com/api/health",
+      "interval": 60,
+      "timeout": 10,
+      "retries": 2,
+      "regions": ["us-east", "eu-west"],
+      "assertions": [
+        {
+          "type": "status",
+          "value": 200
+        },
+        {
+          "type": "json",
+          "path": "$.status",
+          "value": "healthy"
+        },
+        {
+          "type": "json",
+          "path": "$.database",
+          "value": "connected"
+        }
+      ],
+      "notifications": {
+        "email": ["admin@wildclash.com"],
+        "slack": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK",
+        "sms": true
+      }
+    },
+    {
+      "name": "Wild Clash API Response Time",
+      "type": "http",
+      "url": "https://wildclash-api.onrender.com/api/ping",
+      "interval": 300,
+      "timeout": 5,
+      "regions": ["us-east"],
+      "assertions": [
+        {
+          "type": "response_time",
+          "max": 2000
+        }
+      ]
+    }
+  ],
+  "alerts": {
+    "critical": {
+      "after": 3,
+      "channels": ["email", "slack", "sms"],
+      "message": "🚨 Wild Clash API está OFFLINE! Verifique imediatamente."
+    },
+    "warning": {
+      "after": 2,
+      "channels": ["email", "slack"],
+      "message": "⚠️ Wild Clash API está respondendo lentamente."
+    }
+  }
+}

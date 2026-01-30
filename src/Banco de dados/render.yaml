@@ -4,8 +4,12 @@ services:
     env: node
     plan: free
     region: ohio
-    buildCommand: npm install
-    startCommand: npm run migrate && node server.js
+    buildCommand: |
+      npm install
+      npm run migrate
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
@@ -35,8 +39,24 @@ services:
         fromDatabase:
           name: wildclash-db
           property: database
-    healthCheckPath: /api/health
-    autoDeploy: true
+      - key: RATE_LIMIT_WINDOW
+        value: "15"
+      - key: RATE_LIMIT_MAX
+        value: "250"
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
+    disk:
+      name: logs
+      mountPath: /var/log/wildclash
+      sizeGB: 1
 
 databases:
   - name: wildclash-db
@@ -44,3 +64,9 @@ databases:
     region: ohio
     databaseName: wildclash_db
     user: wildclash_user
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
+    scaling:
+      maxConnections: 25
+    maintenanceWindow: SUN:03:00-04:00
