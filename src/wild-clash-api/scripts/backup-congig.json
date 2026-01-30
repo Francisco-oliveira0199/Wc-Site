@@ -1,0 +1,51 @@
+{
+  "backup": {
+    "enabled": true,
+    "schedule": "0 2 * * *",
+    "retention": {
+      "daily": 7,
+      "weekly": 4,
+      "monthly": 12
+    },
+    "compression": {
+      "enabled": true,
+      "level": 6
+    },
+    "encryption": {
+      "enabled": false,
+      "algorithm": "aes-256-gcm"
+    },
+    "notifications": {
+      "on_success": true,
+      "on_failure": true,
+      "on_warning": true
+    }
+  },
+  "database": {
+    "include_tables": ["access_codes", "administrators", "system_logs"],
+    "exclude_tables": ["temp_", "cache_"],
+    "max_rows_per_query": 10000
+  },
+  "storage": {
+    "local": {
+      "path": "./backups",
+      "max_size_gb": 10
+    },
+    "remote": {
+      "enabled": false,
+      "services": ["google_drive", "s3"],
+      "auto_delete_local_after_upload": false
+    }
+  },
+  "monitoring": {
+    "health_checks": {
+      "enabled": true,
+      "url": "/api/health",
+      "timeout_seconds": 30
+    },
+    "uptime_robot": {
+      "enabled": true,
+      "check_interval": 300
+    }
+  }
+}
