@@ -1,21 +1,37 @@
 // =============================================================================
-// PROJETO: Wild Clash - Painel Administrativo
+// PROJETO: Wild Clash - Painel Administrativo (Versão Offline Completa)
 // ARQUIVO: admin.js
-// DESCRIÇÃO: Lógica do painel administrativo com login fixo
+// DESCRIÇÃO: Painel administrativo offline com validação de códigos integrada
 // =============================================================================
 
-// Configurações da API
-const API_URL = 'http://localhost:3001/api';
-let authToken = localStorage.getItem('wildclash_admin_token');
-let currentPage = 'dashboard';
-let currentPageNumber = 1;
-const itemsPerPage = 10;
-
-// Credenciais fixas para login
+// Configurações
 const FIXED_CREDENTIALS = {
     username: 'admin123',
     password: 'admin123'
 };
+
+const SYSTEM_CONFIG = {
+    storageKey: 'wildclash_codes_v2',
+    settingsKey: 'wildclash_settings_v2',
+    backupKey: 'wildclash_backups_v2',
+    adminPassword: 'admin123',
+    version: '1.1.0'
+};
+
+// Variáveis globais
+let authToken = localStorage.getItem('wildclash_admin_token');
+let currentPage = 'dashboard';
+let currentTab = 'available-tab';
+let currentPageNumbers = {
+    available: 1,
+    used: 1,
+    expired: 1,
+    all: 1
+};
+const itemsPerPage = 10;
+let codes = [];
+let settings = {};
+let pendingAction = null;
 
 // Elementos DOM
 const loginPage = document.getElementById('loginPage');
@@ -27,219 +43,68 @@ const welcomeUser = document.getElementById('welcomeUser');
 const pageTitle = document.getElementById('pageTitle');
 const pageContent = document.getElementById('pageContent');
 const navLinks = document.querySelectorAll('.nav-link');
+const modeIndicator = document.getElementById('modeIndicator');
 
-// Verificar se já está logado
-if (authToken) {
-    checkAuth();
-}
+// ========== INICIALIZAÇÃO ==========
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Wild Clash Admin - Modo OFFLINE iniciado');
+    
+    // Verificar autenticação
+    checkAuthentication();
+    
+    // Inicializar sistema
+    initSystem();
+    
+    // Carregar todos os dados
+    loadAllData();
+    
+    // Configurar event listeners
+    setupEventListeners();
+    
+    // Verificar expiração de códigos a cada minuto
+    setInterval(checkExpiredCodes, 60000);
+    
+    // Auto-save a cada 30 segundos
+    setInterval(saveAllData, 30000);
+    
+    // Log de inicialização
+    console.log(`
+╔══════════════════════════════════════════════╗
+║      PAINEL ADMIN WILD CLASH INICIALIZADO    ║
+╠══════════════════════════════════════════════╣
+║ Login: ${FIXED_CREDENTIALS.username}/${FIXED_CREDENTIALS.password} ║
+║ Modo: OFFLINE                                ║
+║ Versão: ${SYSTEM_CONFIG.version}                       ║
+║ Códigos: ${codes.length}                               ║
+╚══════════════════════════════════════════════╝
+    `);
+});
 
-// Login MODIFICADO com credenciais fixas
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    
-    // Limpar alerta anterior
-    clearAlert(loginAlert);
-    
-    // Verificação de credenciais fixas
-    if (username === FIXED_CREDENTIALS.username && password === FIXED_CREDENTIALS.password) {
-        // Login bem-sucedido com credenciais fixas
-        authToken = 'admin_fixed_token_' + Date.now();
-        localStorage.setItem('wildclash_admin_token', authToken);
-        localStorage.setItem('wildclash_admin_user', JSON.stringify({
-            username: username,
-            role: 'admin',
-            login_time: new Date().toISOString()
-        }));
+// ========== AUTENTICAÇÃO ==========
+function checkAuthentication() {
+    if (window.location.pathname.includes('admin-panel.html')) {
+        const isAuthenticated = localStorage.getItem('wildclash_authenticated') === 'true';
         
-        showAlert(loginAlert, ' Login realizado com sucesso!', 'success');
-        setTimeout(() => {
+        if (!isAuthenticated) {
+            const password = prompt('Digite a senha de administrador:');
+            if (password === SYSTEM_CONFIG.adminPassword) {
+                localStorage.setItem('wildclash_authenticated', 'true');
+                showAlert(' Autenticado com sucesso!', 'success');
+            } else {
+                alert('Senha incorreta! Redirecionando...');
+                window.location.href = 'index.html';
+            }
+        }
+    } else {
+        // Para login.html
+        if (authToken && authToken.includes('admin_fixed_token')) {
             showDashboard();
             loadDashboardStats();
-        }, 1000);
-        return;
-    }
-    
-    // Se as credenciais fixas falharem, tentar API (opcional)
-    try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-        
-        // Se a API não existir ou falhar, mostrar erro
-        if (!response.ok) {
-            throw new Error('Credenciais inválidas ou servidor indisponível');
-        }
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            authToken = data.token;
-            localStorage.setItem('wildclash_admin_token', authToken);
-            localStorage.setItem('wildclash_admin_user', JSON.stringify(data.user));
-            
-            showAlert(loginAlert, 'Login realizado com sucesso!', 'success');
-            setTimeout(() => {
-                showDashboard();
-                loadDashboardStats();
-            }, 1000);
         } else {
-            showAlert(loginAlert, data.error || 'Credenciais inválidas', 'error');
+            showLogin();
         }
-    } catch (error) {
-        showAlert(loginAlert, ' Credenciais inválidas. Use: admin123 / admin123', 'error');
     }
-});
-
-// Logout
-logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('wildclash_admin_token');
-    localStorage.removeItem('wildclash_admin_user');
-    authToken = null;
-    showLogin();
-    showAlert(loginAlert, ' Logout realizado com sucesso!', 'success');
-});
-
-// Navegação
-navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        // Remover classe active de todos
-        navLinks.forEach(l => l.classList.remove('active'));
-        // Adicionar ao clicado
-        link.classList.add('active');
-        
-        // Mostrar página correspondente
-        const page = link.getAttribute('data-page');
-        showPage(page);
-    });
-});
-
-// Botão de ação rápida
-document.getElementById('quickGenerateBtn')?.addEventListener('click', () => {
-    showPage('generate');
-});
-
-// Formulário de geração de código
-const generateForm = document.getElementById('generateForm');
-const generateAlert = document.getElementById('generateAlert');
-const generatedCodeSection = document.getElementById('generatedCodeSection');
-const generatedCodeInput = document.getElementById('generatedCode');
-
-if (generateForm) {
-    generateForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const codeData = {
-            team_name: document.getElementById('teamName').value,
-            coach_name: document.getElementById('coachName').value || null,
-            coach_email: document.getElementById('coachEmail').value || null,
-            expires_in_days: parseInt(document.getElementById('expiryDays').value),
-            max_uses: parseInt(document.getElementById('maxUses').value),
-            notes: document.getElementById('notes').value || null
-        };
-        
-        // Validação básica
-        if (!codeData.team_name) {
-            showAlert(generateAlert, ' Nome do time é obrigatório', 'error');
-            return;
-        }
-        
-        try {
-            // Tentar API primeiro
-            let response;
-            try {
-                response = await fetch(`${API_URL}/codes/generate`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
-                    },
-                    body: JSON.stringify(codeData)
-                });
-            } catch (apiError) {
-                // Se API falhar, gerar código localmente
-                console.log('API não disponível, gerando código localmente...');
-                response = { ok: false };
-            }
-            
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    showAlert(generateAlert, ' Código gerado com sucesso!', 'success');
-                    generatedCodeInput.value = data.data.code;
-                    generatedCodeSection.style.display = 'block';
-                    generateForm.reset();
-                    
-                    // Atualizar estatísticas
-                    loadDashboardStats();
-                } else {
-                    throw new Error(data.error || 'Erro ao gerar código');
-                }
-            } else {
-                // Gerar código localmente
-                const code = generateRandomCode();
-                const generatedData = {
-                    id: Date.now(),
-                    code: code,
-                    team_name: codeData.team_name,
-                    coach_name: codeData.coach_name,
-                    coach_email: codeData.coach_email,
-                    created_at: new Date().toISOString(),
-                    expires_at: new Date(Date.now() + (codeData.expires_in_days * 24 * 60 * 60 * 1000)).toISOString(),
-                    max_uses: codeData.max_uses,
-                    current_uses: 0,
-                    notes: codeData.notes,
-                    is_expired: false,
-                    is_max_used: false
-                };
-                
-                // Salvar no localStorage
-                saveCodeToLocalStorage(generatedData);
-                
-                showAlert(generateAlert, ' Código gerado localmente com sucesso!', 'success');
-                generatedCodeInput.value = code;
-                generatedCodeSection.style.display = 'block';
-                generateForm.reset();
-                
-                // Atualizar estatísticas
-                loadDashboardStats();
-                // Recarregar lista de códigos se estiver na página
-                if (currentPage === 'codes') {
-                    loadCodes(1);
-                }
-            }
-        } catch (error) {
-            showAlert(generateAlert, ` ${error.message}`, 'error');
-        }
-    });
 }
-
-// Busca de códigos
-document.getElementById('searchCodes')?.addEventListener('input', debounce(() => {
-    currentPageNumber = 1;
-    loadCodes(1);
-}, 500));
-
-// Paginação
-document.getElementById('prevPage')?.addEventListener('click', () => {
-    if (currentPageNumber > 1) {
-        currentPageNumber--;
-        loadCodes(currentPageNumber);
-    }
-});
-
-document.getElementById('nextPage')?.addEventListener('click', () => {
-    currentPageNumber++;
-    loadCodes(currentPageNumber);
-});
-
-// ========== FUNÇÕES PRINCIPAIS ==========
 
 function showLogin() {
     if (loginPage) loginPage.style.display = 'flex';
@@ -256,6 +121,488 @@ function showDashboard() {
     showPage(currentPage);
 }
 
+// Login MODIFICADO com credenciais fixas
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        // Limpar alerta anterior
+        clearAlert(loginAlert);
+        
+        // Verificação de credenciais fixas
+        if (username === FIXED_CREDENTIALS.username && password === FIXED_CREDENTIALS.password) {
+            // Login bem-sucedido com credenciais fixas
+            authToken = 'admin_fixed_token_' + Date.now();
+            localStorage.setItem('wildclash_admin_token', authToken);
+            localStorage.setItem('wildclash_admin_user', JSON.stringify({
+                username: username,
+                role: 'admin',
+                login_time: new Date().toISOString()
+            }));
+            
+            showAlert(loginAlert, ' Login realizado com sucesso!', 'success');
+            setTimeout(() => {
+                showDashboard();
+                loadDashboardStats();
+            }, 1000);
+        } else {
+            showAlert(loginAlert, ' Credenciais inválidas. Use: admin123 / admin123', 'error');
+        }
+    });
+}
+
+// Logout
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('wildclash_admin_token');
+        localStorage.removeItem('wildclash_admin_user');
+        localStorage.removeItem('wildclash_authenticated');
+        authToken = null;
+        
+        if (window.location.pathname.includes('admin-panel.html')) {
+            window.location.href = 'index.html';
+        } else {
+            showLogin();
+            showAlert(loginAlert, ' Logout realizado com sucesso!', 'success');
+        }
+    });
+}
+
+// ========== SISTEMA OFFLINE ==========
+function initSystem() {
+    // Carregar configurações
+    loadSettings();
+    
+    // Configurar modo offline
+    if (modeIndicator) {
+        modeIndicator.className = 'mode-indicator mode-offline';
+        modeIndicator.innerHTML = '🔴 Modo OFFLINE';
+    }
+    
+    // Atualizar informações do sistema
+    const systemVersion = document.getElementById('systemVersion');
+    const systemMode = document.getElementById('systemMode');
+    
+    if (systemVersion) systemVersion.textContent = SYSTEM_CONFIG.version;
+    if (systemMode) systemMode.textContent = 'OFFLINE';
+}
+
+function loadAllData() {
+    loadCodes();
+    loadSettings();
+    updateStats();
+    
+    // Renderizar tabelas se existirem
+    if (document.getElementById('allTableBody')) {
+        renderAllTables();
+    }
+}
+
+function saveAllData() {
+    saveCodes();
+    saveSettings();
+}
+
+// ========== GERENCIAMENTO DE CÓDIGOS ==========
+function loadCodes() {
+    try {
+        const saved = localStorage.getItem(SYSTEM_CONFIG.storageKey);
+        if (saved) {
+            codes = JSON.parse(saved);
+            
+            // Garantir estrutura correta
+            codes = codes.map(code => ({
+                id: code.id || generateId(),
+                code: code.code,
+                team_name: code.team_name || code.team,
+                coach_name: code.coach_name || code.coach,
+                coach_email: code.coach_email || code.email,
+                coach_phone: code.coach_phone || code.phone,
+                created_at: code.created_at || code.created,
+                expires_at: code.expires_at || code.expires,
+                validity_days: code.validity_days || code.validity,
+                current_uses: code.current_uses || code.uses || 0,
+                max_uses: code.max_uses || code.maxUses || 1,
+                status: code.status || 'active',
+                notes: code.notes || '',
+                is_active: code.is_active !== undefined ? code.is_active : true
+            }));
+        } else {
+            // Dados de exemplo
+            codes = [
+                {
+                    id: generateId(),
+                    code: 'WILDCLASH-001',
+                    team_name: 'Dragões de Fogo',
+                    coach_name: 'Carlos Silva',
+                    coach_email: 'carlos@email.com',
+                    coach_phone: '(11) 99999-9999',
+                    created_at: new Date().toISOString(),
+                    expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    validity_days: 7,
+                    current_uses: 0,
+                    max_uses: 1,
+                    status: 'active',
+                    notes: 'Time exemplo',
+                    is_active: true
+                },
+                {
+                    id: generateId(),
+                    code: 'TESTE123',
+                    team_name: 'Time de Teste',
+                    coach_name: 'Teste Coach',
+                    coach_email: 'teste@email.com',
+                    coach_phone: '(11) 99999-9999',
+                    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                    expires_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                    validity_days: 30,
+                    current_uses: 1,
+                    max_uses: 1,
+                    status: 'expired',
+                    notes: 'Para testes',
+                    is_active: true
+                },
+                {
+                    id: generateId(),
+                    code: 'USADO001',
+                    team_name: 'Time Usado',
+                    coach_name: 'Coach Usado',
+                    coach_email: 'usado@email.com',
+                    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                    expires_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+                    validity_days: 7,
+                    current_uses: 1,
+                    max_uses: 1,
+                    status: 'used',
+                    notes: 'Código já utilizado',
+                    is_active: true
+                }
+            ];
+            saveCodes();
+        }
+    } catch (error) {
+        console.error('Erro ao carregar códigos:', error);
+        codes = [];
+    }
+}
+
+function saveCodes() {
+    try {
+        localStorage.setItem(SYSTEM_CONFIG.storageKey, JSON.stringify(codes));
+    } catch (error) {
+        console.error('Erro ao salvar códigos:', error);
+        showAlert(' Erro ao salvar códigos!', 'error');
+    }
+}
+
+function loadSettings() {
+    try {
+        const saved = localStorage.getItem(SYSTEM_CONFIG.settingsKey);
+        settings = saved ? JSON.parse(saved) : {
+            defaultDays: 7,
+            defaultUses: 1,
+            codePrefix: 'WILDCLASH',
+            autoExpire: true,
+            lastBackup: null
+        };
+    } catch (error) {
+        console.error('Erro ao carregar configurações:', error);
+        settings = {};
+    }
+}
+
+function saveSettings() {
+    try {
+        localStorage.setItem(SYSTEM_CONFIG.settingsKey, JSON.stringify(settings));
+    } catch (error) {
+        console.error('Erro ao salvar configurações:', error);
+    }
+}
+
+// ========== FUNÇÕES DE VALIDAÇÃO OFFLINE ==========
+function validateCodeOffline(code) {
+    const codeUpper = code.trim().toUpperCase();
+    const now = new Date();
+    
+    // Códigos especiais
+    if (codeUpper === 'ADMIN123') {
+        return {
+            success: true,
+            isAdmin: true,
+            message: 'Código de administrador válido!'
+        };
+    }
+    
+    if (codeUpper === 'TESTE123') {
+        return {
+            success: true,
+            isTest: true,
+            message: 'Código de teste válido!',
+            data: {
+                code: 'TESTE123',
+                team_name: 'Equipe Teste',
+                coach_name: 'Coach Teste',
+                coach_email: 'teste@email.com',
+                expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                id: 999
+            }
+        };
+    }
+    
+    // Buscar código no banco local
+    const foundCode = codes.find(c => 
+        c.code.toUpperCase() === codeUpper && 
+        c.is_active === true
+    );
+    
+    if (!foundCode) {
+        return {
+            success: false,
+            error: 'Código não encontrado'
+        };
+    }
+    
+    // Verificar expiração
+    const expiresAt = new Date(foundCode.expires_at);
+    if (expiresAt < now) {
+        return {
+            success: false,
+            error: 'Código expirado'
+        };
+    }
+    
+    // Verificar se já foi usado completamente
+    if (foundCode.current_uses >= foundCode.max_uses) {
+        return {
+            success: false,
+            error: 'Código já foi usado o número máximo de vezes'
+        };
+    }
+    
+    // Verificar status
+    if (foundCode.status === 'used' || foundCode.status === 'expired') {
+        return {
+            success: false,
+            error: `Código ${foundCode.status === 'used' ? 'já utilizado' : 'expirado'}`
+        };
+    }
+    
+    // Código válido
+    return {
+        success: true,
+        message: 'Código válido!',
+        data: {
+            code: foundCode.code,
+            team_name: foundCode.team_name,
+            coach_name: foundCode.coach_name,
+            coach_email: foundCode.coach_email,
+            expires_at: foundCode.expires_at,
+            id: foundCode.id
+        }
+    };
+}
+
+function useCodeOffline(code) {
+    const codeUpper = code.trim().toUpperCase();
+    const foundCode = codes.find(c => c.code.toUpperCase() === codeUpper);
+    
+    if (!foundCode) {
+        return {
+            success: false,
+            error: 'Código não encontrado'
+        };
+    }
+    
+    // Verificar se pode ser usado
+    const validation = validateCodeOffline(code);
+    if (!validation.success) {
+        return validation;
+    }
+    
+    // Incrementar usos
+    foundCode.current_uses++;
+    
+    // Atualizar status se necessário
+    if (foundCode.current_uses >= foundCode.max_uses) {
+        foundCode.status = 'used';
+    }
+    
+    // Salvar alterações
+    saveCodes();
+    
+    return {
+        success: true,
+        message: 'Código marcado como usado com sucesso!',
+        current_uses: foundCode.current_uses,
+        max_uses: foundCode.max_uses
+    };
+}
+
+// ========== FUNÇÕES DO PAINEL ==========
+function generateCode(formData) {
+    const teamName = formData.get('team_name');
+    if (!teamName) {
+        showAlert(' Digite o nome do time!', 'error');
+        return null;
+    }
+
+    const validity = parseInt(formData.get('expires_in_days')) || settings.defaultDays || 7;
+    const maxUses = parseInt(formData.get('max_uses')) || settings.defaultUses || 1;
+    
+    // Gerar código único
+    const prefix = settings.codePrefix || 'WILDCLASH';
+    let code;
+    do {
+        const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+        code = `${prefix}-${random}`;
+    } while (codes.some(c => c.code === code));
+
+    const newCode = {
+        id: generateId(),
+        code: code,
+        team_name: teamName,
+        coach_name: formData.get('coach_name') || '',
+        coach_email: formData.get('coach_email') || '',
+        coach_phone: formData.get('coach_phone') || '',
+        created_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + validity * 24 * 60 * 60 * 1000).toISOString(),
+        validity_days: validity,
+        current_uses: 0,
+        max_uses: maxUses,
+        status: 'active',
+        notes: formData.get('notes') || '',
+        is_active: true
+    };
+
+    codes.push(newCode);
+    saveCodes();
+    updateStats();
+    
+    // Renderizar tabelas se estiverem visíveis
+    renderAllTables();
+    
+    return newCode;
+}
+
+function generateMultipleCodes(quantity, prefix, validity, maxUses) {
+    const generated = [];
+    for (let i = 1; i <= quantity; i++) {
+        const teamName = prefix ? `${prefix}${i}` : `Time ${i}`;
+        
+        const code = {
+            id: generateId(),
+            code: generateUniqueCode(),
+            team_name: teamName,
+            coach_name: '',
+            coach_email: '',
+            coach_phone: '',
+            created_at: new Date().toISOString(),
+            expires_at: new Date(Date.now() + validity * 24 * 60 * 60 * 1000).toISOString(),
+            validity_days: validity,
+            current_uses: 0,
+            max_uses: maxUses,
+            status: 'active',
+            notes: `Código ${i} de ${quantity}`,
+            is_active: true
+        };
+        
+        codes.push(code);
+        generated.push(code);
+    }
+    
+    saveCodes();
+    updateStats();
+    renderAllTables();
+    
+    return generated;
+}
+
+function deleteCode(codeId) {
+    showConfirm('Excluir Código', 'Tem certeza que deseja excluir este código?\nEsta ação não pode ser desfeita.', () => {
+        codes = codes.filter(c => c.id !== codeId);
+        saveCodes();
+        updateStats();
+        renderAllTables();
+        showAlert(' Código excluído com sucesso!', 'success');
+    });
+}
+
+function useCode(codeId) {
+    const code = codes.find(c => c.id === codeId);
+    if (code) {
+        code.current_uses++;
+        if (code.current_uses >= code.max_uses) {
+            code.status = 'used';
+        }
+        saveCodes();
+        updateStats();
+        renderAllTables();
+        showAlert(' Código marcado como usado!', 'success');
+    }
+}
+
+function viewCode(codeId) {
+    const code = codes.find(c => c.id === codeId);
+    if (!code) return;
+    
+    const details = document.getElementById('codeDetails');
+    const created = new Date(code.created_at);
+    const expires = new Date(code.expires_at);
+    const now = new Date();
+    const isExpired = expires < now;
+    const isUsed = code.current_uses >= code.max_uses;
+    
+    if (details) {
+        details.innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: var(--primary-color);">Informações do Código</h4>
+                <p><strong>Código:</strong> <span style="font-size: 1.2em; font-weight: bold;">${code.code}</span></p>
+                <p><strong>Time:</strong> ${code.team_name}</p>
+                <p><strong>Coach:</strong> ${code.coach_name || '-'}</p>
+                <p><strong>Email:</strong> ${code.coach_email || '-'}</p>
+                <p><strong>Telefone:</strong> ${code.coach_phone || '-'}</p>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: var(--primary-color);">Configurações</h4>
+                <p><strong>Dias de Validade:</strong> ${code.validity_days}</p>
+                <p><strong>Usos:</strong> ${code.current_uses}/${code.max_uses}</p>
+                <p><strong>Criado em:</strong> ${formatDate(created)}</p>
+                <p><strong>Expira em:</strong> ${formatDate(expires)}</p>
+                <p><strong>Status:</strong> <span class="status-badge ${getStatusClass(code.status)}">
+                    ${getStatusText(code.status)}</span></p>
+            </div>
+            
+            ${code.notes ? `
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: var(--primary-color);">Observações</h4>
+                <p>${code.notes}</p>
+            </div>
+            ` : ''}
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="copyToClipboard('${code.code}')">
+                    <i class="fas fa-copy"></i> Copiar Código
+                </button>
+                ${!isUsed && !isExpired ? `
+                <button class="btn btn-success" onclick="useCode('${code.id}'); closeModal('viewModal');">
+                    <i class="fas fa-check"></i> Marcar como Usado
+                </button>
+                ` : ''}
+                <button class="btn" onclick="closeModal('viewModal')">
+                    <i class="fas fa-times"></i> Fechar
+                </button>
+            </div>
+        `;
+        
+        showModal('viewModal');
+    }
+}
+
+// ========== NAVEGAÇÃO E INTERFACE ==========
 function showPage(page) {
     currentPage = page;
     
@@ -283,7 +630,7 @@ function showPage(page) {
             loadDashboardStats();
             break;
         case 'codes':
-            loadCodes(1);
+            loadCodesPage();
             break;
         case 'stats':
             loadStats();
@@ -291,71 +638,299 @@ function showPage(page) {
     }
 }
 
-async function checkAuth() {
-    // Com login fixo, basta verificar se existe o token
-    if (authToken && authToken.includes('admin_fixed_token')) {
-        showDashboard();
-        loadDashboardStats();
-    } else {
-        showLogin();
+function openTab(tabId) {
+    // Esconder todas as tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remover active de todos os botões
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Mostrar tab selecionada
+    document.getElementById(tabId).classList.add('active');
+    
+    // Ativar botão correspondente
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+    
+    // Atualizar dados da tab
+    currentTab = tabId;
+    const type = tabId.replace('-tab', '');
+    if (type === 'all' || type === 'available' || type === 'used' || type === 'expired') {
+        renderTable(type);
     }
 }
 
-// ========== FUNÇÕES DO DASHBOARD ==========
+function loadCodesPage() {
+    renderTable('all');
+}
 
-async function loadDashboardStats() {
-    try {
-        // Tentar API primeiro
-        let data;
-        try {
-            const response = await fetch(`${API_URL}/codes/list?limit=1`, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            });
-            if (response.ok) {
-                const result = await response.json();
-                if (result.success && result.stats) {
-                    data = result.stats;
-                }
-            }
-        } catch (apiError) {
-            // Se API falhar, usar dados locais
-            data = getLocalStats();
-        }
-        
-        // Usar dados locais se API não retornou
-        if (!data) {
-            data = getLocalStats();
-        }
-        
-        // Atualizar UI
-        updateStatsUI(data);
-        
-    } catch (error) {
-        console.error('Erro ao carregar estatísticas:', error);
-        // Usar dados locais em caso de erro
-        const localStats = getLocalStats();
-        updateStatsUI(localStats);
+function renderTable(type) {
+    let filteredCodes = [];
+    const now = new Date();
+    
+    switch(type) {
+        case 'available':
+            filteredCodes = codes.filter(c => 
+                c.status === 'active' && 
+                new Date(c.expires_at) > now &&
+                c.current_uses < c.max_uses &&
+                c.is_active === true
+            );
+            break;
+            
+        case 'used':
+            filteredCodes = codes.filter(c => 
+                (c.status === 'used' || c.current_uses >= c.max_uses) &&
+                c.is_active === true
+            );
+            break;
+            
+        case 'expired':
+            filteredCodes = codes.filter(c => 
+                (c.status === 'expired' || new Date(c.expires_at) <= now) &&
+                c.is_active === true
+            );
+            break;
+            
+        case 'all':
+            filteredCodes = codes.filter(c => c.is_active === true);
+            break;
     }
+    
+    // Aplicar busca
+    const searchInput = document.getElementById(`search${type.charAt(0).toUpperCase() + type.slice(1)}`);
+    if (searchInput && searchInput.value) {
+        const searchTerm = searchInput.value.toLowerCase();
+        filteredCodes = filteredCodes.filter(code => 
+            code.code.toLowerCase().includes(searchTerm) ||
+            code.team_name.toLowerCase().includes(searchTerm) ||
+            (code.coach_name && code.coach_name.toLowerCase().includes(searchTerm))
+        );
+    }
+    
+    // Paginação
+    const page = currentPageNumbers[type] || 1;
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedCodes = filteredCodes.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(filteredCodes.length / itemsPerPage);
+    
+    // Renderizar tabela
+    const tbody = document.getElementById(`${type}TableBody`);
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    if (paginatedCodes.length === 0) {
+        const colSpan = type === 'all' ? 8 : (type === 'available' ? 7 : 6);
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align: center; padding: 40px;">Nenhum código encontrado</td></tr>`;
+    } else {
+        paginatedCodes.forEach(code => {
+            const row = createTableRow(code, type);
+            tbody.appendChild(row);
+        });
+    }
+    
+    // Renderizar paginação
+    renderPagination(type, page, totalPages);
+}
+
+function renderAllTables() {
+    renderTable('all');
+    renderTable('available');
+    renderTable('used');
+    renderTable('expired');
+}
+
+function createTableRow(code, type) {
+    const row = document.createElement('tr');
+    const created = new Date(code.created_at);
+    const expires = new Date(code.expires_at);
+    
+    switch(type) {
+        case 'available':
+            row.innerHTML = `
+                <td><strong>${code.code}</strong></td>
+                <td>${code.team_name}</td>
+                <td>${code.validity_days}</td>
+                <td>${code.current_uses}/${code.max_uses}</td>
+                <td>${formatDate(expires)}</td>
+                <td>${formatDate(created)}</td>
+                <td class="actions-cell">
+                    <button class="action-btn view" onclick="viewCode('${code.id}')" title="Visualizar">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn delete" onclick="deleteCode('${code.id}')" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            break;
+            
+        case 'used':
+            const usedDate = code.current_uses > 0 ? new Date() : '-';
+            row.innerHTML = `
+                <td><strong>${code.code}</strong></td>
+                <td>${code.team_name}</td>
+                <td>${code.coach_name || '-'}</td>
+                <td>${code.current_uses}/${code.max_uses}</td>
+                <td>${code.current_uses > 0 ? formatDate(usedDate) : '-'}</td>
+                <td>${formatDate(created)}</td>
+                <td>
+                    <button class="btn" onclick="viewCode('${code.id}')">
+                        <i class="fas fa-history"></i> Detalhes
+                    </button>
+                </td>
+            `;
+            break;
+            
+        case 'expired':
+            row.innerHTML = `
+                <td><strong>${code.code}</strong></td>
+                <td>${code.team_name}</td>
+                <td>${code.coach_name || '-'}</td>
+                <td>${code.validity_days}</td>
+                <td>${formatDate(expires)}</td>
+                <td>${formatDate(created)}</td>
+                <td class="actions-cell">
+                    <button class="action-btn view" onclick="viewCode('${code.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn delete" onclick="deleteCode('${code.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            break;
+            
+        case 'all':
+            row.innerHTML = `
+                <td><strong>${code.code}</strong></td>
+                <td>${code.team_name}</td>
+                <td><span class="status-badge ${getStatusClass(code.status)}">${getStatusText(code.status)}</span></td>
+                <td>${code.current_uses}/${code.max_uses}</td>
+                <td>${code.validity_days} dias</td>
+                <td>${formatDate(created)}</td>
+                <td>${formatDate(expires)}</td>
+                <td class="actions-cell">
+                    <button class="action-btn view" onclick="viewCode('${code.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn delete" onclick="deleteCode('${code.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            break;
+    }
+    
+    return row;
+}
+
+function renderPagination(type, currentPage, totalPages) {
+    const pagination = document.getElementById(`${type}Pagination`);
+    if (!pagination || totalPages <= 1) {
+        if (pagination) pagination.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    
+    // Botão anterior
+    html += `<button class="page-btn" ${currentPage <= 1 ? 'disabled' : ''} 
+             onclick="changePage('${type}', ${currentPage - 1})">&laquo;</button>`;
+    
+    // Números das páginas
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+            html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" 
+                     onclick="changePage('${type}', ${i})">${i}</button>`;
+        } else if (i === currentPage - 3 || i === currentPage + 3) {
+            html += `<span class="page-btn">...</span>`;
+        }
+    }
+    
+    // Botão próximo
+    html += `<button class="page-btn" ${currentPage >= totalPages ? 'disabled' : ''} 
+             onclick="changePage('${type}', ${currentPage + 1})">&raquo;</button>`;
+    
+    pagination.innerHTML = html;
+}
+
+function changePage(type, page) {
+    currentPageNumbers[type] = page;
+    renderTable(type);
+}
+
+function searchCodes(type) {
+    renderTable(type);
+}
+
+// ========== DASHBOARD E ESTATÍSTICAS ==========
+function loadDashboardStats() {
+    const data = getLocalStats();
+    updateStatsUI(data);
 }
 
 function getLocalStats() {
-    const codes = getCodesFromLocalStorage();
     const now = new Date();
     
-    const totalCodes = codes.length;
-    const usedCodes = codes.filter(code => code.current_uses >= code.max_uses).length;
-    const expiredCodes = codes.filter(code => new Date(code.expires_at) < now).length;
-    const availableCodes = codes.filter(code => 
-        code.current_uses < code.max_uses && 
-        new Date(code.expires_at) >= now
-    ).length;
-    
-    return {
-        total_codes: totalCodes,
-        used_codes: usedCodes,
-        expired_codes: expiredCodes,
-        available_codes: availableCodes
+    const stats = {
+        total_codes: codes.filter(c => c.is_active === true).length,
+        available_codes: codes.filter(c => 
+            c.status === 'active' && 
+            new Date(c.expires_at) > now &&
+            c.current_uses < c.max_uses &&
+            c.is_active === true
+        ).length,
+        used_codes: codes.filter(c => 
+            (c.status === 'used' || c.current_uses >= c.max_uses) &&
+            c.is_active === true
+        ).length,
+        expired_codes: codes.filter(c => 
+            (c.status === 'expired' || new Date(c.expires_at) <= now) &&
+            c.is_active === true
+        ).length
     };
+    
+    return stats;
+}
+
+function updateStats() {
+    const stats = getLocalStats();
+    
+    // Atualizar dashboard admin.html
+    const elements = {
+        totalCodes: document.getElementById('totalCodes'),
+        usedCodes: document.getElementById('usedCodes'),
+        availableCodes: document.getElementById('availableCodes'),
+        expiredCodes: document.getElementById('expiredCodes')
+    };
+    
+    if (elements.totalCodes) elements.totalCodes.textContent = stats.total_codes || 0;
+    if (elements.usedCodes) elements.usedCodes.textContent = stats.used_codes || 0;
+    if (elements.availableCodes) elements.availableCodes.textContent = stats.available_codes || 0;
+    if (elements.expiredCodes) elements.expiredCodes.textContent = stats.expired_codes || 0;
+    
+    // Atualizar admin-panel.html
+    const panelElements = {
+        totalCount: document.getElementById('totalCount'),
+        availableCount: document.getElementById('availableCount'),
+        usedCount: document.getElementById('usedCount'),
+        expiredCount: document.getElementById('expiredCount'),
+        systemTotalCodes: document.getElementById('systemTotalCodes')
+    };
+    
+    if (panelElements.totalCount) panelElements.totalCount.textContent = stats.total_codes;
+    if (panelElements.availableCount) panelElements.availableCount.textContent = stats.available_codes;
+    if (panelElements.usedCount) panelElements.usedCount.textContent = stats.used_codes;
+    if (panelElements.expiredCount) panelElements.expiredCount.textContent = stats.expired_codes;
+    if (panelElements.systemTotalCodes) panelElements.systemTotalCodes.textContent = stats.total_codes;
 }
 
 function updateStatsUI(stats) {
@@ -372,293 +947,142 @@ function updateStatsUI(stats) {
     if (elements.expiredCodes) elements.expiredCodes.textContent = stats.expired_codes || 0;
 }
 
-// ========== FUNÇÕES DE GERENCIAMENTO DE CÓDIGOS ==========
-
-async function loadCodes(page = 1) {
-    try {
-        const search = document.getElementById('searchCodes')?.value || '';
-        let codes = [];
-        
-        // Tentar API primeiro
-        try {
-            let url = `${API_URL}/codes/list?page=${page}&limit=${itemsPerPage}`;
-            if (search) {
-                url += `&search=${encodeURIComponent(search)}`;
-            }
-            
-            const response = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    codes = data.data;
-                    // Atualizar paginação
-                    if (data.pagination) {
-                        updatePagination(data.pagination);
-                    }
-                }
-            }
-        } catch (apiError) {
-            // Se API falhar, usar dados locais
-            codes = getCodesFromLocalStorage();
-            
-            // Aplicar busca local
-            if (search) {
-                const searchLower = search.toLowerCase();
-                codes = codes.filter(code => 
-                    code.code.toLowerCase().includes(searchLower) ||
-                    code.team_name.toLowerCase().includes(searchLower) ||
-                    (code.coach_name && code.coach_name.toLowerCase().includes(searchLower)) ||
-                    (code.coach_email && code.coach_email.toLowerCase().includes(searchLower))
-                );
-            }
-            
-            // Paginação local
-            const startIndex = (page - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const paginatedCodes = codes.slice(startIndex, endIndex);
-            
-            updatePagination({
-                page: page,
-                total: codes.length,
-                has_next: endIndex < codes.length,
-                has_prev: page > 1
-            });
-            
-            codes = paginatedCodes;
-        }
-        
-        // Renderizar tabela
-        renderCodesTable(codes);
-        
-    } catch (error) {
-        console.error('Erro ao carregar códigos:', error);
-        showAlert(document.getElementById('generateAlert') || loginAlert, 'Erro ao carregar códigos', 'error');
-    }
-}
-
-function renderCodesTable(codes) {
-    const tbody = document.getElementById('codesTableBody');
-    if (!tbody) return;
+function loadStats() {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
     
-    tbody.innerHTML = '';
+    // Cálculos
+    const totalUses = codes.reduce((sum, code) => sum + (code.current_uses || 0), 0);
+    const totalCodes = codes.length;
+    const usageRate = totalCodes > 0 ? Math.round((totalUses / (totalCodes * 3)) * 100) : 0;
     
-    if (codes.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="7" style="text-align: center; padding: 30px; color: var(--admin-gray);">
-                    Nenhum código encontrado
-                </td>
-            </tr>
-        `;
-        return;
-    }
+    const todayCodes = codes.filter(code => {
+        const created = new Date(code.created_at);
+        return created >= today;
+    }).length;
     
-    codes.forEach(code => {
-        const row = document.createElement('tr');
-        
-        // Determinar status
-        let status = '';
-        let badgeClass = '';
-        const now = new Date();
-        const expiresAt = new Date(code.expires_at);
-        
-        if (code.current_uses >= code.max_uses) {
-            status = 'USADO';
-            badgeClass = 'badge-success';
-        } else if (expiresAt < now) {
-            status = 'EXPIRADO';
-            badgeClass = 'badge-danger';
-        } else {
-            status = 'DISPONÍVEL';
-            badgeClass = 'badge-info';
-        }
-        
-        // Formatar data de expiração
-        const formattedDate = expiresAt.toLocaleDateString('pt-BR');
-        
-        row.innerHTML = `
-            <td><strong>${code.code}</strong></td>
-            <td>${code.team_name || '-'}</td>
-            <td>${code.coach_name || '-'}</td>
-            <td><span class="badge ${badgeClass}">${status}</span></td>
-            <td>${formattedDate}</td>
-            <td>${code.current_uses || 0}/${code.max_uses || 1}</td>
-            <td>
-                <button class="btn" onclick="deleteCode(${code.id})" title="Deletar">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-        `;
-        
-        tbody.appendChild(row);
-    });
-}
-
-function updatePagination(pagination) {
-    const pageInfo = document.getElementById('pageInfo');
-    const prevBtn = document.getElementById('prevPage');
-    const nextBtn = document.getElementById('nextPage');
+    const weekCodes = codes.filter(code => {
+        const created = new Date(code.created_at);
+        return created >= weekAgo;
+    }).length;
     
-    if (pageInfo) {
-        const totalPages = Math.ceil(pagination.total / itemsPerPage);
-        pageInfo.textContent = `Página ${pagination.page} de ${totalPages || 1}`;
-    }
+    // Atualizar UI
+    const totalUsesEl = document.getElementById('totalUses');
+    const usageRateEl = document.getElementById('usageRate');
+    const todayCodesEl = document.getElementById('todayCodes');
+    const weekCodesEl = document.getElementById('weekCodes');
     
-    if (prevBtn) {
-        prevBtn.disabled = !pagination.has_prev && pagination.page <= 1;
-    }
-    
-    if (nextBtn) {
-        nextBtn.disabled = !pagination.has_next;
-    }
-}
-
-// ========== FUNÇÕES DE ESTATÍSTICAS ==========
-
-async function loadStats() {
-    try {
-        const codes = getCodesFromLocalStorage();
-        const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-        
-        // Cálculos
-        const totalUses = codes.reduce((sum, code) => sum + (code.current_uses || 0), 0);
-        const totalCodes = codes.length;
-        const usageRate = totalCodes > 0 ? Math.round((totalUses / (totalCodes * 3)) * 100) : 0; // Estimativa
-        
-        const todayCodes = codes.filter(code => {
-            const created = new Date(code.created_at);
-            return created >= today;
-        }).length;
-        
-        const weekCodes = codes.filter(code => {
-            const created = new Date(code.created_at);
-            return created >= weekAgo;
-        }).length;
-        
-        // Atualizar UI
-        const totalUsesEl = document.getElementById('totalUses');
-        const usageRateEl = document.getElementById('usageRate');
-        const todayCodesEl = document.getElementById('todayCodes');
-        const weekCodesEl = document.getElementById('weekCodes');
-        
-        if (totalUsesEl) totalUsesEl.textContent = totalUses;
-        if (usageRateEl) usageRateEl.textContent = `${usageRate}%`;
-        if (todayCodesEl) todayCodesEl.textContent = todayCodes;
-        if (weekCodesEl) weekCodesEl.textContent = weekCodes;
-        
-    } catch (error) {
-        console.error('Erro ao carregar estatísticas:', error);
-    }
-}
-
-// ========== FUNÇÕES DE CRUD LOCAL ==========
-
-function generateRandomCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
-    for (let i = 0; i < 12; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-        if ((i + 1) % 4 === 0 && i < 11) {
-            code += '-';
-        }
-    }
-    return code;
-}
-
-function saveCodeToLocalStorage(codeData) {
-    const codes = getCodesFromLocalStorage();
-    codes.push(codeData);
-    localStorage.setItem('wildclash_admin_codes', JSON.stringify(codes));
-    return codeData;
-}
-
-function getCodesFromLocalStorage() {
-    const codesJson = localStorage.getItem('wildclash_admin_codes');
-    return codesJson ? JSON.parse(codesJson) : [];
-}
-
-function deleteCodeFromLocalStorage(codeId) {
-    const codes = getCodesFromLocalStorage();
-    const filteredCodes = codes.filter(code => code.id !== codeId);
-    localStorage.setItem('wildclash_admin_codes', JSON.stringify(filteredCodes));
-    return true;
-}
-
-// ========== FUNÇÕES DE CONTROLE ==========
-
-async function deleteCode(codeId) {
-    if (!confirm('Tem certeza que deseja deletar este código?\nEsta ação não pode ser desfeita.')) {
-        return;
-    }
-    
-    try {
-        // Tentar deletar na API
-        let deleted = false;
-        try {
-            const response = await fetch(`${API_URL}/codes/${codeId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    deleted = true;
-                }
-            }
-        } catch (apiError) {
-            console.log('API não disponível, deletando localmente...');
-        }
-        
-        // Se API não deletou ou falhou, deletar localmente
-        if (!deleted) {
-            deleteCodeFromLocalStorage(codeId);
-        }
-        
-        // Recarregar dados
-        loadDashboardStats();
-        loadCodes(currentPageNumber);
-        
-        showAlert(generateAlert || loginAlert, ' Código deletado com sucesso!', 'success');
-        
-    } catch (error) {
-        showAlert(generateAlert || loginAlert, ' Erro ao deletar código', 'error');
-    }
-}
-
-// Copiar código para área de transferência
-function copyToClipboard() {
-    const code = generatedCodeInput?.value;
-    if (!code) return;
-    
-    navigator.clipboard.writeText(code).then(() => {
-        alert(' Código copiado para a área de transferência!');
-    }).catch(err => {
-        console.error('Erro ao copiar:', err);
-        alert(' Erro ao copiar código');
-    });
+    if (totalUsesEl) totalUsesEl.textContent = totalUses;
+    if (usageRateEl) usageRateEl.textContent = `${usageRate}%`;
+    if (todayCodesEl) todayCodesEl.textContent = todayCodes;
+    if (weekCodesEl) weekCodesEl.textContent = weekCodes;
 }
 
 // ========== FUNÇÕES UTILITÁRIAS ==========
+function formatDate(date) {
+    if (!date || isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString('pt-BR');
+}
 
-function showAlert(element, message, type = 'info') {
-    if (!element) return;
-    
-    element.textContent = message;
-    element.className = `alert alert-${type}`;
-    element.style.display = 'block';
-    
-    // Auto-ocultar após 5 segundos para mensagens de sucesso/info
-    if (type === 'success' || type === 'info') {
-        setTimeout(() => {
-            element.style.display = 'none';
-        }, 5000);
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}
+
+function generateUniqueCode() {
+    const prefix = settings.codePrefix || 'WILDCLASH';
+    let code;
+    do {
+        const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+        code = `${prefix}-${random}`;
+    } while (codes.some(c => c.code === code));
+    return code;
+}
+
+function getStatusClass(status) {
+    switch(status) {
+        case 'active': return 'status-active';
+        case 'used': return 'status-used';
+        case 'expired': return 'status-expired';
+        case 'cancelled': return 'status-cancelled';
+        default: return '';
     }
+}
+
+function getStatusText(status) {
+    switch(status) {
+        case 'active': return 'Ativo';
+        case 'used': return 'Usado';
+        case 'expired': return 'Expirado';
+        case 'cancelled': return 'Cancelado';
+        default: return status;
+    }
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showAlert(' Código copiado para área de transferência!', 'success');
+    }).catch(err => {
+        showAlert(' Erro ao copiar código', 'error');
+    });
+}
+
+// ========== MODAIS E ALERTAS ==========
+function showModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.add('active');
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.remove('active');
+}
+
+function showConfirm(title, message, callback) {
+    const confirmTitle = document.getElementById('confirmTitle');
+    const confirmMessage = document.getElementById('confirmMessage');
+    
+    if (confirmTitle && confirmMessage) {
+        confirmTitle.textContent = title;
+        confirmMessage.textContent = message;
+        pendingAction = callback;
+        showModal('confirmModal');
+    }
+}
+
+function confirmAction(proceed) {
+    closeModal('confirmModal');
+    if (proceed && pendingAction) {
+        pendingAction();
+    }
+    pendingAction = null;
+}
+
+function showAlert(message, type = 'info') {
+    let container = document.getElementById('alertContainer');
+    if (!container) {
+        container = document.getElementById('loginAlert')?.parentElement;
+    }
+    
+    if (!container) {
+        console.log(message);
+        return;
+    }
+    
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type}`;
+    alert.innerHTML = `
+        ${message}
+        <span class="close" onclick="this.parentElement.remove()">&times;</span>
+    `;
+    container.appendChild(alert);
+    
+    // Remover automaticamente após 5 segundos
+    setTimeout(() => {
+        if (alert.parentElement) {
+            alert.remove();
+        }
+    }, 5000);
 }
 
 function clearAlert(element) {
@@ -667,6 +1091,471 @@ function clearAlert(element) {
     element.style.display = 'none';
 }
 
+// ========== EXPORTAÇÃO/IMPORTAÇÃO ==========
+function exportToCSV() {
+    const headers = ['Código', 'Time', 'Coach', 'Email', 'Telefone', 'Validade (dias)', 'Usos', 'Máx Usos', 'Status', 'Criado em', 'Expira em'];
+    const rows = codes.map(code => [
+        `"${code.code}"`,
+        `"${code.team_name}"`,
+        `"${code.coach_name || ''}"`,
+        `"${code.coach_email || ''}"`,
+        `"${code.coach_phone || ''}"`,
+        code.validity_days,
+        code.current_uses,
+        code.max_uses,
+        code.status,
+        `"${formatDate(new Date(code.created_at))}"`,
+        `"${formatDate(new Date(code.expires_at))}"`
+    ]);
+    
+    const csv = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `wildclash-codes-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showAlert(' Códigos exportados em CSV!', 'success');
+}
+
+function exportGeneratedCodes(generatedCodes) {
+    const text = generatedCodes.map(code => `${code.code} - ${code.team_name}`).join('\n');
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `wildclash-codes-gerados-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function importFromFile() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,.csv,.txt';
+    
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const content = e.target.result;
+                
+                if (file.name.endsWith('.json')) {
+                    const imported = JSON.parse(content);
+                    if (imported.codes && Array.isArray(imported.codes)) {
+                        // Mesclar códigos
+                        imported.codes.forEach(newCode => {
+                            if (!codes.some(c => c.code === newCode.code)) {
+                                codes.push({
+                                    ...newCode,
+                                    id: newCode.id || generateId()
+                                });
+                            }
+                        });
+                        
+                        saveCodes();
+                        updateStats();
+                        renderAllTables();
+                        showAlert(` ${imported.codes.length} códigos importados!`, 'success');
+                    }
+                } else if (file.name.endsWith('.csv')) {
+                    // Implementar importação CSV se necessário
+                    showAlert(' Importação CSV em desenvolvimento', 'warning');
+                } else {
+                    showAlert(' Formato de arquivo não suportado', 'error');
+                }
+            } catch (error) {
+                showAlert(' Erro ao importar arquivo!', 'error');
+            }
+        };
+        reader.readAsText(file);
+    };
+    
+    input.click();
+}
+
+function backupData() {
+    const backup = {
+        codes: codes,
+        settings: settings,
+        backupDate: new Date().toISOString(),
+        version: SYSTEM_CONFIG.version
+    };
+    
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `wildclash-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    settings.lastBackup = new Date().toISOString();
+    saveSettings();
+    
+    const systemLastBackup = document.getElementById('systemLastBackup');
+    if (systemLastBackup) systemLastBackup.textContent = formatDate(new Date());
+    showAlert(' Backup realizado com sucesso!', 'success');
+}
+
+function resetData() {
+    showConfirm('Resetar Dados', ' ATENÇÃO: Esta ação apagará TODOS os códigos e configurações. Tem certeza?', () => {
+        codes = [];
+        settings = {
+            defaultDays: 7,
+            defaultUses: 1,
+            codePrefix: 'WILDCLASH',
+            autoExpire: true,
+            lastBackup: null
+        };
+        
+        saveCodes();
+        saveSettings();
+        updateStats();
+        renderAllTables();
+        
+        showAlert(' Todos os dados foram resetados!', 'success');
+    });
+}
+
+// ========== CONFIGURAÇÕES ==========
+function saveSettings() {
+    const configDefaultDays = document.getElementById('configDefaultDays');
+    const configDefaultUses = document.getElementById('configDefaultUses');
+    const configCodePrefix = document.getElementById('configCodePrefix');
+    const configAutoExpire = document.getElementById('configAutoExpire');
+    const configPassword = document.getElementById('configPassword');
+    
+    if (configDefaultDays) settings.defaultDays = parseInt(configDefaultDays.value) || 7;
+    if (configDefaultUses) settings.defaultUses = parseInt(configDefaultUses.value) || 1;
+    if (configCodePrefix) settings.codePrefix = configCodePrefix.value || 'WILDCLASH';
+    if (configAutoExpire) settings.autoExpire = configAutoExpire.value === 'true';
+    
+    if (configPassword && configPassword.value) {
+        SYSTEM_CONFIG.adminPassword = configPassword.value;
+        configPassword.value = '';
+        showAlert(' Senha alterada com sucesso!', 'success');
+    }
+    
+    saveAllData();
+    showAlert(' Configurações salvas!', 'success');
+}
+
+function checkExpiredCodes() {
+    if (!settings.autoExpire) return;
+    
+    const now = new Date();
+    let updated = false;
+    
+    codes.forEach(code => {
+        if (code.status === 'active' && new Date(code.expires_at) <= now) {
+            code.status = 'expired';
+            updated = true;
+        }
+    });
+    
+    if (updated) {
+        saveCodes();
+        updateStats();
+        renderAllTables();
+    }
+}
+
+// ========== EVENT LISTENERS ==========
+function setupEventListeners() {
+    // Navegação
+    if (navLinks) {
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Remover classe active de todos
+                navLinks.forEach(l => l.classList.remove('active'));
+                // Adicionar ao clicado
+                link.classList.add('active');
+                
+                // Mostrar página correspondente
+                const page = link.getAttribute('data-page');
+                showPage(page);
+            });
+        });
+    }
+    
+    // Botão de ação rápida
+    const quickGenerateBtn = document.getElementById('quickGenerateBtn');
+    if (quickGenerateBtn) {
+        quickGenerateBtn.addEventListener('click', () => {
+            showPage('generate');
+        });
+    }
+    
+    // Formulário de geração de código (admin.html)
+    const generateForm = document.getElementById('generateForm');
+    if (generateForm) {
+        generateForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const codeData = {
+                team_name: document.getElementById('teamName').value,
+                coach_name: document.getElementById('coachName').value || null,
+                coach_email: document.getElementById('coachEmail').value || null,
+                expires_in_days: parseInt(document.getElementById('expiryDays').value),
+                max_uses: parseInt(document.getElementById('maxUses').value),
+                notes: document.getElementById('notes').value || null
+            };
+            
+            // Validação básica
+            if (!codeData.team_name) {
+                showAlert(' Nome do time é obrigatório', 'error');
+                return;
+            }
+            
+            // Gerar código localmente
+            const code = generateUniqueCode();
+            const generatedData = {
+                id: generateId(),
+                code: code,
+                team_name: codeData.team_name,
+                coach_name: codeData.coach_name,
+                coach_email: codeData.coach_email,
+                created_at: new Date().toISOString(),
+                expires_at: new Date(Date.now() + (codeData.expires_in_days * 24 * 60 * 60 * 1000)).toISOString(),
+                max_uses: codeData.max_uses,
+                current_uses: 0,
+                notes: codeData.notes,
+                is_expired: false,
+                is_max_used: false,
+                status: 'active',
+                is_active: true
+            };
+            
+            // Salvar no localStorage
+            codes.push(generatedData);
+            saveCodes();
+            
+            showAlert(' Código gerado localmente com sucesso!', 'success');
+            
+            const generatedCodeInput = document.getElementById('generatedCode');
+            const generatedCodeSection = document.getElementById('generatedCodeSection');
+            
+            if (generatedCodeInput) generatedCodeInput.value = code;
+            if (generatedCodeSection) generatedCodeSection.style.display = 'block';
+            generateForm.reset();
+            
+            // Atualizar estatísticas
+            updateStats();
+            
+            // Recarregar lista de códigos se estiver na página
+            if (currentPage === 'codes') {
+                renderTable('all');
+            }
+        });
+    }
+    
+    // Formulário de geração (admin-panel.html)
+    const generateCodeForm = document.getElementById('generateCodeForm');
+    if (generateCodeForm) {
+        generateCodeForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const generatedCode = generateCode(formData);
+            
+            if (generatedCode) {
+                // Mostrar resultado
+                const resultDiv = document.getElementById('generatedCodeResult');
+                const codeResult = document.getElementById('codeResult');
+                
+                if (resultDiv && codeResult) {
+                    codeResult.innerHTML = `
+                        <p><strong>Código:</strong> <span style="font-size: 1.2em; font-weight: bold;">${generatedCode.code}</span></p>
+                        <p><strong>Time:</strong> ${generatedCode.team_name}</p>
+                        <p><strong>Validade:</strong> ${generatedCode.validity_days} dias</p>
+                        <p><strong>Usos:</strong> ${generatedCode.max_uses}</p>
+                        <p><strong>Expira em:</strong> ${formatDate(new Date(generatedCode.expires_at))}</p>
+                        <button class="btn btn-primary" onclick="copyToClipboard('${generatedCode.code}')" style="margin-top: 10px;">
+                            <i class="fas fa-copy"></i> Copiar Código
+                        </button>
+                    `;
+                    
+                    resultDiv.style.display = 'block';
+                    this.reset();
+                    showAlert(' Código gerado com sucesso!', 'success');
+                }
+            }
+        });
+    }
+    
+    // Botão de gerar múltiplos (modal)
+    const generateMultipleBtn = document.getElementById('btn-generate-multiple');
+    if (generateMultipleBtn) {
+        generateMultipleBtn.addEventListener('click', function() {
+            const quantity = parseInt(document.getElementById('multipleQuantity').value) || 5;
+            const prefix = document.getElementById('multiplePrefix').value;
+            const validity = parseInt(document.getElementById('multipleValidity').value) || 7;
+            const maxUses = parseInt(document.getElementById('multipleUses').value) || 1;
+            
+            const generated = generateMultipleCodes(quantity, prefix, validity, maxUses);
+            closeModal('multipleModal');
+            showAlert(` ${quantity} códigos gerados com sucesso!`, 'success');
+            exportGeneratedCodes(generated);
+        });
+    }
+    
+    // Busca de códigos (admin-panel.html)
+    const searchAvailable = document.getElementById('searchAvailable');
+    const searchUsed = document.getElementById('searchUsed');
+    const searchExpired = document.getElementById('searchExpired');
+    const searchAll = document.getElementById('searchAll');
+    
+    if (searchAvailable) {
+        searchAvailable.addEventListener('input', debounce(() => {
+            currentPageNumbers.available = 1;
+            renderTable('available');
+        }, 500));
+    }
+    
+    if (searchUsed) {
+        searchUsed.addEventListener('input', debounce(() => {
+            currentPageNumbers.used = 1;
+            renderTable('used');
+        }, 500));
+    }
+    
+    if (searchExpired) {
+        searchExpired.addEventListener('input', debounce(() => {
+            currentPageNumbers.expired = 1;
+            renderTable('expired');
+        }, 500));
+    }
+    
+    if (searchAll) {
+        searchAll.addEventListener('input', debounce(() => {
+            currentPageNumbers.all = 1;
+            renderTable('all');
+        }, 500));
+    }
+    
+    // Busca de códigos (admin.html)
+    const searchCodesInput = document.getElementById('searchCodes');
+    if (searchCodesInput) {
+        searchCodesInput.addEventListener('input', debounce(() => {
+            currentPageNumbers.all = 1;
+            renderTable('all');
+        }, 500));
+    }
+    
+    // Atalhos de teclado para debug
+    document.addEventListener('keydown', function(e) {
+        // Ctrl+Shift+L - Limpar dados
+        if (e.ctrlKey && e.shiftKey && e.key === 'L') {
+            e.preventDefault();
+            if (confirm('Limpar todos os dados do painel?')) {
+                window.AdminDebug.clearAllData();
+            }
+        }
+        
+        // Ctrl+Shift+G - Gerar códigos de teste
+        if (e.ctrlKey && e.shiftKey && e.key === 'G') {
+            e.preventDefault();
+            window.AdminDebug.generateTestCodes(3);
+        }
+    });
+}
+
+function generateMultiple() {
+    showModal('multipleModal');
+}
+
+function refreshAll() {
+    updateStats();
+    renderAllTables();
+    showAlert(' Dados atualizados!', 'success');
+}
+
+function logout() {
+    localStorage.removeItem('wildclash_authenticated');
+    window.location.href = 'index.html';
+}
+
+// ========== FUNÇÕES DE DEBUG ==========
+window.AdminDebug = {
+    clearAllData: function() {
+        localStorage.removeItem('wildclash_admin_token');
+        localStorage.removeItem('wildclash_admin_user');
+        localStorage.removeItem('wildclash_admin_codes');
+        localStorage.removeItem(SYSTEM_CONFIG.storageKey);
+        localStorage.removeItem(SYSTEM_CONFIG.settingsKey);
+        localStorage.removeItem('wildclash_authenticated');
+        alert(' Todos os dados foram limpos!\nA página será recarregada.');
+        location.reload();
+    },
+    
+    generateTestCodes: function(count = 5) {
+        const teams = ['Dragões de Fogo', 'Águias da Tempestade', 'Tigres de Aço', 'Leões da Montanha', 'Serpentes da Noite'];
+        const coaches = ['Carlos Silva', 'Ana Santos', 'Pedro Costa', 'Mariana Lima', 'Ricardo Alves'];
+        
+        for (let i = 0; i < count; i++) {
+            const codeData = {
+                id: generateId(),
+                code: generateUniqueCode(),
+                team_name: teams[i % teams.length],
+                coach_name: coaches[i % coaches.length],
+                coach_email: `coach${i+1}@email.com`,
+                coach_phone: `(11) 9${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}`,
+                created_at: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
+                expires_at: new Date(Date.now() + (7 + i) * 24 * 60 * 60 * 1000).toISOString(),
+                validity_days: 7 + i,
+                max_uses: Math.floor(Math.random() * 5) + 1,
+                current_uses: Math.floor(Math.random() * 3),
+                notes: `Código de teste ${i+1}`,
+                status: Math.random() > 0.7 ? 'used' : 'active',
+                is_active: true
+            };
+            
+            codes.push(codeData);
+        }
+        
+        saveCodes();
+        
+        alert(` ${count} códigos de teste gerados!\nRecarregando dashboard...`);
+        updateStats();
+        renderAllTables();
+    },
+    
+    viewLocalData: function() {
+        const data = {
+            token: localStorage.getItem('wildclash_admin_token'),
+            user: JSON.parse(localStorage.getItem('wildclash_admin_user') || '{}'),
+            codes: codes,
+            settings: settings
+        };
+        console.log(' Dados locais:', data);
+        alert('Verifique o console do navegador (F12) para ver os dados locais.');
+    },
+    
+    testValidation: function() {
+        const testCode = prompt('Digite um código para testar a validação:');
+        if (testCode) {
+            const result = validateCodeOffline(testCode);
+            alert(`Resultado da validação: ${JSON.stringify(result, null, 2)}`);
+        }
+    }
+};
+
+// ========== FUNÇÕES AUXILIARES ==========
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -679,83 +1568,12 @@ function debounce(func, wait) {
     };
 }
 
-// ========== INICIALIZAÇÃO ==========
-
-// Inicializar debug helpers
-window.AdminDebug = {
-    clearAllData: function() {
-        localStorage.removeItem('wildclash_admin_token');
-        localStorage.removeItem('wildclash_admin_user');
-        localStorage.removeItem('wildclash_admin_codes');
-        alert(' Todos os dados foram limpos!\nA página será recarregada.');
-        location.reload();
-    },
-    
-    generateTestCodes: function(count = 5) {
-        const teams = ['Dragões de Fogo', 'Águias da Tempestade', 'Tigres de Aço', 'Leões da Montanha', 'Serpentes da Noite'];
-        const coaches = ['Carlos Silva', 'Ana Santos', 'Pedro Costa', 'Mariana Lima', 'Ricardo Alves'];
-        
-        for (let i = 0; i < count; i++) {
-            const codeData = {
-                id: Date.now() + i,
-                code: generateRandomCode(),
-                team_name: teams[i % teams.length],
-                coach_name: coaches[i % coaches.length],
-                coach_email: `coach${i+1}@email.com`,
-                created_at: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-                expires_at: new Date(Date.now() + (7 + i) * 24 * 60 * 60 * 1000).toISOString(),
-                max_uses: Math.floor(Math.random() * 5) + 1,
-                current_uses: Math.floor(Math.random() * 3),
-                notes: `Código de teste ${i+1}`,
-                is_expired: false,
-                is_max_used: false
-            };
-            
-            saveCodeToLocalStorage(codeData);
-        }
-        
-        alert(` ${count} códigos de teste gerados!\nRecarregando dashboard...`);
-        loadDashboardStats();
-        if (currentPage === 'codes') loadCodes(1);
-        if (currentPage === 'stats') loadStats();
-    },
-    
-    viewLocalData: function() {
-        const data = {
-            token: localStorage.getItem('wildclash_admin_token'),
-            user: JSON.parse(localStorage.getItem('wildclash_admin_user') || '{}'),
-            codes: getCodesFromLocalStorage()
-        };
-        console.log(' Dados locais:', data);
-        alert('Verifique o console do navegador (F12) para ver os dados locais.');
-    }
+// ========== EXPORTAÇÃO PARA USO EM OUTROS ARQUIVOS ==========
+window.WildClashAdmin = {
+    validateCode: validateCodeOffline,
+    useCode: useCodeOffline,
+    getCodes: () => codes,
+    getStats: getLocalStats,
+    generateCode: generateCode,
+    generateUniqueCode: generateUniqueCode
 };
-
-// Log de inicialização
-console.log(`
-╔══════════════════════════════════════════════╗
-║      PAINEL ADMIN WILD CLASH INICIALIZADO    ║
-╠══════════════════════════════════════════════╣
-║ Login: ${FIXED_CREDENTIALS.username}/${FIXED_CREDENTIALS.password}          ║
-║ Token: ${authToken ? '✅ Presente' : '❌ Ausente'}                    ║
-║ Página: ${currentPage}                                 ║
-║ Códigos Locais: ${getCodesFromLocalStorage().length}             ║
-╚══════════════════════════════════════════════╝
-`);
-
-// Atalhos de teclado para debug
-document.addEventListener('keydown', function(e) {
-    // Ctrl+Shift+L - Limpar dados
-    if (e.ctrlKey && e.shiftKey && e.key === 'L') {
-        e.preventDefault();
-        if (confirm('Limpar todos os dados do painel?')) {
-            window.AdminDebug.clearAllData();
-        }
-    }
-    
-    // Ctrl+Shift+G - Gerar códigos de teste
-    if (e.ctrlKey && e.shiftKey && e.key === 'G') {
-        e.preventDefault();
-        window.AdminDebug.generateTestCodes(3);
-    }
-});

@@ -44,9 +44,9 @@ function initializeEmailJS() {
                 throttle: 10000
             }
         });
-        console.log('✅ EmailJS configurado');
+        console.log(' EmailJS configurado');
     } catch (error) {
-        console.error('❌ Erro ao configurar EmailJS:', error);
+        console.error(' Erro ao configurar EmailJS:', error);
     }
 }
 
@@ -101,7 +101,7 @@ function showAccessError(message) {
 }
 
 function displayTeamInfo(accessData) {
-    console.log('✅ Time autorizado:', accessData.team_name);
+    console.log(' Time autorizado:', accessData.team_name);
     // Você pode adicionar lógica para preencher automaticamente campos aqui
 }
 
@@ -205,7 +205,7 @@ function toggleRulesAcceptance(button, checkbox, submitBtn, form) {
         }
         
         showFormMessage(form, 
-            '✅ Regras aceitas com sucesso! Agora você pode enviar sua inscrição.', 
+            ' Regras aceitas com sucesso! Agora você pode enviar sua inscrição.', 
             'success');
     }
 }
@@ -350,7 +350,7 @@ function initializeRulesScroll() {
                 rulesStatus.style.color = '#28c76f';
             }
             
-            console.log('✅ Regras lidas completamente - botão habilitado');
+            console.log(' Regras lidas completamente - botão habilitado');
         }
     });
     
@@ -366,7 +366,7 @@ function initializeRulesScroll() {
                 <span class="btn-icon">✓</span>
                 <span class="btn-text">Li e aceito todas as regras</span>
             `;
-            console.log('✅ Conteúdo das regras carregado - botão habilitado automaticamente');
+            console.log(' Conteúdo das regras carregado - botão habilitado automaticamente');
         }
     }, 500);
 }
@@ -515,7 +515,7 @@ async function uploadFileToImgBB(file) {
     formData.append('image', file);
     
     try {
-        console.log('📤 Enviando para ImgBB...');
+        console.log(' Enviando para ImgBB...');
         const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
             method: 'POST',
             body: formData
@@ -524,7 +524,7 @@ async function uploadFileToImgBB(file) {
         const data = await response.json();
         
         if (data.success) {
-            console.log('✅ Upload para ImgBB bem-sucedido:', data.data.url);
+            console.log(' Upload para ImgBB bem-sucedido:', data.data.url);
             return {
                 url: data.data.url,
                 thumb: data.data.thumb.url,
@@ -535,7 +535,7 @@ async function uploadFileToImgBB(file) {
             throw new Error(data.error.message || 'Erro no upload para ImgBB');
         }
     } catch (error) {
-        console.error('❌ Erro no upload para ImgBB:', error);
+        console.error(' Erro no upload para ImgBB:', error);
         throw new Error('Falha ao enviar a logo para o servidor. Tente novamente ou envie a logo manualmente para: nittocoach@gmail.com');
     }
 }
@@ -638,7 +638,7 @@ async function handleFormSubmit(e) {
     
     try {
         // 6. Fazer upload da logo para o ImgBB
-        console.log('📤 Iniciando upload da logo para ImgBB...');
+        console.log(' Iniciando upload da logo para ImgBB...');
         const imgbbResult = await uploadFileToImgBB(file);
         
         // 7. Preparar dados do formulário
@@ -666,7 +666,7 @@ async function handleFormSubmit(e) {
         `;
         
         // 11. Enviar via EmailJS
-        console.log('📧 Enviando formulário via EmailJS...', data);
+        console.log(' Enviando formulário via EmailJS...', data);
         
         const response = await emailjs.send(
             'service_n23atzb',
@@ -674,7 +674,7 @@ async function handleFormSubmit(e) {
             data
         );
         
-        console.log('✅ Formulário enviado com sucesso:', response);
+        console.log(' Formulário enviado com sucesso:', response);
         
         if (response.status === 200) {
             // 12. Marcar código como usado na API
@@ -683,9 +683,9 @@ async function handleFormSubmit(e) {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
-                console.log('✅ Código marcado como usado na API');
+                console.log(' Código marcado como usado na API');
             } catch (apiError) {
-                console.error('❌ Erro ao marcar código como usado:', apiError);
+                console.error(' Erro ao marcar código como usado:', apiError);
             }
             
             // 13. Limpar acesso
@@ -693,13 +693,13 @@ async function handleFormSubmit(e) {
             
             // 14. Mostrar mensagem de sucesso
             showFormMessage(form, 
-                '✅ Inscrição enviada com sucesso!<br><br>' +
-                '✅ Logo do time enviada para o ImgBB com sucesso!<br>' +
-                '✅ Link da logo: <a href="' + imgbbResult.url + '" target="_blank">' + imgbbResult.url + '</a><br><br>' +
-                '✅ Código marcado como utilizado<br>' +
-                '📧 Toda a inscrição foi enviada para nittocoach@gmail.com<br>' +
-                '📨 Você receberá uma cópia por email em breve.<br><br>' +
-                '🎮 Acompanhe nosso Discord para mais informações: ' +
+                ' Inscrição enviada com sucesso!<br><br>' +
+                ' Logo do time enviada para o ImgBB com sucesso!<br>' +
+                ' Link da logo: <a href="' + imgbbResult.url + '" target="_blank">' + imgbbResult.url + '</a><br><br>' +
+                ' Código marcado como utilizado<br>' +
+                ' Toda a inscrição foi enviada para nittocoach@gmail.com<br>' +
+                ' Você receberá uma cópia por email em breve.<br><br>' +
+                ' Acompanhe nosso Discord para mais informações: ' +
                 '<a href="https://discord.gg/smJ9Q2V3VB">discord.gg/smJ9Q2V3VB</a>', 
                 'success'
             );
@@ -735,7 +735,7 @@ async function handleFormSubmit(e) {
         }
         
     } catch (error) {
-        console.error('❌ Erro ao enviar formulário:', error);
+        console.error(' Erro ao enviar formulário:', error);
         
         // Mensagem de erro amigável
         let errorMessage = 'Erro ao enviar inscrição. ';
@@ -771,7 +771,7 @@ async function handleFormSubmit(e) {
             console.log('Backup salvo localmente:', backupKey);
             
             showFormMessage(form, 
-                '⚠️ Seu formulário foi salvo localmente. Recarregue a página e tente enviar novamente.', 
+                ' Seu formulário foi salvo localmente. Recarregue a página e tente enviar novamente.', 
                 'info');
         } catch (backupError) {
             console.error('Erro ao salvar backup:', backupError);
@@ -901,15 +901,15 @@ window.InscricoesDebug = {
         console.log('Testando EmailJS com dados:', testData);
         
         emailjs.send('service_n23atzb', 'template_9k24qcu', testData)
-            .then(response => console.log('✅ Teste EmailJS bem-sucedido:', response))
-            .catch(error => console.error('❌ Erro no teste EmailJS:', error));
+            .then(response => console.log(' Teste EmailJS bem-sucedido:', response))
+            .catch(error => console.error(' Erro no teste EmailJS:', error));
     },
     
     clearAllData: function() {
         localStorage.removeItem('wildclash_access_token');
         const backupKeys = Object.keys(localStorage).filter(key => key.includes('inscricao_backup'));
         backupKeys.forEach(key => localStorage.removeItem(key));
-        console.log('❌ Todos os dados limpos');
+        console.log(' Todos os dados limpos');
         alert('Dados limpos! A página será recarregada.');
         location.reload();
     }

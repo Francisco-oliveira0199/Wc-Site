@@ -16,10 +16,10 @@ function domReady(callback) {
 
 // Inicialização principal
 domReady(function() {
-    console.log('🔧 Wild Clash - Inicializando funcionalidades...');
+    console.log(' Wild Clash - Inicializando funcionalidades...');
     
     // Verificar elementos críticos
-    console.log('📋 Verificando elementos:');
+    console.log(' Verificando elementos:');
     console.log('  - Modal:', !!document.getElementById('accessModal'));
     console.log('  - Botão Nav:', !!document.getElementById('inscreva-se-link'));
     console.log('  - Botão Hero:', !!document.getElementById('inscreva-se-btn'));
@@ -35,9 +35,9 @@ domReady(function() {
         initializeSmoothScroll();
         initializeFormEnhancements();
         
-        console.log('✅ Todas as funcionalidades inicializadas com sucesso!');
+        console.log(' Todas as funcionalidades inicializadas com sucesso!');
     } catch (error) {
-        console.error('❌ Erro ao inicializar:', error);
+        console.error(' Erro ao inicializar:', error);
     }
 });
 
@@ -45,11 +45,11 @@ domReady(function() {
 function initializeAccessModal() {
     const modal = document.getElementById('accessModal');
     if (!modal) {
-        console.warn('⚠️ Modal de acesso não encontrado');
+        console.warn(' Modal de acesso não encontrado');
         return;
     }
     
-    console.log('🔧 Configurando modal de acesso...');
+    console.log(' Configurando modal de acesso...');
     
     // Elementos
     const btnNav = document.getElementById('inscreva-se-link');
@@ -63,7 +63,7 @@ function initializeAccessModal() {
             event.stopPropagation();
         }
         
-        console.log('📱 Abrindo modal...');
+        console.log(' Abrindo modal...');
         modal.classList.add('active');
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -88,7 +88,7 @@ function initializeAccessModal() {
             event.stopPropagation();
         }
         
-        console.log('❌ Fechando modal...');
+        console.log(' Fechando modal...');
         modal.classList.remove('active');
         modal.style.opacity = '0';
         modal.querySelector('.access-modal-content').style.transform = 'translateY(-20px)';
@@ -127,18 +127,18 @@ function initializeAccessModal() {
     if (btnNav) {
         btnNav.addEventListener('click', openModal);
         btnNav.addEventListener('touchstart', openModal, { passive: true });
-        console.log('✅ Eventos adicionados ao botão de navegação');
+        console.log(' Eventos adicionados ao botão de navegação');
     }
     
     if (btnHero) {
         btnHero.addEventListener('click', openModal);
         btnHero.addEventListener('touchstart', openModal, { passive: true });
-        console.log('✅ Eventos adicionados ao botão do hero');
+        console.log(' Eventos adicionados ao botão do hero');
     }
     
     if (btnClose) {
         btnClose.addEventListener('click', closeModal);
-        console.log('✅ Evento adicionado ao botão fechar');
+        console.log(' Evento adicionado ao botão fechar');
     }
     
     // Fechar ao clicar fora
@@ -163,7 +163,7 @@ function initializeAccessModal() {
         });
     }
     
-    console.log('✅ Modal configurado com sucesso!');
+    console.log(' Modal configurado com sucesso!');
 }
 
 // ========== CAROUSEL ==========
@@ -306,7 +306,7 @@ function initializeCarousel() {
     updateSlides();
     startAutoPlay();
     
-    console.log('✅ Carousel inicializado');
+    console.log(' Carousel inicializado');
 }
 
 // ========== CARD EFFECTS ==========
@@ -339,7 +339,7 @@ function initializeCardEffects() {
         }, { passive: true });
     });
     
-    console.log('✅ Efeitos de cards inicializados');
+    console.log(' Efeitos de cards inicializados');
 }
 
 // ========== NAVEGAÇÃO ==========
@@ -364,7 +364,7 @@ function initializeNavigation() {
         }
     });
     
-    console.log('✅ Navegação inicializada');
+    console.log(' Navegação inicializada');
 }
 
 // ========== FOOTER ==========
@@ -375,7 +375,7 @@ function initializeFooter() {
         el.textContent = `© ${year} WILD CLASH`;
     });
     
-    console.log('✅ Footer inicializado');
+    console.log(' Footer inicializado');
 }
 
 // ========== SCROLL SUAVE ==========
@@ -405,7 +405,7 @@ function initializeSmoothScroll() {
         });
     });
     
-    console.log('✅ Scroll suave inicializado');
+    console.log(' Scroll suave inicializado');
 }
 
 // ========== FORM ENHANCEMENTS ==========
@@ -439,7 +439,7 @@ function initializeFormEnhancements() {
         });
     });
     
-    console.log('✅ Form enhancements inicializados');
+    console.log(' Form enhancements inicializados');
 }
 
 // ========== UTILITÁRIOS ==========
@@ -457,12 +457,12 @@ function checkConnection() {
     
     window.addEventListener('online', () => {
         hideOfflineWarning();
-        console.log('🌐 Conexão restaurada');
+        console.log(' Conexão restaurada');
     });
     
     window.addEventListener('offline', () => {
         showOfflineWarning();
-        console.log('⚠️  Conexão perdida');
+        console.log('  Conexão perdida');
     });
 }
 
@@ -485,7 +485,7 @@ function showOfflineWarning() {
             font-weight: 600;
             animation: slideDown 0.3s ease;
         `;
-        warning.textContent = '⚠️ Você está offline. Algumas funcionalidades podem não funcionar.';
+        warning.textContent = ' Você está offline. Algumas funcionalidades podem não funcionar.';
         document.body.appendChild(warning);
     }
 }

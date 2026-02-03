@@ -6,6 +6,8 @@
     <title>Wild Clash - Painel Administrativo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./src/css/admin.css">
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -451,6 +453,57 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Mode Indicator */
+        .mode-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 9999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .mode-online { background: #27ae60; color: white; }
+        .mode-offline { background: #e74c3c; color: white; }
+
+        /* Alert */
+        .alert {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            display: block;
+        }
+        
+        .alert.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            display: block;
+        }
+        
+        .alert.warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            display: block;
+        }
+
+        .alert .close {
+            float: right;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .dashboard {
@@ -479,12 +532,17 @@
     </style>
 </head>
 <body>
+    <!-- Mode Indicator -->
+    <div id="modeIndicator" class="mode-indicator mode-offline">
+         Modo OFFLINE
+    </div>
+
     <div class="container">
         <!-- Header -->
         <header class="header">
             <div class="logo">
                 <i class="fas fa-dragon"></i>
-                <h1>Wild Clash Admin</h1>
+                <h1>Wild Clash Admin <span style="font-size: 14px; color: #e74c3c;">(OFFLINE)</span></h1>
             </div>
             <div class="user-info">
                 <div class="user-avatar" id="userAvatar">A</div>
@@ -494,6 +552,9 @@
                 </button>
             </div>
         </header>
+
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
 
         <!-- Dashboard Stats -->
         <div class="dashboard">
@@ -537,6 +598,9 @@
                 <button class="tab-button" onclick="openTab('generate-tab')">
                     <i class="fas fa-plus"></i> Gerar Código
                 </button>
+                <button class="tab-button" onclick="openTab('config-tab')">
+                    <i class="fas fa-cog"></i> Configurações
+                </button>
             </div>
 
             <!-- Tab: Códigos Disponíveis -->
@@ -578,6 +642,7 @@
                             <tr>
                                 <th>Código</th>
                                 <th>Time</th>
+                                <th>Coach</th>
                                 <th>Usos</th>
                                 <th>Usado em</th>
                                 <th>Criado em</th>
@@ -604,6 +669,7 @@
                             <tr>
                                 <th>Código</th>
                                 <th>Time</th>
+                                <th>Coach</th>
                                 <th>Validade (dias)</th>
                                 <th>Expirou em</th>
                                 <th>Criado em</th>
@@ -630,6 +696,9 @@
                     </button>
                     <button class="btn btn-primary" onclick="refreshAll()">
                         <i class="fas fa-sync"></i> Atualizar
+                    </button>
+                    <button class="btn" onclick="importFromFile()">
+                        <i class="fas fa-upload"></i> Importar
                     </button>
                 </div>
                 <div class="table-container">
@@ -663,8 +732,24 @@
                             <div class="form-group">
                                 <label for="teamName"><i class="fas fa-users"></i> Nome do Time *</label>
                                 <input type="text" id="teamName" name="team_name" required>
-                            </div> 
+                            </div>
+                            <div class="form-group">
+                                <label for="coachName"><i class="fas fa-user-tie"></i> Nome do Coach</label>
+                                <input type="text" id="coachName" name="coach_name">
+                            </div>
                         </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="coachEmail"><i class="fas fa-envelope"></i> Email do Coach</label>
+                                <input type="email" id="coachEmail" name="coach_email">
+                            </div>
+                            <div class="form-group">
+                                <label for="coachPhone"><i class="fas fa-phone"></i> Telefone do Coach</label>
+                                <input type="tel" id="coachPhone" name="coach_phone">
+                            </div>
+                        </div>
+
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="validityDays"><i class="fas fa-calendar-day"></i> Dias de Validade *</label>
@@ -714,6 +799,65 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Tab: Configurações -->
+            <div id="config-tab" class="tab-content">
+                <div class="form-container">
+                    <h2 style="margin-bottom: 20px; color: var(--primary-color);">Configurações do Sistema</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="configDefaultDays"><i class="fas fa-calendar"></i> Dias de Validade Padrão</label>
+                            <input type="number" id="configDefaultDays" value="7" min="1" max="365">
+                        </div>
+                        <div class="form-group">
+                            <label for="configDefaultUses"><i class="fas fa-redo"></i> Usos Máximos Padrão</label>
+                            <input type="number" id="configDefaultUses" value="1" min="1" max="999">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="configCodePrefix"><i class="fas fa-hashtag"></i> Prefixo dos Códigos</label>
+                            <input type="text" id="configCodePrefix" value="WILDCLASH">
+                        </div>
+                        <div class="form-group">
+                            <label for="configPassword"><i class="fas fa-lock"></i> Senha do Admin</label>
+                            <input type="password" id="configPassword" placeholder="Digite nova senha">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="configAutoExpire"><i class="fas fa-clock"></i> Expirar Códigos Automaticamente</label>
+                        <select id="configAutoExpire">
+                            <option value="true">Sim</option>
+                            <option value="false">Não</option>
+                        </select>
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn btn-success" onclick="saveSettings()">
+                            <i class="fas fa-save"></i> Salvar Configurações
+                        </button>
+                        <button class="btn" onclick="backupData()">
+                            <i class="fas fa-database"></i> Backup dos Dados
+                        </button>
+                        <button class="btn btn-danger" onclick="resetData()">
+                            <i class="fas fa-trash"></i> Resetar Dados
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <h4 style="color: var(--primary-color); margin-bottom: 10px;">
+                            <i class="fas fa-info-circle"></i> Informações do Sistema
+                        </h4>
+                        <p><strong>Versão:</strong> <span id="systemVersion">1.0.0</span></p>
+                        <p><strong>Total de Códigos:</strong> <span id="systemTotalCodes">0</span></p>
+                        <p><strong>Último Backup:</strong> <span id="systemLastBackup">Nunca</span></p>
+                        <p><strong>Modo:</strong> <span id="systemMode">OFFLINE</span></p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Loading Overlay -->
@@ -751,621 +895,50 @@
                         <label>Prefixo do Time</label>
                         <input type="text" id="multiplePrefix" placeholder="Ex: Time-">
                     </div>
-                    <div class="form-group">
-                        <label>Dias de Validade *</label>
-                        <select id="multipleValidity">
-                            <option value="7">7 dias</option>
-                            <option value="14">14 dias</option>
-                            <option value="30">30 dias</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Dias de Validade *</label>
+                            <select id="multipleValidity">
+                                <option value="7">7 dias</option>
+                                <option value="14">14 dias</option>
+                                <option value="30">30 dias</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Usos por Código</label>
+                            <select id="multipleUses">
+                                <option value="1">1 uso</option>
+                                <option value="2">2 usos</option>
+                                <option value="3">3 usos</option>
+                            </select>
+                        </div>
                     </div>
-                    <button class="btn btn-success" onclick="generateMultipleCodes()">
+                    <button class="btn btn-success" id="btn-generate-multiple">
                         <i class="fas fa-play"></i> Gerar
                     </button>
                 </div>
             </div>
         </div>
+
+        <!-- Modal: Confirmação -->
+        <div id="confirmModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="confirmTitle"></h3>
+                    <button class="close-modal" onclick="closeModal('confirmModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmMessage"></p>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="btn btn-danger" onclick="confirmAction(true)">Confirmar</button>
+                        <button class="btn" onclick="confirmAction(false)">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        // ============================================
-        // CONFIGURAÇÕES
-        // ============================================
-        const API_BASE_URL = 'http://localhost:3001/api'; // Altere para sua URL
-        let currentUser = null;
-        let currentTab = 'available-tab';
-        let codesData = {
-            available: { data: [], page: 1, total: 0, search: '' },
-            used: { data: [], page: 1, total: 0, search: '' },
-            expired: { data: [], page: 1, total: 0, search: '' },
-            all: { data: [], page: 1, total: 0, search: '' }
-        };
-
-        // ============================================
-        // FUNÇÕES DE AUTENTICAÇÃO
-        // ============================================
-        function checkAuth() {
-            const token = localStorage.getItem('wildclash_token');
-            const user = localStorage.getItem('wildclash_user');
-            
-            if (!token || !user) {
-                window.location.href = 'login.html';
-                return false;
-            }
-            
-            currentUser = JSON.parse(user);
-            document.getElementById('username').textContent = currentUser.username;
-            document.getElementById('userAvatar').textContent = currentUser.username.charAt(0).toUpperCase();
-            
-            // Validar token com API
-            validateToken(token);
-            
-            return true;
-        }
-
-        async function validateToken(token) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/auth/validate`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Token inválido');
-                }
-            } catch (error) {
-                localStorage.removeItem('wildclash_token');
-                localStorage.removeItem('wildclash_user');
-                window.location.href = 'login.html';
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('wildclash_token');
-            localStorage.removeItem('wildclash_user');
-            window.location.href = 'login.html';
-        }
-
-        // ============================================
-        // FUNÇÕES DE INTERFACE
-        // ============================================
-        function openTab(tabId) {
-            // Esconder todas as tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Remover active de todos os botões
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Mostrar tab selecionada
-            document.getElementById(tabId).classList.add('active');
-            
-            // Ativar botão correspondente
-            event.target.classList.add('active');
-            
-            // Atualizar dados da tab
-            currentTab = tabId;
-            if (tabId === 'available-tab') loadCodes('available');
-            if (tabId === 'used-tab') loadCodes('used');
-            if (tabId === 'expired-tab') loadCodes('expired');
-            if (tabId === 'all-tab') loadCodes('all');
-        }
-
-        function showLoading(show) {
-            document.getElementById('loadingOverlay').classList.toggle('active', show);
-        }
-
-        function showModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
-        // ============================================
-        // FUNÇÕES DE CÓDIGOS
-        // ============================================
-        async function loadStats() {
-            try {
-                const token = localStorage.getItem('wildclash_token');
-                const response = await fetch(`${API_BASE_URL}/codes/list?limit=1`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.stats) {
-                        document.getElementById('availableCount').textContent = data.stats.available_codes || 0;
-                        document.getElementById('usedCount').textContent = data.stats.used_codes || 0;
-                        document.getElementById('expiredCount').textContent = data.stats.expired_codes || 0;
-                        document.getElementById('totalCount').textContent = data.stats.total_codes || 0;
-                    }
-                }
-            } catch (error) {
-                console.error('Erro ao carregar estatísticas:', error);
-            }
-        }
-
-        async function loadCodes(type = 'available', page = 1) {
-            showLoading(true);
-            
-            try {
-                const token = localStorage.getItem('wildclash_token');
-                const search = codesData[type].search || '';
-                const query = new URLSearchParams({
-                    page: page,
-                    limit: 10,
-                    search: search,
-                    ...(type !== 'all' && { status: type })
-                }).toString();
-                
-                const response = await fetch(`${API_BASE_URL}/codes/list?${query}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    codesData[type].data = data.data || [];
-                    codesData[type].total = data.pagination?.total || 0;
-                    codesData[type].page = page;
-                    
-                    renderTable(type);
-                    renderPagination(type);
-                } else {
-                    throw new Error('Erro ao carregar códigos');
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                showError('Erro ao carregar códigos');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        function renderTable(type) {
-            const data = codesData[type].data;
-            const tbodyId = `${type}TableBody`;
-            const tbody = document.getElementById(tbodyId);
-            
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 40px;">Nenhum código encontrado</td></tr>`;
-                return;
-            }
-            
-            data.forEach(code => {
-                const row = document.createElement('tr');
-                
-                switch(type) {
-                    case 'available':
-                        row.innerHTML = `
-                            <td><strong>${code.code}</strong></td>
-                            <td>${code.team_name}</td>
-                            <td>${code.validity_days}</td>
-                            <td>${code.current_uses}/${code.max_uses}</td>
-                            <td>${formatDate(code.expires_at)}</td>
-                            <td>${formatDate(code.created_at)}</td>
-                            <td class="actions-cell">
-                                <button class="action-btn view" onclick="viewCode(${code.id})">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn delete" onclick="deleteCode(${code.id})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        `;
-                        break;
-                        
-                    case 'used':
-                        row.innerHTML = `
-                            <td><strong>${code.code}</strong></td>
-                            <td>${code.team_name}</td>
-                            <td>${code.coach_name || '-'}</td>
-                            <td>${code.current_uses}/${code.max_uses}</td>
-                            <td>${formatDate(code.used_at)}</td>
-                            <td>${formatDate(code.created_at)}</td>
-                            <td>
-                                <button class="btn" onclick="viewUsageHistory(${code.id})">
-                                    <i class="fas fa-history"></i> Histórico
-                                </button>
-                            </td>
-                        `;
-                        break;
-                        
-                    case 'expired':
-                        row.innerHTML = `
-                            <td><strong>${code.code}</strong></td>
-                            <td>${code.team_name}</td>
-                            <td>${code.coach_name || '-'}</td>
-                            <td>${code.validity_days}</td>
-                            <td>${formatDate(code.expires_at)}</td>
-                            <td>${formatDate(code.created_at)}</td>
-                            <td class="actions-cell">
-                                <button class="action-btn view" onclick="viewCode(${code.id})">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn delete" onclick="deleteCode(${code.id})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        `;
-                        break;
-                        
-                    case 'all':
-                        const statusClass = getStatusClass(code.status);
-                        row.innerHTML = `
-                            <td><strong>${code.code}</strong></td>
-                            <td>${code.team_name}</td>
-                            <td><span class="status-badge ${statusClass}">${getStatusText(code.status)}</span></td>
-                            <td>${code.current_uses}/${code.max_uses}</td>
-                            <td>${code.validity_days} dias</td>
-                            <td>${formatDate(code.created_at)}</td>
-                            <td>${formatDate(code.expires_at)}</td>
-                            <td class="actions-cell">
-                                <button class="action-btn view" onclick="viewCode(${code.id})">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn edit" onclick="editCode(${code.id})">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn delete" onclick="deleteCode(${code.id})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        `;
-                        break;
-                }
-                
-                tbody.appendChild(row);
-            });
-        }
-
-        function renderPagination(type) {
-            const paginationId = `${type}Pagination`;
-            const pagination = document.getElementById(paginationId);
-            const data = codesData[type];
-            
-            if (!pagination || data.total <= 10) {
-                if (pagination) pagination.innerHTML = '';
-                return;
-            }
-            
-            const totalPages = Math.ceil(data.total / 10);
-            let html = '';
-            
-            // Botão anterior
-            html += `<button class="page-btn" ${data.page <= 1 ? 'disabled' : ''} 
-                     onclick="loadCodes('${type}', ${data.page - 1})">&laquo;</button>`;
-            
-            // Números das páginas
-            for (let i = 1; i <= totalPages; i++) {
-                if (i === 1 || i === totalPages || (i >= data.page - 2 && i <= data.page + 2)) {
-                    html += `<button class="page-btn ${i === data.page ? 'active' : ''}" 
-                             onclick="loadCodes('${type}', ${i})">${i}</button>`;
-                } else if (i === data.page - 3 || i === data.page + 3) {
-                    html += `<span class="page-btn">...</span>`;
-                }
-            }
-            
-            // Botão próximo
-            html += `<button class="page-btn" ${data.page >= totalPages ? 'disabled' : ''} 
-                     onclick="loadCodes('${type}', ${data.page + 1})">&raquo;</button>`;
-            
-            pagination.innerHTML = html;
-        }
-
-        function searchCodes(type) {
-            const searchInput = document.getElementById(`search${type.charAt(0).toUpperCase() + type.slice(1)}`);
-            if (searchInput) {
-                codesData[type].search = searchInput.value;
-                loadCodes(type, 1);
-            }
-        }
-
-        function refreshAll() {
-            loadStats();
-            loadCodes(currentTab.replace('-tab', '').replace('generate', 'available'));
-        }
-
-        // ============================================
-        // FUNÇÕES DE CRIAÇÃO DE CÓDIGOS
-        // ============================================
-        document.getElementById('generateCodeForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            
-            try {
-                showLoading(true);
-                const token = localStorage.getItem('wildclash_token');
-                
-                const response = await fetch(`${API_BASE_URL}/codes/generate`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showSuccess('Código gerado com sucesso!');
-                    
-                    // Mostrar código gerado
-                    const resultDiv = document.getElementById('generatedCodeResult');
-                    const codeResult = document.getElementById('codeResult');
-                    
-                    codeResult.innerHTML = `
-                        <p><strong>Código:</strong> ${result.data.code}</p>
-                        <p><strong>Time:</strong> ${result.data.team_name}</p>
-                        <p><strong>Validade:</strong> ${result.data.validity_days} dias</p>
-                        <p><strong>Usos:</strong> ${result.data.max_uses}</p>
-                        <p><strong>Expira em:</strong> ${formatDate(result.data.expires_at)}</p>
-                        <button class="btn btn-primary" onclick="copyToClipboard('${result.data.code}')">
-                            <i class="fas fa-copy"></i> Copiar Código
-                        </button>
-                    `;
-                    
-                    resultDiv.style.display = 'block';
-                    
-                    // Resetar formulário
-                    this.reset();
-                    
-                    // Atualizar listas
-                    refreshAll();
-                } else {
-                    throw new Error(result.error || 'Erro ao gerar código');
-                }
-            } catch (error) {
-                showError(error.message);
-            } finally {
-                showLoading(false);
-            }
-        });
-
-        function generateMultiple() {
-            showModal('multipleModal');
-        }
-
-        async function generateMultipleCodes() {
-            const quantity = parseInt(document.getElementById('multipleQuantity').value);
-            const prefix = document.getElementById('multiplePrefix').value;
-            const validity = parseInt(document.getElementById('multipleValidity').value);
-            
-            if (!quantity || quantity < 1) {
-                showError('Digite uma quantidade válida');
-                return;
-            }
-            
-            showLoading(true);
-            
-            try {
-                const token = localStorage.getItem('wildclash_token');
-                const generated = [];
-                
-                for (let i = 1; i <= quantity; i++) {
-                    const teamName = prefix ? `${prefix}${i}` : `Time ${i}`;
-                    
-                    const response = await fetch(`${API_BASE_URL}/codes/generate`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            team_name: teamName,
-                            expires_in_days: validity,
-                            max_uses: 1
-                        })
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        generated.push(result.data);
-                    }
-                }
-                
-                showSuccess(`${generated.length} códigos gerados com sucesso!`);
-                closeModal('multipleModal');
-                refreshAll();
-                
-            } catch (error) {
-                showError('Erro ao gerar múltiplos códigos');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // ============================================
-        // FUNÇÕES DE GERENCIAMENTO
-        // ============================================
-        async function viewCode(codeId) {
-            try {
-                showLoading(true);
-                const token = localStorage.getItem('wildclash_token');
-                
-                // Buscar detalhes do código
-                const response = await fetch(`${API_BASE_URL}/codes/${codeId}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    const details = document.getElementById('codeDetails');
-                    
-                    details.innerHTML = `
-                        <div style="margin-bottom: 20px;">
-                            <h4 style="color: var(--primary-color);">Informações do Código</h4>
-                            <p><strong>Código:</strong> ${data.code}</p>
-                            <p><strong>Time:</strong> ${data.team_name}</p>
-                            <p><strong>Treinador:</strong> $
-                        </div>
-                        
-                        <div style="margin-bottom: 20px;">
-                            <h4 style="color: var(--primary-color);">Configurações</h4>
-                            <p><strong>Dias de Validade:</strong> ${data.validity_days}</p>
-                            <p><strong>Usos:</strong> ${data.current_uses}/${data.max_uses}</p>
-                            <p><strong>Criado em:</strong> ${formatDate(data.created_at)}</p>
-                            <p><strong>Expira em:</strong> ${formatDate(data.expires_at)}</p>
-                            <p><strong>Status:</strong> <span class="status-badge ${getStatusClass(data.status)}">
-                                ${getStatusText(data.status)}</span></p>
-                        </div>
-                        
-                        ${data.notes ? `
-                        <div style="margin-bottom: 20px;">
-                            <h4 style="color: var(--primary-color);">Observações</h4>
-                            <p>${data.notes}</p>
-                        </div>
-                        ` : ''}
-                        
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-primary" onclick="copyToClipboard('${data.code}')">
-                                <i class="fas fa-copy"></i> Copiar Código
-                            </button>
-                            <button class="btn" onclick="closeModal('viewModal')">
-                                <i class="fas fa-times"></i> Fechar
-                            </button>
-                        </div>
-                    `;
-                    
-                    showModal('viewModal');
-                }
-            } catch (error) {
-                showError('Erro ao carregar detalhes do código');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        async function deleteCode(codeId) {
-            if (!confirm('Tem certeza que deseja excluir este código?')) return;
-            
-            try {
-                showLoading(true);
-                const token = localStorage.getItem('wildclash_token');
-                
-                const response = await fetch(`${API_BASE_URL}/codes/${codeId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (response.ok) {
-                    showSuccess('Código excluído com sucesso!');
-                    refreshAll();
-                } else {
-                    throw new Error('Erro ao excluir código');
-                }
-            } catch (error) {
-                showError(error.message);
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        async function viewUsageHistory(codeId) {
-            // Implementar histórico de usos
-            alert('Funcionalidade de histórico em desenvolvimento');
-        }
-
-        // ============================================
-        // FUNÇÕES UTILITÁRIAS
-        // ============================================
-        function formatDate(dateString) {
-            if (!dateString) return '-';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR');
-        }
-
-        function getStatusClass(status) {
-            switch(status) {
-                case 'active': return 'status-active';
-                case 'used': return 'status-used';
-                case 'expired': return 'status-expired';
-                case 'cancelled': return 'status-cancelled';
-                default: return '';
-            }
-        }
-
-        function getStatusText(status) {
-            switch(status) {
-                case 'active': return 'Ativo';
-                case 'used': return 'Usado';
-                case 'expired': return 'Expirado';
-                case 'cancelled': return 'Cancelado';
-                default: return status;
-            }
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showSuccess('Código copiado para a área de transferência!');
-            }).catch(err => {
-                showError('Erro ao copiar código');
-            });
-        }
-
-        async function exportToCSV() {
-            try {
-                showLoading(true);
-                const token = localStorage.getItem('wildclash_token');
-                
-                const response = await fetch(`${API_BASE_URL}/codes/export`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `wildclash-codes-${new Date().toISOString().split('T')[0]}.csv`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-                }
-            } catch (error) {
-                showError('Erro ao exportar dados');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        function showSuccess(message) {
-            alertify.success(message);
-        }
-
-        function showError(message) {
-            alertify.error(message);
-        }
-
-        // ============================================
-        // INICIALIZAÇÃO
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
-            if (checkAuth()) {
-                loadStats();
-                loadCodes('available');
-                
-                // Configurar alertify
-                alertify.set('notifier','position', 'top-right');
-            }
-        });
-    </script>
-    
-    <!-- Alertify para notificações -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <script src="./src/js/admin.js"></script>
+    <script src="./src/js/script.js"></script>
 </body>
 </html>

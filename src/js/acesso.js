@@ -81,7 +81,7 @@ function initializeModalAccess() {
         
         // Verificar se é o código ADMIN
         if (codigo === ADMIN_CODE) {
-            showModalSuccess('✅ Código de administrador válido! Redirecionando para o painel...');
+            showModalSuccess(' Código de administrador válido! Redirecionando para o painel...');
             setTimeout(() => {
                 window.location.href = 'admin-panel.html';
             }, 1500);
@@ -90,7 +90,7 @@ function initializeModalAccess() {
         
         // Verificar se é o código de teste para inscrições
         if (codigo === TEST_CODE) {
-            showModalSuccess('✅ Código de teste válido! Redirecionando para o formulário...');
+            showModalSuccess(' Código de teste válido! Redirecionando para o formulário...');
             
             // Criar dados de acesso de teste
             const accessData = {
@@ -149,7 +149,7 @@ function initializeModalAccess() {
             
             localStorage.setItem(STORAGE_KEY, JSON.stringify(accessData));
             
-            showModalSuccess('✅ Código válido! Redirecionando para o formulário...');
+            showModalSuccess(' Código válido! Redirecionando para o formulário...');
             
             // Redirecionar após 1.5 segundos
             setTimeout(() => {
@@ -178,7 +178,7 @@ function initializeModalAccess() {
         if (accessStatus) {
             accessStatus.innerHTML = `
                 <div class="message error" style="margin-top: 15px;">
-                    ❌ ${mensagem}
+                    x ${mensagem}
                 </div>
             `;
             accessStatus.style.display = 'block';
@@ -273,7 +273,7 @@ function initializeAccessPage() {
         
         // Verificar se é o código ADMIN
         if (codigo === ADMIN_CODE) {
-            showPageSuccess('✅ Código de administrador válido! Redirecionando para o painel...');
+            showPageSuccess(' Código de administrador válido! Redirecionando para o painel...');
             setTimeout(() => {
                 window.location.href = 'admin-panel.html';
             }, 1500);
@@ -282,7 +282,7 @@ function initializeAccessPage() {
         
         // Verificar se é o código de teste para inscrições
         if (codigo === TEST_CODE) {
-            showPageSuccess('✅ Código de teste válido! Redirecionando para o formulário...');
+            showPageSuccess(' Código de teste válido! Redirecionando para o formulário...');
             
             // Criar dados de acesso de teste
             const accessData = {
@@ -341,7 +341,7 @@ function initializeAccessPage() {
             
             localStorage.setItem(STORAGE_KEY, JSON.stringify(accessData));
             
-            showPageSuccess('✅ Código válido! Redirecionando para o formulário...');
+            showPageSuccess(' Código válido! Redirecionando para o formulário...');
             
             // Atualizar navegação
             updateNavigation();
@@ -373,7 +373,7 @@ function initializeAccessPage() {
         if (accessStatus) {
             accessStatus.innerHTML = `
                 <div class="message error">
-                    ❌ ${mensagem}
+                     ${mensagem}
                 </div>
             `;
             accessStatus.style.display = 'block';
@@ -384,7 +384,7 @@ function initializeAccessPage() {
         if (accessStatus) {
             accessStatus.innerHTML = `
                 <div class="message success">
-                    ${mensagem}
+                   x ${mensagem}
                 </div>
             `;
             accessStatus.style.display = 'block';
@@ -433,7 +433,7 @@ function checkExistingAccess() {
                     if (accessStatus) {
                         accessStatus.innerHTML = `
                             <div class="message success">
-                                ✅ Você já tem acesso válido até ${expira.toLocaleDateString('pt-BR')}. Redirecionando...
+                                 Você já tem acesso válido até ${expira.toLocaleDateString('pt-BR')}. Redirecionando...
                             </div>
                         `;
                         accessStatus.style.display = 'block';
@@ -459,7 +459,7 @@ function checkExistingAccess() {
                     if (accessStatus) {
                         accessStatus.innerHTML = `
                             <div class="message error">
-                                ⚠️ Seu acesso expirou. Por favor, use um novo código.
+                                 Seu acesso expirou. Por favor, use um novo código.
                             </div>
                         `;
                         accessStatus.style.display = 'block';
@@ -498,7 +498,7 @@ window.AccessDebug = {
         };
         
         localStorage.setItem(STORAGE_KEY, JSON.stringify(accessData));
-        console.log('✅ Código de teste configurado:', accessData);
+        console.log(' Código de teste configurado:', accessData);
         alert('Código de teste configurado! Redirecionando...');
         
         setTimeout(() => {
@@ -533,7 +533,7 @@ window.AccessDebug = {
     
     clearAccess: function() {
         localStorage.removeItem(STORAGE_KEY);
-        console.log('❌ Acesso limpo');
+        console.log(' Acesso limpo');
         alert('Acesso removido do localStorage');
         
         if (window.location.pathname.includes('acesso.html')) {
@@ -544,10 +544,10 @@ window.AccessDebug = {
     viewAccessData: function() {
         const data = localStorage.getItem(STORAGE_KEY);
         if (data) {
-            console.log('📋 Dados de acesso:', JSON.parse(data));
+            console.log(' Dados de acesso:', JSON.parse(data));
             alert('Verifique o console para ver os dados de acesso');
         } else {
-            console.log('❌ Nenhum dado de acesso encontrado');
+            console.log(' Nenhum dado de acesso encontrado');
             alert('Nenhum código de acesso armazenado');
         }
     }
