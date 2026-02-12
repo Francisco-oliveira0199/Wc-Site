@@ -1,0 +1,269 @@
+/* =============================================================================
+   PROJETO: Wild Clash - Estilos do Header
+   VERSÃO: 1.2 - HEADER IGUAL DESKTOP EM MOBILE
+   DATA: Dezembro 2025
+============================================================================= */
+
+/* ========== HEADER ========== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 24px;
+  margin: 20px auto;
+  position: sticky;
+  top: 12px;
+  z-index: 40;
+  max-width: var(--max-width);
+  width: calc(100% - 40px);
+  background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(6px) saturate(140%);
+  border-radius: 14px;
+  box-shadow: 
+    0 6px 30px rgba(0,0,0,0.6), 
+    0 0 20px rgba(0,0,0,0.35) inset;
+  transition: all 0.3s ease;
+}
+
+.logo-placeholder { 
+  padding: 8px 14px; 
+  font-weight:700; 
+  letter-spacing:1px; 
+  color:var(--neon-cyan); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-placeholder img {
+  max-height: 60px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo-placeholder img:hover {
+  transform: scale(1.05);
+}
+
+.nav { 
+  display: flex; 
+  gap: 14px; 
+  align-items: center; 
+  flex-wrap: nowrap;
+  flex-shrink: 1;
+}
+
+.nav-list {
+  display: flex;
+  gap: 14px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.nav-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  transition: all 0.18s ease;
+  position: relative;
+  white-space: nowrap;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.nav-link:hover { 
+  color: white; 
+  transform: translateY(-2px); 
+  background: rgba(0,234,255,0.05);
+}
+
+.nav-link.active { 
+  color: white; 
+  background: rgba(0,234,255,0.1); 
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+/* ========== HEADER RESPONSIVO ========== */
+/* IMPORTANTE: Header mantém layout igual ao desktop em todas as resoluções */
+/* Apenas ajustes menores de padding e espaçamento */
+
+@media (max-width: 1024px) {
+  .header {
+    width: calc(100% - 30px);
+    padding: 12px 20px;
+  }
+  
+  .logo-placeholder img {
+    max-height: 55px;
+  }
+  
+  .nav {
+    gap: 12px;
+  }
+  
+  .nav-link {
+    padding: 7px 10px;
+    font-size: 13.5px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    width: calc(100% - 20px);
+    padding: 10px 15px;
+    margin: 15px auto;
+    gap: 15px;
+  }
+  
+  .logo-placeholder img {
+    max-height: 50px;
+  }
+  
+  .nav {
+    gap: 10px;
+  }
+  
+  .nav-list {
+    gap: 10px;
+  }
+  
+  .nav-link {
+    padding: 6px 9px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    width: calc(100% - 16px);
+    padding: 8px 12px;
+    margin: 12px auto;
+    gap: 12px;
+  }
+  
+  .logo-placeholder img {
+    max-height: 45px;
+  }
+  
+  .nav {
+    gap: 8px;
+  }
+  
+  .nav-list {
+    gap: 8px;
+  }
+  
+  .nav-link {
+    padding: 5px 8px;
+    font-size: 12.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    width: calc(100% - 12px);
+    padding: 6px 10px;
+    margin: 10px auto;
+    gap: 10px;
+  }
+  
+  .logo-placeholder img {
+    max-height: 40px;
+  }
+  
+  .nav {
+    gap: 6px;
+  }
+  
+  .nav-list {
+    gap: 6px;
+  }
+  
+  .nav-link {
+    padding: 4px 7px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 5px 8px;
+    gap: 8px;
+  }
+  
+  .logo-placeholder img {
+    max-height: 35px;
+  }
+  
+  .nav {
+    gap: 5px;
+  }
+  
+  .nav-list {
+    gap: 5px;
+  }
+  
+  .nav-link {
+    padding: 4px 6px;
+    font-size: 11.5px;
+  }
+}
+
+@media (max-width: 360px) {
+  .header {
+    padding: 4px 6px;
+    gap: 6px;
+  }
+  
+  .logo-placeholder img {
+    max-height: 32px;
+  }
+  
+  .nav {
+    gap: 4px;
+  }
+  
+  .nav-list {
+    gap: 4px;
+  }
+  
+  .nav-link {
+    padding: 3px 5px;
+    font-size: 11px;
+  }
+}
+
+/* Fallback para telas muito pequenas */
+@media (max-width: 320px) {
+  .header {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  
+  .nav-list {
+    flex-shrink: 0;
+  }
+  
+  .nav-link {
+    white-space: nowrap;
+  }
+}

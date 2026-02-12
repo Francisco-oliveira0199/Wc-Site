@@ -226,7 +226,7 @@ function initializeScrimForm() {
             });
             
             if (response.ok) {
-                alert('✅ Solicitação de SCRIM enviada com sucesso!\n\nEm breve nossa equipe entrará em contato com você.\n\nAcompanhe nosso Discord para mais informações:\ndiscord.gg/smJ9Q2V3VB');
+                alert(' Solicitação de SCRIM enviada com sucesso!\n\nEm breve nossa equipe entrará em contato com você.\n\nAcompanhe nosso Discord para mais informações:\ndiscord.gg/smJ9Q2V3VB');
                 form.reset();
                 
                 // Resetar botão de aceitação
@@ -259,7 +259,7 @@ function initializeScrimForm() {
             // Fallback: mostrar dados no console e alerta
             console.log('Dados da SCRIM (para envio manual):', data);
             
-            alert('⚠️ SCRIM salva localmente!\n\n' +
+            alert(' SCRIM salva localmente!\n\n' +
                   'O sistema de envio automático está temporariamente indisponível.\n\n' +
                   'Por favor, entre em contato diretamente pelo Discord:\n' +
                   'discord.gg/smJ9Q2V3VB\n\n' +

@@ -1,29 +1,28 @@
 // =============================================================================
 // PROJETO: Wild Clash - Sistema de Acesso por Código
 // ARQUIVO: acesso.js (para modal na index.html e página acesso.html)
-// DESCRIÇÃO: Validação de códigos de acesso via API
+// DESCRIÇÃO: Validação de códigos de acesso via Storage
 // =============================================================================
 
-// Configuração da API - ALTERE PARA SEU DOMÍNIO EM PRODUÇÃO
-const API_URL = 'http://localhost:3001/api';
-const STORAGE_KEY = 'wildclash_access_token';
-const ADMIN_CODE = 'ADMIN123'; // Código especial para acessar o painel admin
-const TEST_CODE = 'TESTE123';  // Código de teste para inscrições
+const ACCESS_STORAGE_KEY = 'wildclash_access_token';
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Sistema de acesso inicializado');
     
-    // Verificar em qual página estamos
-    if (document.getElementById('access-code-modal')) {
-        // Estamos no modal da index.html
-        initializeModalAccess();
-    } else if (document.getElementById('access-code')) {
-        // Estamos na página acesso.html
-        initializeAccessPage();
-    }
-    
-    // Verificar acesso existente em ambas as páginas
-    checkExistingAccess();
+    // Aguardar storage carregar
+    setTimeout(() => {
+        // Verificar em qual página estamos
+        if (document.getElementById('access-code-modal')) {
+            // Estamos no modal da index.html
+            initializeModalAccess();
+        } else if (document.getElementById('access-code')) {
+            // Estamos na página acesso.html
+            initializeAccessPage();
+        }
+        
+        // Verificar acesso existente em ambas as páginas
+        checkExistingAccess();
+    }, 100);
 });
 
 // ========== FUNÇÕES PARA MODAL (index.html) ==========
@@ -70,7 +69,7 @@ function initializeModalAccess() {
     }
     
     async function verificarCodigoModal() {
-        const codigo = accessCodeInput.value.trim().toUpperCase();
+        const codigo = accessCodeInput.value.trim();
         
         clearModalMessages();
         
@@ -80,7 +79,7 @@ function initializeModalAccess() {
         }
         
         // Verificar se é o código ADMIN
-        if (codigo === ADMIN_CODE) {
+        if (codigo === window.WildClashStorage.ADMIN_CODE) {
             showModalSuccess(' Código de administrador válido! Redirecionando para o painel...');
             setTimeout(() => {
                 window.location.href = 'admin-panel.html';
@@ -89,21 +88,21 @@ function initializeModalAccess() {
         }
         
         // Verificar se é o código de teste para inscrições
-        if (codigo === TEST_CODE) {
+        if (codigo === window.WildClashStorage.TEST_CODE) {
             showModalSuccess(' Código de teste válido! Redirecionando para o formulário...');
             
             // Criar dados de acesso de teste
             const accessData = {
-                codigo: TEST_CODE,
+                codigo: window.WildClashStorage.TEST_CODE,
                 team_name: 'Equipe Teste',
                 coach_name: 'Coach Teste',
                 coach_email: 'teste@email.com',
                 validoAte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                code_id: 999,
+                code_id: 2,
                 timestamp: new Date().toISOString()
             };
             
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(accessData));
+            localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
             
             setTimeout(() => {
                 window.location.href = 'inscricoes.html';
@@ -123,31 +122,25 @@ function initializeModalAccess() {
         }
         
         try {
-            // Chamar API para validar código
-            const response = await fetch(`${API_URL}/codes/validate/${codigo}`);
+            // Validar código usando o storage
+            const validation = window.WildClashStorage.validateCode(codigo);
             
-            if (!response.ok) {
-                throw new Error('Erro na conexão com o servidor');
-            }
-            
-            const data = await response.json();
-            
-            if (!data.success) {
-                throw new Error(data.error || 'Código inválido');
+            if (!validation.success) {
+                throw new Error(validation.error || 'Código inválido');
             }
             
             // Código válido - salvar no localStorage
             const accessData = {
-                codigo: data.data.code,
-                team_name: data.data.team_name,
-                coach_name: data.data.coach_name,
-                coach_email: data.data.coach_email,
-                validoAte: data.data.expires_at,
-                code_id: data.data.id,
+                codigo: validation.data.code,
+                team_name: validation.data.team_name,
+                coach_name: validation.data.coach_name,
+                coach_email: validation.data.coach_email,
+                validoAte: validation.data.expires_at,
+                code_id: validation.data.id,
                 timestamp: new Date().toISOString()
             };
             
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(accessData));
+            localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
             
             showModalSuccess(' Código válido! Redirecionando para o formulário...');
             
@@ -178,7 +171,7 @@ function initializeModalAccess() {
         if (accessStatus) {
             accessStatus.innerHTML = `
                 <div class="message error" style="margin-top: 15px;">
-                    x ${mensagem}
+                    ✗ ${mensagem}
                 </div>
             `;
             accessStatus.style.display = 'block';
@@ -262,7 +255,7 @@ function initializeAccessPage() {
     }
     
     async function verificarCodigoPage() {
-        const codigo = accessCodeInput.value.trim().toUpperCase();
+        const codigo = accessCodeInput.value.trim();
         
         clearPageMessages();
         
@@ -272,7 +265,7 @@ function initializeAccessPage() {
         }
         
         // Verificar se é o código ADMIN
-        if (codigo === ADMIN_CODE) {
+        if (codigo === window.WildClashStorage.ADMIN_CODE) {
             showPageSuccess(' Código de administrador válido! Redirecionando para o painel...');
             setTimeout(() => {
                 window.location.href = 'admin-panel.html';
@@ -281,21 +274,21 @@ function initializeAccessPage() {
         }
         
         // Verificar se é o código de teste para inscrições
-        if (codigo === TEST_CODE) {
+        if (codigo === window.WildClashStorage.TEST_CODE) {
             showPageSuccess(' Código de teste válido! Redirecionando para o formulário...');
             
             // Criar dados de acesso de teste
             const accessData = {
-                codigo: TEST_CODE,
+                codigo: window.WildClashStorage.TEST_CODE,
                 team_name: 'Equipe Teste',
                 coach_name: 'Coach Teste',
                 coach_email: 'teste@email.com',
                 validoAte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                code_id: 999,
+                code_id: 2,
                 timestamp: new Date().toISOString()
             };
             
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(accessData));
+            localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
             
             setTimeout(() => {
                 window.location.href = 'inscricoes.html';
@@ -315,31 +308,25 @@ function initializeAccessPage() {
         }
         
         try {
-            // Chamar API para validar código
-            const response = await fetch(`${API_URL}/codes/validate/${codigo}`);
+            // Validar código usando o storage
+            const validation = window.WildClashStorage.validateCode(codigo);
             
-            if (!response.ok) {
-                throw new Error('Erro na conexão com o servidor');
-            }
-            
-            const data = await response.json();
-            
-            if (!data.success) {
-                throw new Error(data.error || 'Código inválido');
+            if (!validation.success) {
+                throw new Error(validation.error || 'Código inválido');
             }
             
             // Código válido - salvar no localStorage
             const accessData = {
-                codigo: data.data.code,
-                team_name: data.data.team_name,
-                coach_name: data.data.coach_name,
-                coach_email: data.data.coach_email,
-                validoAte: data.data.expires_at,
-                code_id: data.data.id,
+                codigo: validation.data.code,
+                team_name: validation.data.team_name,
+                coach_name: validation.data.coach_name,
+                coach_email: validation.data.coach_email,
+                validoAte: validation.data.expires_at,
+                code_id: validation.data.id,
                 timestamp: new Date().toISOString()
             };
             
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(accessData));
+            localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
             
             showPageSuccess(' Código válido! Redirecionando para o formulário...');
             
@@ -373,7 +360,7 @@ function initializeAccessPage() {
         if (accessStatus) {
             accessStatus.innerHTML = `
                 <div class="message error">
-                     ${mensagem}
+                     ✗ ${mensagem}
                 </div>
             `;
             accessStatus.style.display = 'block';
@@ -384,7 +371,7 @@ function initializeAccessPage() {
         if (accessStatus) {
             accessStatus.innerHTML = `
                 <div class="message success">
-                   x ${mensagem}
+                   ${mensagem}
                 </div>
             `;
             accessStatus.style.display = 'block';
@@ -415,7 +402,7 @@ function initializeAccessPage() {
 
 // ========== FUNÇÕES COMPARTILHADAS ==========
 function checkExistingAccess() {
-    const accessData = localStorage.getItem(STORAGE_KEY);
+    const accessData = localStorage.getItem(ACCESS_STORAGE_KEY);
     
     if (accessData) {
         try {
@@ -433,7 +420,7 @@ function checkExistingAccess() {
                     if (accessStatus) {
                         accessStatus.innerHTML = `
                             <div class="message success">
-                                 Você já tem acesso válido até ${expira.toLocaleDateString('pt-BR')}. Redirecionando...
+                                  Você já tem acesso válido até ${expira.toLocaleDateString('pt-BR')}. Redirecionando...
                             </div>
                         `;
                         accessStatus.style.display = 'block';
@@ -451,7 +438,7 @@ function checkExistingAccess() {
                 }
             } else {
                 // Acesso expirado - limpar
-                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(ACCESS_STORAGE_KEY);
                 console.log('Acesso expirado removido');
                 
                 if (window.location.pathname.includes('acesso.html')) {
@@ -459,7 +446,7 @@ function checkExistingAccess() {
                     if (accessStatus) {
                         accessStatus.innerHTML = `
                             <div class="message error">
-                                 Seu acesso expirou. Por favor, use um novo código.
+                                 ✗ Seu acesso expirou. Por favor, use um novo código.
                             </div>
                         `;
                         accessStatus.style.display = 'block';
@@ -467,7 +454,7 @@ function checkExistingAccess() {
                 }
             }
         } catch (e) {
-            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(ACCESS_STORAGE_KEY);
             console.error('Erro ao analisar dados de acesso:', e);
         }
     }
@@ -485,7 +472,7 @@ function updateNavigation() {
 
 // ========== FUNÇÕES DE DEBUG/TESTE ==========
 window.AccessDebug = {
-    testAccessCode: function(code = 'TESTE123') {
+    testAccessCode: function(code = window.WildClashStorage.TEST_CODE) {
         // Simula um código de teste válido
         const accessData = {
             codigo: code,
@@ -497,9 +484,9 @@ window.AccessDebug = {
             timestamp: new Date().toISOString()
         };
         
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(accessData));
+        localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
         console.log(' Código de teste configurado:', accessData);
-        alert('Código de teste configurado! Redirecionando...');
+        alert(' Código de teste configurado! Redirecionando...');
         
         setTimeout(() => {
             window.location.href = 'inscricoes.html';
@@ -507,10 +494,10 @@ window.AccessDebug = {
     },
     
     testAdminCode: function() {
-        alert('Usando código ADMIN123 para acessar o painel...');
+        alert(' Usando código admin para acessar o painel...');
         
         const fakeInput = document.createElement('input');
-        fakeInput.value = 'ADMIN123';
+        fakeInput.value = window.WildClashStorage.ADMIN_CODE;
         fakeInput.id = 'test-admin-input';
         document.body.appendChild(fakeInput);
         
@@ -518,7 +505,7 @@ window.AccessDebug = {
                                 document.getElementById('access-code') || 
                                 fakeInput;
         
-        accessCodeInput.value = 'ADMIN123';
+        accessCodeInput.value = window.WildClashStorage.ADMIN_CODE;
         
         if (document.getElementById('access-code-modal')) {
             document.getElementById('btn-verificar-modal').click();
@@ -532,9 +519,9 @@ window.AccessDebug = {
     },
     
     clearAccess: function() {
-        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(ACCESS_STORAGE_KEY);
         console.log(' Acesso limpo');
-        alert('Acesso removido do localStorage');
+        alert(' Acesso removido do localStorage');
         
         if (window.location.pathname.includes('acesso.html')) {
             location.reload();
@@ -542,13 +529,13 @@ window.AccessDebug = {
     },
     
     viewAccessData: function() {
-        const data = localStorage.getItem(STORAGE_KEY);
+        const data = localStorage.getItem(ACCESS_STORAGE_KEY);
         if (data) {
             console.log(' Dados de acesso:', JSON.parse(data));
-            alert('Verifique o console para ver os dados de acesso');
+            alert(' Verifique o console para ver os dados de acesso');
         } else {
             console.log(' Nenhum dado de acesso encontrado');
-            alert('Nenhum código de acesso armazenado');
+            alert(' Nenhum código de acesso armazenado');
         }
     }
 };
@@ -558,10 +545,9 @@ console.log(`
 ║           SISTEMA DE ACESSO ATIVO            ║
 ╠══════════════════════════════════════════════╣
 ║ Modo: ${document.getElementById('access-code-modal') ? 'Modal (index.html)' : 'Página (acesso.html)'} ║
-║ API: ${API_URL}                              ║
-║ Storage Key: ${STORAGE_KEY}                  ║
-║ Código Admin: ${ADMIN_CODE}                  ║
-║ Código Teste: ${TEST_CODE}                   ║
-║ Acesso Atual: ${localStorage.getItem(STORAGE_KEY) ? '✅' : '❌'}               ║
+║ Storage: ✅ Carregado                        ║
+║ Código Admin: ${window.WildClashStorage?.ADMIN_CODE || 'N/A'}          ║
+║ Código Teste: ${window.WildClashStorage?.TEST_CODE || 'N/A'}           ║
+║ Acesso Atual: ${localStorage.getItem(ACCESS_STORAGE_KEY) ? '✅' : '❌'}  ║
 ╚══════════════════════════════════════════════╝
 `);

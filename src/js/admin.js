@@ -15,7 +15,7 @@ const SYSTEM_CONFIG = {
     settingsKey: 'wildclash_settings_v2',
     backupKey: 'wildclash_backups_v2',
     adminPassword: 'admin123',
-    version: '1.1.0'
+    version: '1.2.0'
 };
 
 // Variáveis globais
@@ -179,7 +179,7 @@ function initSystem() {
     // Configurar modo offline
     if (modeIndicator) {
         modeIndicator.className = 'mode-indicator mode-offline';
-        modeIndicator.innerHTML = '🔴 Modo OFFLINE';
+        modeIndicator.innerHTML = ' Modo OFFLINE';
     }
     
     // Atualizar informações do sistema
@@ -209,80 +209,9 @@ function saveAllData() {
 // ========== GERENCIAMENTO DE CÓDIGOS ==========
 function loadCodes() {
     try {
-        const saved = localStorage.getItem(SYSTEM_CONFIG.storageKey);
-        if (saved) {
-            codes = JSON.parse(saved);
-            
-            // Garantir estrutura correta
-            codes = codes.map(code => ({
-                id: code.id || generateId(),
-                code: code.code,
-                team_name: code.team_name || code.team,
-                coach_name: code.coach_name || code.coach,
-                coach_email: code.coach_email || code.email,
-                coach_phone: code.coach_phone || code.phone,
-                created_at: code.created_at || code.created,
-                expires_at: code.expires_at || code.expires,
-                validity_days: code.validity_days || code.validity,
-                current_uses: code.current_uses || code.uses || 0,
-                max_uses: code.max_uses || code.maxUses || 1,
-                status: code.status || 'active',
-                notes: code.notes || '',
-                is_active: code.is_active !== undefined ? code.is_active : true
-            }));
-        } else {
-            // Dados de exemplo
-            codes = [
-                {
-                    id: generateId(),
-                    code: 'WILDCLASH-001',
-                    team_name: 'Dragões de Fogo',
-                    coach_name: 'Carlos Silva',
-                    coach_email: 'carlos@email.com',
-                    coach_phone: '(11) 99999-9999',
-                    created_at: new Date().toISOString(),
-                    expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                    validity_days: 7,
-                    current_uses: 0,
-                    max_uses: 1,
-                    status: 'active',
-                    notes: 'Time exemplo',
-                    is_active: true
-                },
-                {
-                    id: generateId(),
-                    code: 'TESTE123',
-                    team_name: 'Time de Teste',
-                    coach_name: 'Teste Coach',
-                    coach_email: 'teste@email.com',
-                    coach_phone: '(11) 99999-9999',
-                    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-                    expires_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-                    validity_days: 30,
-                    current_uses: 1,
-                    max_uses: 1,
-                    status: 'expired',
-                    notes: 'Para testes',
-                    is_active: true
-                },
-                {
-                    id: generateId(),
-                    code: 'USADO001',
-                    team_name: 'Time Usado',
-                    coach_name: 'Coach Usado',
-                    coach_email: 'usado@email.com',
-                    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-                    expires_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-                    validity_days: 7,
-                    current_uses: 1,
-                    max_uses: 1,
-                    status: 'used',
-                    notes: 'Código já utilizado',
-                    is_active: true
-                }
-            ];
-            saveCodes();
-        }
+        // Carregar códigos do storage
+        codes = window.WildClashStorage.getAllCodes();
+        console.log(`${codes.length} códigos carregados do storage`);
     } catch (error) {
         console.error('Erro ao carregar códigos:', error);
         codes = [];
@@ -291,7 +220,8 @@ function loadCodes() {
 
 function saveCodes() {
     try {
-        localStorage.setItem(SYSTEM_CONFIG.storageKey, JSON.stringify(codes));
+        // O storage já gerencia a persistência
+        console.log('Códigos gerenciados pelo storage');
     } catch (error) {
         console.error('Erro ao salvar códigos:', error);
         showAlert(' Erro ao salvar códigos!', 'error');
@@ -324,121 +254,11 @@ function saveSettings() {
 
 // ========== FUNÇÕES DE VALIDAÇÃO OFFLINE ==========
 function validateCodeOffline(code) {
-    const codeUpper = code.trim().toUpperCase();
-    const now = new Date();
-    
-    // Códigos especiais
-    if (codeUpper === 'ADMIN123') {
-        return {
-            success: true,
-            isAdmin: true,
-            message: 'Código de administrador válido!'
-        };
-    }
-    
-    if (codeUpper === 'TESTE123') {
-        return {
-            success: true,
-            isTest: true,
-            message: 'Código de teste válido!',
-            data: {
-                code: 'TESTE123',
-                team_name: 'Equipe Teste',
-                coach_name: 'Coach Teste',
-                coach_email: 'teste@email.com',
-                expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                id: 999
-            }
-        };
-    }
-    
-    // Buscar código no banco local
-    const foundCode = codes.find(c => 
-        c.code.toUpperCase() === codeUpper && 
-        c.is_active === true
-    );
-    
-    if (!foundCode) {
-        return {
-            success: false,
-            error: 'Código não encontrado'
-        };
-    }
-    
-    // Verificar expiração
-    const expiresAt = new Date(foundCode.expires_at);
-    if (expiresAt < now) {
-        return {
-            success: false,
-            error: 'Código expirado'
-        };
-    }
-    
-    // Verificar se já foi usado completamente
-    if (foundCode.current_uses >= foundCode.max_uses) {
-        return {
-            success: false,
-            error: 'Código já foi usado o número máximo de vezes'
-        };
-    }
-    
-    // Verificar status
-    if (foundCode.status === 'used' || foundCode.status === 'expired') {
-        return {
-            success: false,
-            error: `Código ${foundCode.status === 'used' ? 'já utilizado' : 'expirado'}`
-        };
-    }
-    
-    // Código válido
-    return {
-        success: true,
-        message: 'Código válido!',
-        data: {
-            code: foundCode.code,
-            team_name: foundCode.team_name,
-            coach_name: foundCode.coach_name,
-            coach_email: foundCode.coach_email,
-            expires_at: foundCode.expires_at,
-            id: foundCode.id
-        }
-    };
+    return window.WildClashStorage.validateCode(code);
 }
 
 function useCodeOffline(code) {
-    const codeUpper = code.trim().toUpperCase();
-    const foundCode = codes.find(c => c.code.toUpperCase() === codeUpper);
-    
-    if (!foundCode) {
-        return {
-            success: false,
-            error: 'Código não encontrado'
-        };
-    }
-    
-    // Verificar se pode ser usado
-    const validation = validateCodeOffline(code);
-    if (!validation.success) {
-        return validation;
-    }
-    
-    // Incrementar usos
-    foundCode.current_uses++;
-    
-    // Atualizar status se necessário
-    if (foundCode.current_uses >= foundCode.max_uses) {
-        foundCode.status = 'used';
-    }
-    
-    // Salvar alterações
-    saveCodes();
-    
-    return {
-        success: true,
-        message: 'Código marcado como usado com sucesso!',
-        current_uses: foundCode.current_uses,
-        max_uses: foundCode.max_uses
-    };
+    return window.WildClashStorage.useCode(code);
 }
 
 // ========== FUNÇÕES DO PAINEL ==========
@@ -452,68 +272,66 @@ function generateCode(formData) {
     const validity = parseInt(formData.get('expires_in_days')) || settings.defaultDays || 7;
     const maxUses = parseInt(formData.get('max_uses')) || settings.defaultUses || 1;
     
-    // Gerar código único
-    const prefix = settings.codePrefix || 'WILDCLASH';
-    let code;
-    do {
-        const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-        code = `${prefix}-${random}`;
-    } while (codes.some(c => c.code === code));
+    // Gerar código único usando o storage
+    const codeValue = window.WildClashStorage.generateUniqueCode(settings.codePrefix || 'WILDCLASH');
 
     const newCode = {
-        id: generateId(),
-        code: code,
+        code: codeValue,
         team_name: teamName,
         coach_name: formData.get('coach_name') || '',
         coach_email: formData.get('coach_email') || '',
         coach_phone: formData.get('coach_phone') || '',
-        created_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + validity * 24 * 60 * 60 * 1000).toISOString(),
         validity_days: validity,
-        current_uses: 0,
         max_uses: maxUses,
-        status: 'active',
-        notes: formData.get('notes') || '',
-        is_active: true
+        notes: formData.get('notes') || ''
     };
 
-    codes.push(newCode);
-    saveCodes();
-    updateStats();
-    
-    // Renderizar tabelas se estiverem visíveis
-    renderAllTables();
-    
-    return newCode;
+    try {
+        // Adicionar código usando o storage
+        const addedCode = window.WildClashStorage.addCode(newCode);
+        
+        // Atualizar lista local
+        loadCodes();
+        updateStats();
+        
+        // Renderizar tabelas se estiverem visíveis
+        renderAllTables();
+        
+        showAlert(' Código gerado com sucesso!', 'success');
+        return addedCode;
+    } catch (error) {
+        showAlert(' Erro ao gerar código: ' + error.message, 'error');
+        return null;
+    }
 }
 
 function generateMultipleCodes(quantity, prefix, validity, maxUses) {
     const generated = [];
     for (let i = 1; i <= quantity; i++) {
         const teamName = prefix ? `${prefix}${i}` : `Time ${i}`;
+        const codeValue = window.WildClashStorage.generateUniqueCode();
         
         const code = {
-            id: generateId(),
-            code: generateUniqueCode(),
+            code: codeValue,
             team_name: teamName,
             coach_name: '',
             coach_email: '',
             coach_phone: '',
-            created_at: new Date().toISOString(),
-            expires_at: new Date(Date.now() + validity * 24 * 60 * 60 * 1000).toISOString(),
             validity_days: validity,
-            current_uses: 0,
             max_uses: maxUses,
-            status: 'active',
-            notes: `Código ${i} de ${quantity}`,
-            is_active: true
+            notes: `Código ${i} de ${quantity}`
         };
         
-        codes.push(code);
-        generated.push(code);
+        try {
+            const addedCode = window.WildClashStorage.addCode(code);
+            generated.push(addedCode);
+        } catch (error) {
+            console.error(`Erro ao gerar código ${i}:`, error);
+        }
     }
     
-    saveCodes();
+    // Atualizar lista local
+    loadCodes();
     updateStats();
     renderAllTables();
     
@@ -522,11 +340,15 @@ function generateMultipleCodes(quantity, prefix, validity, maxUses) {
 
 function deleteCode(codeId) {
     showConfirm('Excluir Código', 'Tem certeza que deseja excluir este código?\nEsta ação não pode ser desfeita.', () => {
-        codes = codes.filter(c => c.id !== codeId);
-        saveCodes();
-        updateStats();
-        renderAllTables();
-        showAlert(' Código excluído com sucesso!', 'success');
+        const success = window.WildClashStorage.deleteCode(codeId);
+        if (success) {
+            loadCodes();
+            updateStats();
+            renderAllTables();
+            showAlert(' Código excluído com sucesso!', 'success');
+        } else {
+            showAlert(' Erro ao excluir código!', 'error');
+        }
     });
 }
 
@@ -537,7 +359,8 @@ function useCode(codeId) {
         if (code.current_uses >= code.max_uses) {
             code.status = 'used';
         }
-        saveCodes();
+        window.WildClashStorage.updateCode(code);
+        loadCodes();
         updateStats();
         renderAllTables();
         showAlert(' Código marcado como usado!', 'success');
@@ -878,27 +701,7 @@ function loadDashboardStats() {
 }
 
 function getLocalStats() {
-    const now = new Date();
-    
-    const stats = {
-        total_codes: codes.filter(c => c.is_active === true).length,
-        available_codes: codes.filter(c => 
-            c.status === 'active' && 
-            new Date(c.expires_at) > now &&
-            c.current_uses < c.max_uses &&
-            c.is_active === true
-        ).length,
-        used_codes: codes.filter(c => 
-            (c.status === 'used' || c.current_uses >= c.max_uses) &&
-            c.is_active === true
-        ).length,
-        expired_codes: codes.filter(c => 
-            (c.status === 'expired' || new Date(c.expires_at) <= now) &&
-            c.is_active === true
-        ).length
-    };
-    
-    return stats;
+    return window.WildClashStorage.getStats();
 }
 
 function updateStats() {
@@ -912,10 +715,10 @@ function updateStats() {
         expiredCodes: document.getElementById('expiredCodes')
     };
     
-    if (elements.totalCodes) elements.totalCodes.textContent = stats.total_codes || 0;
-    if (elements.usedCodes) elements.usedCodes.textContent = stats.used_codes || 0;
-    if (elements.availableCodes) elements.availableCodes.textContent = stats.available_codes || 0;
-    if (elements.expiredCodes) elements.expiredCodes.textContent = stats.expired_codes || 0;
+    if (elements.totalCodes) elements.totalCodes.textContent = stats.total || 0;
+    if (elements.usedCodes) elements.usedCodes.textContent = stats.used || 0;
+    if (elements.availableCodes) elements.availableCodes.textContent = stats.available || 0;
+    if (elements.expiredCodes) elements.expiredCodes.textContent = stats.expired || 0;
     
     // Atualizar admin-panel.html
     const panelElements = {
@@ -926,11 +729,11 @@ function updateStats() {
         systemTotalCodes: document.getElementById('systemTotalCodes')
     };
     
-    if (panelElements.totalCount) panelElements.totalCount.textContent = stats.total_codes;
-    if (panelElements.availableCount) panelElements.availableCount.textContent = stats.available_codes;
-    if (panelElements.usedCount) panelElements.usedCount.textContent = stats.used_codes;
-    if (panelElements.expiredCount) panelElements.expiredCount.textContent = stats.expired_codes;
-    if (panelElements.systemTotalCodes) panelElements.systemTotalCodes.textContent = stats.total_codes;
+    if (panelElements.totalCount) panelElements.totalCount.textContent = stats.total;
+    if (panelElements.availableCount) panelElements.availableCount.textContent = stats.available;
+    if (panelElements.usedCount) panelElements.usedCount.textContent = stats.used;
+    if (panelElements.expiredCount) panelElements.expiredCount.textContent = stats.expired;
+    if (panelElements.systemTotalCodes) panelElements.systemTotalCodes.textContent = stats.total;
 }
 
 function updateStatsUI(stats) {
@@ -941,10 +744,10 @@ function updateStatsUI(stats) {
         expiredCodes: document.getElementById('expiredCodes')
     };
     
-    if (elements.totalCodes) elements.totalCodes.textContent = stats.total_codes || 0;
-    if (elements.usedCodes) elements.usedCodes.textContent = stats.used_codes || 0;
-    if (elements.availableCodes) elements.availableCodes.textContent = stats.available_codes || 0;
-    if (elements.expiredCodes) elements.expiredCodes.textContent = stats.expired_codes || 0;
+    if (elements.totalCodes) elements.totalCodes.textContent = stats.total || 0;
+    if (elements.usedCodes) elements.usedCodes.textContent = stats.used || 0;
+    if (elements.availableCodes) elements.availableCodes.textContent = stats.available || 0;
+    if (elements.expiredCodes) elements.expiredCodes.textContent = stats.expired || 0;
 }
 
 function loadStats() {
@@ -1323,7 +1126,7 @@ function setupEventListeners() {
             }
             
             // Gerar código localmente
-            const code = generateUniqueCode();
+            const code = window.WildClashStorage.generateUniqueCode();
             const generatedData = {
                 id: generateId(),
                 code: code,
@@ -1341,9 +1144,8 @@ function setupEventListeners() {
                 is_active: true
             };
             
-            // Salvar no localStorage
-            codes.push(generatedData);
-            saveCodes();
+            // Salvar usando storage
+            window.WildClashStorage.addCode(generatedData);
             
             showAlert(' Código gerado localmente com sucesso!', 'success');
             
@@ -1510,7 +1312,7 @@ window.AdminDebug = {
         for (let i = 0; i < count; i++) {
             const codeData = {
                 id: generateId(),
-                code: generateUniqueCode(),
+                code: window.WildClashStorage.generateUniqueCode(),
                 team_name: teams[i % teams.length],
                 coach_name: coaches[i % coaches.length],
                 coach_email: `coach${i+1}@email.com`,
@@ -1525,10 +1327,10 @@ window.AdminDebug = {
                 is_active: true
             };
             
-            codes.push(codeData);
+            window.WildClashStorage.addCode(codeData);
         }
         
-        saveCodes();
+        loadCodes();
         
         alert(` ${count} códigos de teste gerados!\nRecarregando dashboard...`);
         updateStats();
@@ -1549,7 +1351,7 @@ window.AdminDebug = {
     testValidation: function() {
         const testCode = prompt('Digite um código para testar a validação:');
         if (testCode) {
-            const result = validateCodeOffline(testCode);
+            const result = window.WildClashStorage.validateCode(testCode);
             alert(`Resultado da validação: ${JSON.stringify(result, null, 2)}`);
         }
     }

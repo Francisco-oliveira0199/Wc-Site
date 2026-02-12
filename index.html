@@ -47,14 +47,6 @@
 
         <div class="access-note-modal">
           <p><strong>Nota:</strong> Os códigos são distribuídos exclusivamente para times convidados ou aprovados pela organização. Cada código é válido para uma única inscrição e expira após 7 dias.</p>
-          <p style="margin-top: 10px;">
-            <!-- <strong>Contato para código:</strong>
-            <a href="https://discord.gg/smJ9Q2V3VB" target="_blank" rel="noopener noreferrer" style="color: #00eaff; text-decoration: none;">
-              Discord do Wild Clash
-            </a> -->
-          </p>
-          <p style="margin-top: 10px; font-size: 12px; color: #aaa;">
-          </p>
         </div>
 
         <div id="access-status-modal" class="form-status" style="margin-top: 20px;" role="status"></div>
@@ -188,6 +180,7 @@
   </footer>
 
   <!-- Scripts -->
+  <script src="./src/js/storage.js"></script>
   <script src="./src/js/script.js"></script>
   <script src="./src/js/acesso.js"></script>
   
@@ -196,125 +189,17 @@
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Script inline do modal carregado');
       
-      // Elementos do modal
-      const btnNav = document.getElementById('inscreva-se-link');
-      const btnHero = document.getElementById('inscreva-se-btn');
-      const btnClose = document.getElementById('closeModal');
-      const modal = document.getElementById('accessModal');
-      
-      // Função para abrir modal
-      function openModal(event) {
-        if (event) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        
-        console.log('Abrindo modal de acesso...');
-        
-        if (modal) {
-          modal.classList.add('active');
-          modal.removeAttribute('hidden');
-          modal.style.display = 'flex';
-          document.body.style.overflow = 'hidden';
-          
-          // Animar entrada
-          modal.style.opacity = '0';
-          const modalContent = modal.querySelector('.access-modal-content');
-          if (modalContent) {
-            modalContent.style.transform = 'translateY(-20px)';
-            modalContent.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-          }
-          
-          setTimeout(() => {
-            modal.style.opacity = '1';
-            if (modalContent) {
-              modalContent.style.transform = 'translateY(0)';
-            }
-          }, 10);
-        }
-        
-        return false;
-      }
-      
-      // Função para fechar modal
-      function closeModal(event) {
-        if (event) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        
-        console.log('Fechando modal...');
-        
-        if (modal) {
-          modal.classList.remove('active');
-          modal.style.opacity = '0';
-          const modalContent = modal.querySelector('.access-modal-content');
-          if (modalContent) {
-            modalContent.style.transform = 'translateY(-20px)';
-          }
-          
-          setTimeout(() => {
-            modal.setAttribute('hidden', true);
-            modal.style.display = 'none';
-            document.body.style.overflow = '';
-          }, 300);
-        }
-        
-        return false;
-      }
-      
-      // Adicionar eventos
-      if (btnNav) {
-        btnNav.addEventListener('click', openModal);
-        console.log('Evento adicionado ao botão de navegação');
-      }
-      
-      if (btnHero) {
-        btnHero.addEventListener('click', openModal);
-        console.log('Evento adicionado ao botão do hero');
-      }
-      
-      if (btnClose) {
-        btnClose.addEventListener('click', closeModal);
-        console.log('Evento adicionado ao botão fechar');
-      }
-      
-      if (modal) {
-        // Fechar ao clicar fora
-        modal.addEventListener('click', function(event) {
-          if (event.target === modal) {
-            closeModal(event);
-          }
-        });
-        
-        // Fechar com ESC
-        document.addEventListener('keydown', function(event) {
-          if (event.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal(event);
-          }
-        });
-        
-        // Prevenir fechamento ao clicar dentro do conteúdo
-        const modalContent = modal.querySelector('.access-modal-content');
-        if (modalContent) {
-          modalContent.addEventListener('click', function(event) {
-            event.stopPropagation();
-          });
-        }
-      }
-      
-      // Debug: adicionar atalhos de teclado para testes
+      // Adicionar atalhos de teclado para testes
       document.addEventListener('keydown', function(event) {
         // Ctrl+Shift+A para testar código ADMIN
         if (event.ctrlKey && event.shiftKey && event.key === 'A') {
           event.preventDefault();
           console.log('Atalho: Testando acesso ADMIN');
-          if (modal && !modal.classList.contains('active')) {
-            openModal();
-          }
-          const input = document.getElementById('access-code-modal');
-          if (input) {
-            input.value = 'ADMIN123';
+          if (window.WildClashStorage) {
+            const input = document.getElementById('access-code-modal');
+            if (input) {
+              input.value = window.WildClashStorage.ADMIN_CODE;
+            }
           }
         }
         
@@ -322,12 +207,11 @@
         if (event.ctrlKey && event.shiftKey && event.key === 'T') {
           event.preventDefault();
           console.log('Atalho: Testando acesso TESTE');
-          if (modal && !modal.classList.contains('active')) {
-            openModal();
-          }
-          const input = document.getElementById('access-code-modal');
-          if (input) {
-            input.value = 'TESTE123';
+          if (window.WildClashStorage) {
+            const input = document.getElementById('access-code-modal');
+            if (input) {
+              input.value = window.WildClashStorage.TEST_CODE;
+            }
           }
         }
       });

@@ -1,7 +1,7 @@
 /* =============================================================================
    PROJETO: Wild Clash - Site de Campeonatos de Wild Rift
    ARQUIVO: wildclash.css - Estilos específicos para wildclash.html
-   VERSÃO: 7.2
+   VERSÃO: 7.3 - ATUALIZADO COM RESPONSIVIDADE CORRIGIDA
    DATA: Dezembro 2025
 ============================================================================= */
 
@@ -460,7 +460,7 @@
     color: white;
 }
 
-/* ========== CONTAINER DE SCROLL PARA CHAVES - DESKTOP STYLE NO MOBILE ========== */
+/* ========== CONTAINER DE SCROLL PARA CHAVES ========== */
 .bracket-scroll-container {
   position: relative;
   width: 100%;
@@ -641,15 +641,6 @@
   min-height: 100px;
 }
 
-/* Alinhamento das semifinais */
-.losers-bracket .round:nth-child(3) {
-  margin-top: 0;
-}
-
-.winners-bracket .round:nth-child(3) {
-  margin-top: 0;
-}
-
 /* ========== SCROLLBARS OCULTAS MAS FUNCIONAIS ========== */
 .bracket-scroll-container::-webkit-scrollbar {
   height: 8px;
@@ -670,6 +661,98 @@
 .bracket-scroll-container::-webkit-scrollbar-thumb:hover {
   background: var(--neon-pink);
   box-shadow: 0 0 8px rgba(255,45,117,0.6);
+}
+
+/* ========== CORREÇÃO PARA ALINHAMENTO DA FINAL DOS PERDEDORES ========== */
+
+/* Ajuste específico para Final dos Perdedores - alinha com as outras rodadas */
+.losers-bracket .round:nth-child(4) {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Ajuste para o título da Final dos Perdedores */
+.losers-bracket .round:nth-child(4) h4 {
+  margin-bottom: 25px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ajuste para o jogo da Final dos Perdedores */
+.losers-bracket .round:nth-child(4) .match {
+  margin-top: 0;
+  flex-grow: 0;
+}
+
+/* Garantir que todas as rodadas tenham o mesmo alinhamento vertical */
+.losers-bracket .bracket-grid {
+  align-items: flex-start !important;
+}
+
+/* Ajuste específico para garantir que o texto fique centralizado verticalmente */
+.losers-bracket .round:nth-child(4) .team {
+  min-height: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 14px;
+}
+
+/* Ajuste para a Semifinal dos Perdedores também (rodada 3) */
+.losers-bracket .round:nth-child(3) {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.losers-bracket .round:nth-child(3) h4 {
+  margin-bottom: 25px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Corrigir o espaçamento entre as rodadas */
+.losers-bracket .round {
+  gap: 25px !important;
+}
+
+/* ========== CORREÇÃO PARA ALINHAMENTO GERAL DO BRACKET ========== */
+.bracket-grid {
+  align-items: stretch !important;
+}
+
+.winners-bracket .bracket-grid,
+.losers-bracket .bracket-grid {
+  align-items: stretch !important;
+}
+
+.round {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+}
+
+.round h4 {
+  flex-shrink: 0;
+  height: 30px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.match {
+  flex-shrink: 0;
 }
 
 /* ========== RESPONSIVIDADE ESPECÍFICA PARA WILDCLASH ========== */
@@ -701,7 +784,7 @@
   }
   
   .round {
-    width: 180px; /* Um pouco menor no mobile */
+    width: 180px;
     min-width: 180px;
   }
   
@@ -753,11 +836,27 @@
   .bracket-subtitle {
     font-size: 1.2rem;
   }
+  
+  /* Ajuste para mobile - Final dos Perdedores */
+  .losers-bracket .round:nth-child(3) h4,
+  .losers-bracket .round:nth-child(4) h4 {
+    font-size: 0.9rem;
+    height: 26px;
+    margin-bottom: 20px;
+  }
+  
+  .losers-bracket .round:nth-child(3) .team,
+  .losers-bracket .round:nth-child(4) .team {
+    min-height: 42px;
+    height: 42px;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
 }
 
 @media (max-width: 480px) {
   .brackets-group-container {
-    min-width: 700px; /* Ajuste para telas muito pequenas */
+    min-width: 700px;
     gap: 30px;
   }
   
@@ -775,6 +874,23 @@
   }
   
   .group-phase-grid {
-    grid-template-columns: 1fr; /* Em telas muito pequenas, grupos em 1 coluna */
+    grid-template-columns: 1fr;
+  }
+  
+  .tab-button {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .phase-title {
+    font-size: 1.6rem;
+  }
+  
+  .bracket-title {
+    font-size: 1.2rem;
+  }
+  
+  .bracket-subtitle {
+    font-size: 1.1rem;
   }
 }
