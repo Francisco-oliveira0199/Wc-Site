@@ -13,14 +13,11 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         // Verificar em qual página estamos
         if (document.getElementById('access-code-modal')) {
-            // Estamos no modal da index.html
             initializeModalAccess();
         } else if (document.getElementById('access-code')) {
-            // Estamos na página acesso.html
             initializeAccessPage();
         }
         
-        // Verificar acesso existente em ambas as páginas
         checkExistingAccess();
     }, 100);
 });
@@ -33,44 +30,26 @@ function initializeModalAccess() {
     const codeError = document.getElementById('code-error-modal');
     const accessStatus = document.getElementById('access-status-modal');
     
-    if (!accessCodeInput || !btnVerificar) {
-        console.log('Elementos do modal não encontrados');
-        return;
-    }
+    if (!accessCodeInput || !btnVerificar) return;
     
-    // Event Listeners para o modal
-    if (btnVerificar) {
-        btnVerificar.addEventListener('click', verificarCodigoModal);
-    }
+    btnVerificar.addEventListener('click', verificarCodigoModal);
+    btnLimpar?.addEventListener('click', () => {
+        accessCodeInput.value = '';
+        clearModalMessages();
+        accessCodeInput.focus();
+    });
     
-    if (btnLimpar) {
-        btnLimpar.addEventListener('click', function() {
-            accessCodeInput.value = '';
-            clearModalMessages();
-            accessCodeInput.focus();
-        });
-    }
-    
-    if (accessCodeInput) {
-        accessCodeInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                verificarCodigoModal();
-            }
-        });
-        
-        // Remover classe de erro ao digitar
-        accessCodeInput.addEventListener('input', function() {
-            this.classList.remove('error');
-            if (codeError) {
-                codeError.textContent = '';
-                codeError.classList.remove('show');
-            }
-        });
-    }
+    accessCodeInput.addEventListener('keypress', (e) => e.key === 'Enter' && verificarCodigoModal());
+    accessCodeInput.addEventListener('input', () => {
+        accessCodeInput.classList.remove('error');
+        if (codeError) {
+            codeError.textContent = '';
+            codeError.classList.remove('show');
+        }
+    });
     
     async function verificarCodigoModal() {
         const codigo = accessCodeInput.value.trim();
-        
         clearModalMessages();
         
         if (!codigo) {
@@ -78,20 +57,26 @@ function initializeModalAccess() {
             return;
         }
         
-        // Verificar se é o código ADMIN
+        // Admin code
         if (codigo === window.WildClashStorage.ADMIN_CODE) {
             showModalSuccess(' Código de administrador válido! Redirecionando para o painel...');
-            setTimeout(() => {
-                window.location.href = 'admin-panel.html';
-            }, 1500);
+            // Salvar token de acesso admin
+            const accessData = {
+                codigo: window.WildClashStorage.ADMIN_CODE,
+                team_name: 'Administrador',
+                validoAte: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 1 dia
+                code_id: 1,
+                isAdmin: true,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
+            setTimeout(() => window.location.href = 'admin-panel.html', 1500);
             return;
         }
         
-        // Verificar se é o código de teste para inscrições
+        // Test code
         if (codigo === window.WildClashStorage.TEST_CODE) {
             showModalSuccess(' Código de teste válido! Redirecionando para o formulário...');
-            
-            // Criar dados de acesso de teste
             const accessData = {
                 codigo: window.WildClashStorage.TEST_CODE,
                 team_name: 'Equipe Teste',
@@ -101,12 +86,8 @@ function initializeModalAccess() {
                 code_id: 2,
                 timestamp: new Date().toISOString()
             };
-            
             localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
-            
-            setTimeout(() => {
-                window.location.href = 'inscricoes.html';
-            }, 1500);
+            setTimeout(() => window.location.href = 'inscricoes.html', 1500);
             return;
         }
         
@@ -115,21 +96,13 @@ function initializeModalAccess() {
             return;
         }
         
-        // Mostrar loading
-        if (btnVerificar) {
-            btnVerificar.disabled = true;
-            btnVerificar.innerHTML = '<span class="loading-spinner"></span> Verificando...';
-        }
+        btnVerificar.disabled = true;
+        btnVerificar.innerHTML = '<span class="loading-spinner"></span> Verificando...';
         
         try {
-            // Validar código usando o storage
             const validation = window.WildClashStorage.validateCode(codigo);
+            if (!validation.success) throw new Error(validation.error || 'Código inválido');
             
-            if (!validation.success) {
-                throw new Error(validation.error || 'Código inválido');
-            }
-            
-            // Código válido - salvar no localStorage
             const accessData = {
                 codigo: validation.data.code,
                 team_name: validation.data.team_name,
@@ -141,23 +114,14 @@ function initializeModalAccess() {
             };
             
             localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
-            
             showModalSuccess(' Código válido! Redirecionando para o formulário...');
-            
-            // Redirecionar após 1.5 segundos
-            setTimeout(() => {
-                window.location.href = 'inscricoes.html';
-            }, 1500);
+            setTimeout(() => window.location.href = 'inscricoes.html', 1500);
             
         } catch (error) {
             showModalError(error.message);
             accessCodeInput.classList.add('error');
-            
-            // Restaurar botão
-            if (btnVerificar) {
-                btnVerificar.disabled = false;
-                btnVerificar.textContent = 'Verificar Código';
-            }
+            btnVerificar.disabled = false;
+            btnVerificar.textContent = 'Verificar Código';
         }
     }
     
@@ -165,29 +129,18 @@ function initializeModalAccess() {
         if (codeError) {
             codeError.textContent = mensagem;
             codeError.classList.add('show');
-            codeError.style.animation = 'fadeIn 0.3s ease';
         }
-        
         if (accessStatus) {
-            accessStatus.innerHTML = `
-                <div class="message error" style="margin-top: 15px;">
-                    ✗ ${mensagem}
-                </div>
-            `;
+            accessStatus.innerHTML = `<div class="message error" style="margin-top:15px;">✗ ${mensagem}</div>`;
             accessStatus.style.display = 'block';
         }
     }
     
     function showModalSuccess(mensagem) {
         if (accessStatus) {
-            accessStatus.innerHTML = `
-                <div class="message success" style="margin-top: 15px;">
-                    ${mensagem}
-                </div>
-            `;
+            accessStatus.innerHTML = `<div class="message success" style="margin-top:15px;">${mensagem}</div>`;
             accessStatus.style.display = 'block';
         }
-        
         if (btnVerificar) {
             btnVerificar.disabled = true;
             btnVerificar.innerHTML = '<span class="loading-spinner"></span> Redirecionando...';
@@ -199,15 +152,11 @@ function initializeModalAccess() {
             codeError.textContent = '';
             codeError.classList.remove('show');
         }
-        
         if (accessStatus) {
             accessStatus.innerHTML = '';
             accessStatus.style.display = 'none';
         }
-        
-        if (accessCodeInput) {
-            accessCodeInput.classList.remove('error');
-        }
+        if (accessCodeInput) accessCodeInput.classList.remove('error');
     }
 }
 
@@ -219,44 +168,26 @@ function initializeAccessPage() {
     const accessStatus = document.getElementById('access-status');
     const codeError = document.getElementById('code-error');
     
-    if (!accessCodeInput || !btnVerificar) {
-        console.log('Elementos da página acesso.html não encontrados');
-        return;
-    }
+    if (!accessCodeInput || !btnVerificar) return;
     
-    // Event Listeners
-    if (btnVerificar) {
-        btnVerificar.addEventListener('click', verificarCodigoPage);
-    }
+    btnVerificar.addEventListener('click', verificarCodigoPage);
+    btnLimpar?.addEventListener('click', () => {
+        accessCodeInput.value = '';
+        clearPageMessages();
+        accessCodeInput.focus();
+    });
     
-    if (btnLimpar) {
-        btnLimpar.addEventListener('click', function() {
-            accessCodeInput.value = '';
-            clearPageMessages();
-            accessCodeInput.focus();
-        });
-    }
-    
-    if (accessCodeInput) {
-        accessCodeInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                verificarCodigoPage();
-            }
-        });
-        
-        // Remover classe de erro ao digitar
-        accessCodeInput.addEventListener('input', function() {
-            this.classList.remove('error');
-            if (codeError) {
-                codeError.textContent = '';
-                codeError.style.display = 'none';
-            }
-        });
-    }
+    accessCodeInput.addEventListener('keypress', (e) => e.key === 'Enter' && verificarCodigoPage());
+    accessCodeInput.addEventListener('input', () => {
+        accessCodeInput.classList.remove('error');
+        if (codeError) {
+            codeError.textContent = '';
+            codeError.style.display = 'none';
+        }
+    });
     
     async function verificarCodigoPage() {
         const codigo = accessCodeInput.value.trim();
-        
         clearPageMessages();
         
         if (!codigo) {
@@ -264,20 +195,25 @@ function initializeAccessPage() {
             return;
         }
         
-        // Verificar se é o código ADMIN
+        // Admin code
         if (codigo === window.WildClashStorage.ADMIN_CODE) {
             showPageSuccess(' Código de administrador válido! Redirecionando para o painel...');
-            setTimeout(() => {
-                window.location.href = 'admin-panel.html';
-            }, 1500);
+            const accessData = {
+                codigo: window.WildClashStorage.ADMIN_CODE,
+                team_name: 'Administrador',
+                validoAte: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                code_id: 1,
+                isAdmin: true,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
+            setTimeout(() => window.location.href = 'admin-panel.html', 1500);
             return;
         }
         
-        // Verificar se é o código de teste para inscrições
+        // Test code
         if (codigo === window.WildClashStorage.TEST_CODE) {
             showPageSuccess(' Código de teste válido! Redirecionando para o formulário...');
-            
-            // Criar dados de acesso de teste
             const accessData = {
                 codigo: window.WildClashStorage.TEST_CODE,
                 team_name: 'Equipe Teste',
@@ -287,12 +223,8 @@ function initializeAccessPage() {
                 code_id: 2,
                 timestamp: new Date().toISOString()
             };
-            
             localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
-            
-            setTimeout(() => {
-                window.location.href = 'inscricoes.html';
-            }, 1500);
+            setTimeout(() => window.location.href = 'inscricoes.html', 1500);
             return;
         }
         
@@ -301,21 +233,13 @@ function initializeAccessPage() {
             return;
         }
         
-        // Mostrar loading
-        if (btnVerificar) {
-            btnVerificar.disabled = true;
-            btnVerificar.innerHTML = '<span class="loading-spinner"></span> Verificando...';
-        }
+        btnVerificar.disabled = true;
+        btnVerificar.innerHTML = '<span class="loading-spinner"></span> Verificando...';
         
         try {
-            // Validar código usando o storage
             const validation = window.WildClashStorage.validateCode(codigo);
+            if (!validation.success) throw new Error(validation.error || 'Código inválido');
             
-            if (!validation.success) {
-                throw new Error(validation.error || 'Código inválido');
-            }
-            
-            // Código válido - salvar no localStorage
             const accessData = {
                 codigo: validation.data.code,
                 team_name: validation.data.team_name,
@@ -327,26 +251,15 @@ function initializeAccessPage() {
             };
             
             localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
-            
             showPageSuccess(' Código válido! Redirecionando para o formulário...');
-            
-            // Atualizar navegação
             updateNavigation();
-            
-            // Redirecionar após 1.5 segundos
-            setTimeout(() => {
-                window.location.href = 'inscricoes.html';
-            }, 1500);
+            setTimeout(() => window.location.href = 'inscricoes.html', 1500);
             
         } catch (error) {
             showPageError(error.message);
             accessCodeInput.classList.add('error');
-            
-            // Restaurar botão
-            if (btnVerificar) {
-                btnVerificar.disabled = false;
-                btnVerificar.textContent = 'Verificar Código';
-            }
+            btnVerificar.disabled = false;
+            btnVerificar.textContent = 'Verificar Código';
         }
     }
     
@@ -354,29 +267,18 @@ function initializeAccessPage() {
         if (codeError) {
             codeError.textContent = mensagem;
             codeError.style.display = 'block';
-            codeError.style.animation = 'fadeIn 0.3s ease';
         }
-        
         if (accessStatus) {
-            accessStatus.innerHTML = `
-                <div class="message error">
-                     ✗ ${mensagem}
-                </div>
-            `;
+            accessStatus.innerHTML = `<div class="message error">✗ ${mensagem}</div>`;
             accessStatus.style.display = 'block';
         }
     }
     
     function showPageSuccess(mensagem) {
         if (accessStatus) {
-            accessStatus.innerHTML = `
-                <div class="message success">
-                   ${mensagem}
-                </div>
-            `;
+            accessStatus.innerHTML = `<div class="message success">${mensagem}</div>`;
             accessStatus.style.display = 'block';
         }
-        
         if (btnVerificar) {
             btnVerificar.disabled = true;
             btnVerificar.innerHTML = '<span class="loading-spinner"></span> Redirecionando...';
@@ -388,81 +290,61 @@ function initializeAccessPage() {
             codeError.textContent = '';
             codeError.style.display = 'none';
         }
-        
         if (accessStatus) {
             accessStatus.innerHTML = '';
             accessStatus.style.display = 'none';
         }
-        
-        if (accessCodeInput) {
-            accessCodeInput.classList.remove('error');
-        }
+        if (accessCodeInput) accessCodeInput.classList.remove('error');
     }
 }
 
 // ========== FUNÇÕES COMPARTILHADAS ==========
 function checkExistingAccess() {
     const accessData = localStorage.getItem(ACCESS_STORAGE_KEY);
+    if (!accessData) return;
     
-    if (accessData) {
-        try {
-            const data = JSON.parse(accessData);
-            const expira = new Date(data.validoAte);
-            const hoje = new Date();
+    try {
+        const data = JSON.parse(accessData);
+        const expira = new Date(data.validoAte);
+        const hoje = new Date();
+        
+        if (expira > hoje) {
+            console.log('Acesso válido encontrado:', data.team_name);
             
-            if (expira > hoje) {
-                // Acesso ainda válido
-                console.log('Acesso válido encontrado:', data.team_name);
+            // Se estiver na página de acesso, redirecionar automaticamente
+            if (window.location.pathname.includes('acesso.html')) {
+                const msg = data.isAdmin 
+                    ? ' Você já tem acesso de administrador. Redirecionando...' 
+                    : ` Você já tem acesso até ${expira.toLocaleDateString('pt-BR')}. Redirecionando...`;
                 
-                // Se estiver na página de acesso, mostrar mensagem e redirecionar
-                if (window.location.pathname.includes('acesso.html')) {
-                    const accessStatus = document.getElementById('access-status');
-                    if (accessStatus) {
-                        accessStatus.innerHTML = `
-                            <div class="message success">
-                                  Você já tem acesso válido até ${expira.toLocaleDateString('pt-BR')}. Redirecionando...
-                            </div>
-                        `;
-                        accessStatus.style.display = 'block';
-                    }
-                    
-                    const btnVerificar = document.getElementById('btn-verificar');
-                    if (btnVerificar) {
-                        btnVerificar.disabled = true;
-                        btnVerificar.textContent = 'Acesso já concedido';
-                    }
-                    
-                    setTimeout(() => {
-                        window.location.href = 'inscricoes.html';
-                    }, 1500);
+                const accessStatus = document.getElementById('access-status');
+                if (accessStatus) {
+                    accessStatus.innerHTML = `<div class="message success">${msg}</div>`;
+                    accessStatus.style.display = 'block';
                 }
-            } else {
-                // Acesso expirado - limpar
-                localStorage.removeItem(ACCESS_STORAGE_KEY);
-                console.log('Acesso expirado removido');
                 
-                if (window.location.pathname.includes('acesso.html')) {
-                    const accessStatus = document.getElementById('access-status');
-                    if (accessStatus) {
-                        accessStatus.innerHTML = `
-                            <div class="message error">
-                                 ✗ Seu acesso expirou. Por favor, use um novo código.
-                            </div>
-                        `;
-                        accessStatus.style.display = 'block';
-                    }
+                const btn = document.getElementById('btn-verificar');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = 'Acesso já concedido';
                 }
+                
+                setTimeout(() => {
+                    if (data.isAdmin) window.location.href = 'admin-panel.html';
+                    else window.location.href = 'inscricoes.html';
+                }, 1500);
             }
-        } catch (e) {
+        } else {
             localStorage.removeItem(ACCESS_STORAGE_KEY);
-            console.error('Erro ao analisar dados de acesso:', e);
+            console.log('Acesso expirado removido');
         }
+    } catch (e) {
+        localStorage.removeItem(ACCESS_STORAGE_KEY);
     }
 }
 
 function updateNavigation() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
+    document.querySelectorAll('.nav-link').forEach(link => {
         if (link.getAttribute('href') === 'acesso.html') {
             link.textContent = 'Formulário';
             link.href = 'inscricoes.html';
@@ -470,10 +352,10 @@ function updateNavigation() {
     });
 }
 
-// ========== FUNÇÕES DE DEBUG/TESTE ==========
+// ========== DEBUG ==========
 window.AccessDebug = {
-    testAccessCode: function(code = window.WildClashStorage.TEST_CODE) {
-        // Simula um código de teste válido
+    testAccessCode: (code = window.WildClashStorage?.TEST_CODE) => {
+        if (!window.WildClashStorage) return alert('Storage não carregado!');
         const accessData = {
             codigo: code,
             team_name: 'Equipe Teste',
@@ -483,60 +365,35 @@ window.AccessDebug = {
             code_id: 999,
             timestamp: new Date().toISOString()
         };
-        
         localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
-        console.log(' Código de teste configurado:', accessData);
         alert(' Código de teste configurado! Redirecionando...');
-        
-        setTimeout(() => {
-            window.location.href = 'inscricoes.html';
-        }, 1000);
+        setTimeout(() => window.location.href = 'inscricoes.html', 1000);
     },
-    
-    testAdminCode: function() {
+    testAdminCode: () => {
+        if (!window.WildClashStorage) return alert('Storage não carregado!');
         alert(' Usando código admin para acessar o painel...');
-        
-        const fakeInput = document.createElement('input');
-        fakeInput.value = window.WildClashStorage.ADMIN_CODE;
-        fakeInput.id = 'test-admin-input';
-        document.body.appendChild(fakeInput);
-        
-        const accessCodeInput = document.getElementById('access-code-modal') || 
-                                document.getElementById('access-code') || 
-                                fakeInput;
-        
-        accessCodeInput.value = window.WildClashStorage.ADMIN_CODE;
-        
-        if (document.getElementById('access-code-modal')) {
-            document.getElementById('btn-verificar-modal').click();
-        } else if (document.getElementById('access-code')) {
-            document.getElementById('btn-verificar').click();
-        } else {
-            window.location.href = 'admin-panel.html';
-        }
-        
-        document.body.removeChild(fakeInput);
+        const accessData = {
+            codigo: window.WildClashStorage.ADMIN_CODE,
+            team_name: 'Administrador',
+            validoAte: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+            code_id: 1,
+            isAdmin: true,
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(accessData));
+        window.location.href = 'admin-panel.html';
     },
-    
-    clearAccess: function() {
+    clearAccess: () => {
         localStorage.removeItem(ACCESS_STORAGE_KEY);
-        console.log(' Acesso limpo');
-        alert(' Acesso removido do localStorage');
-        
-        if (window.location.pathname.includes('acesso.html')) {
-            location.reload();
-        }
+        alert(' Acesso removido');
+        if (window.location.pathname.includes('acesso.html')) location.reload();
     },
-    
-    viewAccessData: function() {
+    viewAccessData: () => {
         const data = localStorage.getItem(ACCESS_STORAGE_KEY);
         if (data) {
             console.log(' Dados de acesso:', JSON.parse(data));
-            alert(' Verifique o console para ver os dados de acesso');
-        } else {
-            console.log(' Nenhum dado de acesso encontrado');
-            alert(' Nenhum código de acesso armazenado');
-        }
+            alert(' Verifique o console (F12)');
+        } else alert(' Nenhum código armazenado');
     }
 };
 
@@ -544,10 +401,7 @@ console.log(`
 ╔══════════════════════════════════════════════╗
 ║           SISTEMA DE ACESSO ATIVO            ║
 ╠══════════════════════════════════════════════╣
-║ Modo: ${document.getElementById('access-code-modal') ? 'Modal (index.html)' : 'Página (acesso.html)'} ║
-║ Storage: ✅ Carregado                        ║
-║ Código Admin: ${window.WildClashStorage?.ADMIN_CODE || 'N/A'}          ║
-║ Código Teste: ${window.WildClashStorage?.TEST_CODE || 'N/A'}           ║
-║ Acesso Atual: ${localStorage.getItem(ACCESS_STORAGE_KEY) ? '✅' : '❌'}  ║
+║ Admin Code: ${window.WildClashStorage?.ADMIN_CODE || 'N/A'}   ║
+║ Test Code:  ${window.WildClashStorage?.TEST_CODE || 'N/A'}   ║
 ╚══════════════════════════════════════════════╝
 `);

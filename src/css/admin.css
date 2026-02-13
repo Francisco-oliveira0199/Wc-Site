@@ -2,6 +2,7 @@
    PROJETO: Wild Clash - Painel Administrativo
    ARQUIVO: admin.css
    DESCRIÇÃO: Estilos específicos para o painel administrativo
+   VERSÃO: 5.0 - DEFINITIVA (TOTALMENTE SEM TACHADO)
 ============================================================================= */
 
 :root {
@@ -488,6 +489,9 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* ========== NENHUMA REGRA DE TACHADO OU LINHA ========== */
+/* Todo e qualquer código relacionado a text-decoration foi removido */
 
 /* Responsivo */
 @media (max-width: 1024px) {
